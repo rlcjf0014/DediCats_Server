@@ -3,7 +3,7 @@ import {
   } from 'typeorm';
   
   @Entity()
-  export default class User extends BaseEntity {
+  export default class Photo extends BaseEntity {
       @PrimaryGeneratedColumn()
       id: number;
   
@@ -16,4 +16,3 @@ import {
       @Column()
       age: number;
   }
-  
