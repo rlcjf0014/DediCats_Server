@@ -3,7 +3,6 @@
 import "reflect-metadata";
 import http from "http";
 
-
 import typeorm from "typeorm";
 import api from "./api";
 import data from "./data";
@@ -21,7 +20,7 @@ server.listen(PORT, () => {
 data
     .getConnection()
     .then(async (connection:typeorm.Connection) => {
-        console.log('연결이 되나요?');
+        console.log("연결이 되나요?");
         const catRepository:typeorm.Repository<Cat> = connection.getRepository(Cat);
         const tagRepository:typeorm.Repository<Tag> = connection.getRepository(Tag);
 
