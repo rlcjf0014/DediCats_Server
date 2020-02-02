@@ -4,7 +4,7 @@ import "reflect-metadata";
 import http from "http";
 
 import typeorm from "typeorm";
-import app from "./app";
+import app from "./api";
 import data from "./data";
 
 import Cat from "./data/entity/Cat";
@@ -36,4 +36,5 @@ data
         console.log(testTag);
         // return;
     })
-    .catch((err) => console.log(`TypeORM connection error: ${err}`));
+    // eslint-disable-next-line no-console
+    .catch((err: any) => console.log(`TypeORM connection error: ${err}`));
