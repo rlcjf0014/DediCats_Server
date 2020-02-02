@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn,
 } from "typeorm";
 
 import Cat from "./Cat";
@@ -9,17 +9,17 @@ import Cat from "./Cat";
 @Entity({ name: "tag" })
 export default class Tag extends BaseEntity {
       @PrimaryGeneratedColumn()
-      id: number;
+      id!: number;
 
-      @Column({ type: "varchar", nullable: "false" })
-      content:string;
+      @Column({ type: "varchar", nullable: false })
+      content!:string;
 
       @CreateDateColumn()
-      createAt: Date;
+      createAt!: Date;
 
       @UpdateDateColumn()
-      updateAt: Date;
+      updateAt!: Date;
 
       @ManyToMany((type) => Cat, (cat) => cat.id, { cascade: true })
-      cats: Cat[];
+      cats!: Cat[];
 }

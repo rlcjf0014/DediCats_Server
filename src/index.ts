@@ -4,13 +4,13 @@ import "reflect-metadata";
 import http from "http";
 
 import typeorm from "typeorm";
-import app from "./app";
+import app from "./api";
 import data from "./data";
 
 import Cat from "./data/entity/Cat";
 import Tag from "./data/entity/Tag";
 
-const PORT : Number = 5000;
+const PORT : Number = 8000;
 const server = http.createServer(app);
 
 server.listen(PORT, () => {
@@ -26,6 +26,8 @@ data
         const cat = new Cat();
         cat.location = "(0,0)";
         cat.nickname = "운영냥";
+        cat.cut = "YY";
+        cat.rainbow = "dead";
         const testCat = await catRepository.save(cat);
 
         const tag = new Tag();
@@ -36,4 +38,5 @@ data
         console.log(testTag);
         // return;
     })
-    .catch((err) => console.log(`TypeORM connection error: ${err}`));
+    // eslint-disable-next-line no-console
+    .catch((err: any) => console.log(`TypeORM connection error: ${err}`));
