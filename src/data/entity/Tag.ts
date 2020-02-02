@@ -20,6 +20,6 @@ export default class Tag extends BaseEntity {
       @UpdateDateColumn()
       updateAt: Date;
 
-      @ManyToMany((type) => Cat, (cat) => cat.id)
+      @ManyToMany((type) => Cat, (cat) => cat.id, { cascade: true })
       cats: Cat[];
 }

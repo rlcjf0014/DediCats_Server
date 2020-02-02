@@ -42,6 +42,6 @@ export default class Cat extends BaseEntity {
     @UpdateDateColumn()
     updateAt: Date;
 
-    @ManyToMany((type) => Tag, (tag) => tag.id)
-    tags:tag[];
+    @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })
+    tags:Tag[];
 }
