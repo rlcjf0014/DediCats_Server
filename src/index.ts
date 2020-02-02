@@ -10,7 +10,7 @@ import data from "./data";
 import Cat from "./data/entity/Cat";
 import Tag from "./data/entity/Tag";
 
-const PORT : Number = 5000;
+const PORT : Number = 8000;
 const server = http.createServer(app);
 
 server.listen(PORT, () => {

@@ -20,7 +20,8 @@ export default class Cat extends BaseEntity {
     @Column({ type: "varchar", nullable: false })
     nickname! :string;
 
-    @Column({ type: "varchar", nullable: false, length: 10, default: "{ Y :  0 , N : 0 , unknown : 0 }" })
+    @Column({
+        type: "varchar", nullable: false, length: 10, default: "{ Y :  0 , N : 0 , unknown : 0 }" })
     cut! :string;
 
     @Column({
