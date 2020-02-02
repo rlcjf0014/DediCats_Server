@@ -19,10 +19,12 @@ export default class Cat extends BaseEntity {
     @Column({ type: "varchar", nullable: "false" })
     nickname:string;
 
-    @Column({ type: "varchar", nullable: "false", length: 100 })
+    @Column({ type: "varchar", nullable: "false", length: 10, default: "{ Y :  0 , N : 0 , unknown : 0 }" })
     cut:string;
 
-    @Column({ type: "varchar", nullable: "false", length: 100 })
+    @Column({
+        type: "varchar", nullable: "false", length: 100, default: "{ Y :  0, Y_date : 'unknown' , N : 0, N_date : 'unknown'  }",
+    })
     rainbow:string;
 
     @Column({ type: "varchar", nullable: "true" })
