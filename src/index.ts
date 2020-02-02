@@ -15,7 +15,7 @@ server.listen(PORT, () => {
 
 data
     .getConnection()
-    .then(async connection => {
+    .then(async (connection) => {
         return;
     })
     .catch((err) => console.log(`TypeORM connection error: ${err}`));
