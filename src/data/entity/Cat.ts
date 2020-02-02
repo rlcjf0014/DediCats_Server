@@ -39,3 +39,5 @@ class Cat extends BaseEntity {
     @UpdateDateColumn()
     updateAt: Date;
 }
+
+export default Cat;
