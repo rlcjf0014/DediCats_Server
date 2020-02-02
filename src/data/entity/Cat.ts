@@ -1,9 +1,12 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable import/extensions */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany,
 } from "typeorm";
+import Tag from "./Tag";
 
 @Entity({ name: "cat" })
-class Cat extends BaseEntity {
+export default class Cat extends BaseEntity {
     @PrimaryGeneratedColumn()
     id:number;
 
@@ -38,6 +41,7 @@ class Cat extends BaseEntity {
 
     @UpdateDateColumn()
     updateAt: Date;
-}
 
-export default Cat;
+    @ManyToMany((type) => Tag, (tag) => tag.id)
+    tags:tag[];
+}
