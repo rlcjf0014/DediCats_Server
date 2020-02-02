@@ -10,31 +10,33 @@ export default class Cat extends BaseEntity {
     @PrimaryGeneratedColumn()
     id! :number;
 
-    @Column({ type: "nvarchar", comment: "a brief explanation of about 200 characters based on uniCode." })
+    @Column({ type: "nvarchar", nullable: true, comment: "a brief explanation of about 200 characters based on uniCode." })
     description! :string;
 
-    @Column({ type: "point", nullable: "false" })
+    @Column({ type: "point", nullable: false })
     location! :string;
 
-    @Column({ type: "varchar", nullable: "false" })
+    @Column({ type: "varchar", nullable: false })
     nickname! :string;
 
-    @Column({ type: "varchar", nullable: "false", length: 10, default: "{ Y :  0 , N : 0 , unknown : 0 }" })
+    @Column({
+        type: "varchar", nullable: false, length: 10, default: "{ Y :  0 , N : 0 , unknown : 0 }",
+    })
     cut! :string;
 
     @Column({
-        type: "varchar", nullable: "false", length: 100, default: "{ Y :  0, Y_date : 'unknown' , N : 0, N_date : 'unknown'  }",
+        type: "varchar", nullable: false, length: 100, default: "{ Y :  0, Y_date : 'unknown' , N : 0, N_date : 'unknown'  }",
     })
     rainbow! :string;
 
-    @Column({ type: "varchar", nullable: "true" })
+    @Column({ type: "varchar", nullable: true })
     species! :string;
 
-    @Column({ type: "varchar", nullable: "true" })
+    @Column({ type: "varchar", nullable: true })
     today! :string;
 
     @Column({
-        type: "timestamp", name: "today_time", nullable: "true", comment: "Time when \"today\"column updated",
+        type: "timestamp", name: "today_time", nullable: true, comment: "Time when \"today\"column updated",
     })
     todayTime! :Date;
 

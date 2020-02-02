@@ -14,4 +14,4 @@ const getConnection = async (): Promise<Connection> => {
     return connection;
 };
 
-export default getConnection;
+export default { getConnection };
