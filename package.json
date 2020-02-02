@@ -4,9 +4,9 @@
   "description": "# CodeStake 송성현, 최윤정, 김대연, 김수지",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "npm run build && node dist/app.js",
     "dev": "ts-node src/index.ts",
-    "build": "tsc -p .",
+    "build": "rm -rf dist && tsc -p .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

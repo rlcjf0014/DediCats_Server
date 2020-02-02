@@ -4,3 +4,9 @@ node_modules/
 build/
 tmp/
 temp/
+
+# build output
+dist/
+
+# ORM setting in local
+ormconfig.json
