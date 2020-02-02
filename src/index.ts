@@ -4,14 +4,14 @@ import "reflect-metadata";
 import http from "http";
 
 import typeorm from "typeorm";
-import api from "./api";
+import app from "./api";
 import data from "./data";
 
 import Cat from "./data/entity/Cat";
 import Tag from "./data/entity/Tag";
 
-const PORT : any = process.env.PORT || 5000;
-const server = http.createServer(api);
+const PORT : Number = 8000;
+const server = http.createServer(app);
 
 server.listen(PORT, () => {
     console.log(`app listen on ${PORT}`);
@@ -27,6 +27,8 @@ data
         const cat = new Cat();
         cat.location = "(0,0)";
         cat.nickname = "운영냥";
+        cat.cut = "YY";
+        cat.rainbow = "dead";
         const testCat = await catRepository.save(cat);
 
         const tag = new Tag();

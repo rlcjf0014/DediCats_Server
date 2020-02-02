@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import {
+    // eslint-disable-next-line max-len
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany,
 } from "typeorm";
 import Tag from "./Tag";
@@ -10,7 +11,7 @@ export default class Cat extends BaseEntity {
     @PrimaryGeneratedColumn()
     id! :number;
 
-    @Column({ type: "nvarchar", nullable: true, comment: "a brief explanation of about 200 characters based on uniCode." })
+    @Column({ type: "nvarchar", comment: "a brief explanation of about 200 characters based on uniCode.", default: null })
     description! :string;
 
     @Column({ type: "point", nullable: false })
@@ -19,14 +20,10 @@ export default class Cat extends BaseEntity {
     @Column({ type: "varchar", nullable: false })
     nickname! :string;
 
-    @Column({
-        type: "varchar", nullable: false, length: 10, default: "{ Y :  0 , N : 0 , unknown : 0 }",
-    })
+    @Column({ type: "varchar", nullable: false, length: 10 })
     cut! :string;
 
-    @Column({
-        type: "varchar", nullable: false, length: 100, default: "{ Y :  0, Y_date : 'unknown' , N : 0, N_date : 'unknown'  }",
-    })
+    @Column({ type: "varchar", nullable: false, length: 100 })
     rainbow! :string;
 
     @Column({ type: "varchar", nullable: true })
@@ -36,7 +33,7 @@ export default class Cat extends BaseEntity {
     today! :string;
 
     @Column({
-        type: "timestamp", name: "today_time", nullable: true, comment: "Time when \"today\"column updated",
+        type: "timestamp", name: "today_time", nullable: true,
     })
     todayTime! :Date;
 
