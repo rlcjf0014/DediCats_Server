@@ -26,6 +26,8 @@ data
         const cat = new Cat();
         cat.location = "(0,0)";
         cat.nickname = "운영냥";
+        cat.cut = "YY";
+        cat.rainbow = "dead";
         const testCat = await catRepository.save(cat);
 
         const tag = new Tag();
