@@ -3,11 +3,11 @@
 import "reflect-metadata";
 import http from "http";
 
-import app from "./app";
+import api from "./api";
 import data from "./data";
 
-const PORT : Number = 5000;
-const server = http.createServer(app);
+const PORT : any = process.env.PORT || 5000;
+const server = http.createServer(api);
 
 server.listen(PORT, () => {
     console.log(`app listen on ${PORT}`);
