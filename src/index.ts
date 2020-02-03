@@ -20,11 +20,12 @@ server.listen(PORT, () => {
 data
     .getConnection()
     .then(async (connection:typeorm.Connection) => {
+        console.log("연결이 되나요?");
         const catRepository:typeorm.Repository<Cat> = connection.getRepository(Cat);
         const tagRepository:typeorm.Repository<Tag> = connection.getRepository(Tag);
 
         const cat = new Cat();
-        cat.location = "(0,0)";
+        // cat.location = null;
         cat.nickname = "운영냥";
         cat.cut = "YY";
         cat.rainbow = "dead";
@@ -38,5 +39,4 @@ data
         console.log(testTag);
         // return;
     })
-    // eslint-disable-next-line no-console
-    .catch((err: any) => console.log(`TypeORM connection error: ${err}`));
+    .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
