@@ -4,6 +4,7 @@ import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn,
 } from "typeorm";
 import Cat from "./Cat";
+import Post from './Post'
 
   @Entity({ name: "photo" })
 export default class Photo extends BaseEntity {
@@ -29,4 +30,7 @@ export default class Photo extends BaseEntity {
 
       @ManyToOne((type) => Cat, (cat) => cat.photos, { cascade: true, nullable: true })
       cat !: Cat;
+
+      @ManyToOne((type) => Post, (post) => post.photos, { cascade: true, nullable: true })
+      post !: Post;
 }

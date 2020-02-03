@@ -5,9 +5,11 @@ import {
 } from "typeorm";
 import Tag from "./Tag";
 import Photo from "./Photo";
+import Post from './Post';
 // const cutDefault:string = "{ Y :  0, N : 0, unknown : 0}";
 // const rainbowDefault:string = "{ Y :  0, Y_date : 2020-01-31 , N : 0, N_date : 2020-01-31  }";
 
+// 등록 유저 column 아직 등록되어있지 않음
 @Entity({ name: "cat" })
 export default class Cat extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -53,6 +55,9 @@ export default class Cat extends BaseEntity {
 
     @OneToMany((type) => Photo, (photo) => photo.cat)
     photos!: Photo[];
+
+    @OneToMany((type) => Photo, (post) => post.cat)
+    posts!: Post[];
 
     @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })
     @JoinTable({ name: "cat_tag" })
