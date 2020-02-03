@@ -1,5 +1,7 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable import/extensions */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToOne,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn,
 } from "typeorm";
 import Cat from "./Cat";
 
@@ -11,18 +13,20 @@ export default class Photo extends BaseEntity {
       @Column({ type: "varchar", nullable: false })
       path!: string;
 
-      @ManyToOne((type) => Cat, (cat) => cat.photos)
-      cat_id !: Cat;
-
-      @Column({ name: "is_profile", type: "varchar", length: 2 })
+      @Column({
+          name: "is_profile", type: "varchar", length: 2, nullable: false, default: "N",
+      })
       isProfile!: string;
 
-      @Column({ type: "varchar", length: 2 })
+      @Column({ type: "varchar", length: 2, nullable: false })
       status!: string;
 
-      @CreateDateColumn({ name: "create_at" })
+      @CreateDateColumn({ name: "create_at", nullable: false })
       createAt! : Date;
 
-      @UpdateDateColumn({ name: "update_at" })
+      @UpdateDateColumn({ name: "update_at", nullable: false })
       updateAt! : Date;
+
+      @ManyToOne((type) => Cat, (cat) => cat.photos, { cascade: true, nullable: true })
+      cat !: Cat;
 }

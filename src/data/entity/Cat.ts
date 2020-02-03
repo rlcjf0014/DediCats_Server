@@ -51,10 +51,10 @@ export default class Cat extends BaseEntity {
     @UpdateDateColumn({ name: "update_at" })
     updateAt! : Date;
 
-    @OneToMany((type) => Photo, (photo) => photo.cat_id)
-    photo!: Photo[];
+    @OneToMany((type) => Photo, (photo) => photo.cat)
+    photos!: Photo[];
 
     @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })
-    @JoinTable()
+    @JoinTable({ name: "cat_tag" })
     tags! :Tag[];
 }
