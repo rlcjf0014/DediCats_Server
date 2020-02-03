@@ -25,7 +25,7 @@ data
         const tagRepository:typeorm.Repository<Tag> = connection.getRepository(Tag);
 
         const cat = new Cat();
-        cat.location = "(0,0)";
+        // cat.location = null;
         cat.nickname = "운영냥";
         cat.cut = "YY";
         cat.rainbow = "dead";
