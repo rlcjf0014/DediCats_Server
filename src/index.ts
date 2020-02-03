@@ -2,7 +2,6 @@
 /* eslint-disable import/no-unresolved */
 import "reflect-metadata";
 import http from "http";
-import wkt from "terraformer-wkt-parser";
 import wkx from "wkx";
 
 import typeorm from "typeorm";
@@ -27,11 +26,9 @@ data
 
         
         const cat = new Cat();
-        // const venue = wkt.parse('POINT(15 20');
-        cat.location = wkt.convert{
-            "type": "Point",
-            "coordinates": [10, 10]
-        };
+        const venue = new wkx.Point(1, 2).toWkt();
+        console.log(wkx.Geometry.parse(venue));
+        cat.location = venue;
         cat.nickname = "고냥이";
         cat.cut = "YY";
         cat.rainbow = "dead";

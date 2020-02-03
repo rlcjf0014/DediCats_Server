@@ -9,4 +9,3 @@ temp/
 dist/
 
 # ORM setting in local
-ormconfig.json
