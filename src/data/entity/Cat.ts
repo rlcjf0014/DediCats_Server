@@ -2,7 +2,7 @@
 /* eslint-disable import/extensions */
 import {
     // eslint-disable-next-line max-len
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable,
 } from "typeorm";
 import Tag from "./Tag";
 
@@ -43,6 +43,8 @@ export default class Cat extends BaseEntity {
     @UpdateDateColumn()
     updateAt! : Date;
 
-    @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })
+    // , tag => tag.id, { cascade: true }
+    @ManyToMany(type => Tag)
+    @JoinTable()
     tags! :Tag[];
 }
