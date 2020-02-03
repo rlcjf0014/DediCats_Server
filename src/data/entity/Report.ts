@@ -1,18 +1,38 @@
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
+    OneToMany, ManyToOne
 } from "typeorm";
+
+import Post from "./Post";
+import Comment from "./Comment";
+import Cat from "./Cat";
+import User from "./User";
+
 
 @Entity()
 export default class Report extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id!: number;
 
-    @Column()
-    firstName: string;
+    @Column({ name: "criminal_id", type: "integer", nullable: false})
+    criminalId! : number;
 
-    @Column()
-    lastName: string;
+    @CreateDateColumn({ name: "create_at" })
+    createAt! : Date;
 
-    @Column()
-    age: number;
+    @UpdateDateColumn({ name: "update_at" })
+    updateAt! : Date;
+
+    @ManyToOne((type) => Post, (post) => post.reports, { cascade: true, nullable: true })
+    post!: Post;
+
+    @ManyToOne((type) => Comment, (comment) => comment.reports, { cascade: true, nullable: true })
+    comment!: Comment;
+
+    @ManyToOne((type) => Cat, (cat) => cat.reports, { cascade: true, nullable: true })
+    cat!: Cat;
+    
+    @ManyToOne((type) => User, (user) => user.reports, { cascade: true, nullable: true })
+    user!: User;
+
 }

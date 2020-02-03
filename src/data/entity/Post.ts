@@ -7,6 +7,8 @@ import {
 import Cat from "./Cat";
 import Photo from "./Photo";
 import Comment from "./Comment";
+import Report from "./Report";
+import User from "./User";
 // 유저아이디 작성되어있지 않음
 @Entity({ name: "post" })
 export default class Post extends BaseEntity {
@@ -31,7 +33,13 @@ export default class Post extends BaseEntity {
       @ManyToOne((type) => Cat, (cat) => cat.posts, { cascade: true, nullable: false })
       cat !: Cat;
 
-      @OneToMany((type) => Comment, (comment) => comment.comments)
+      @ManyToOne((type) => User, (user) => user.posts, { cascade: true, nullable: false })
+      user !: User;
+
+      @OneToMany((type) => Comment, (comment) => comment.post)
       comments!: Comment[];
+
+      @OneToMany((type) => Report, (report) => report.post)
+      reports!: Report[];
 
 }
