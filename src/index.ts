@@ -21,22 +21,18 @@ server.listen(PORT, () => {
 data
     .getConnection()
     .then(async (connection:typeorm.Connection) => {
-        console.log("연결이 되나요?");
         const catRepository:typeorm.Repository<Cat> = connection.getRepository(Cat);
         const tagRepository:typeorm.Repository<Tag> = connection.getRepository(Tag);
 
-        
         const cat = new Cat();
         const venue = new wkx.Point(1, 2).toWkt();
-        console.log(wkx.Geometry.parse(venue));
         cat.location = venue;
         cat.nickname = "고냥이";
-        cat.cut = "YY";
-        cat.rainbow = "dead";
+
         const testCat = await catRepository.save(cat);
 
         const tag = new Tag();
-        tag.content = "dominant";
+        tag.content = "권위적!";
         const testTag = await tagRepository.save(tag);
 
         console.log(testCat);
