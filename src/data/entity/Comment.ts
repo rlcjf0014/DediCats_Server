@@ -1,18 +1,37 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable import/extensions */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, 
+    CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany
 } from "typeorm";
 
-@Entity()
+import User from "./User";
+import Post from "./Post";
+import Report from "./Report";
+
+@Entity({ name: "comment" })
 export default class Comment extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id!: number;
 
-    @Column()
-    firstName: string;
+    @Column({ type: "varchar", nullable: false })
+    content!: string;
 
-    @Column()
-    lastName: string;
+    @Column({ type: "varchar", nullable: false })
+    status!: string;
 
-    @Column()
-    age: number;
+    @CreateDateColumn({ name: "create_at" })
+    createAt! : Date;
+
+    @UpdateDateColumn({ name: "update_at" })
+    updateAt! : Date;
+
+    @OneToMany((type) => Report, (report) => report.comment)
+    reports!: Report[];
+
+    @ManyToOne((type) => User, (user) => user.comments, { cascade: true, nullable: true })
+    user!: User;
+
+    @ManyToOne((type) => Post, (post) => post.comments, { cascade: true, nullable: true })
+    post!: Post;
 }

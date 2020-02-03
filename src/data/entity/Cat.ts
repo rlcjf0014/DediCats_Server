@@ -1,11 +1,14 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany,
+     JoinTable, OneToMany, ManyToOne
 } from "typeorm";
 import Tag from "./Tag";
 import Photo from "./Photo";
 import Post from "./Post";
+import User from "./User";
+import Report from "./Report";
 // const cutDefault:string = "{ Y :  0, N : 0, unknown : 0}";
 // const rainbowDefault:string = "{ Y :  0, Y_date : 2020-01-31 , N : 0, N_date : 2020-01-31  }";
 
@@ -18,7 +21,7 @@ export default class Cat extends BaseEntity {
     @Column({ type: "nvarchar", nullable: true })
     description! :string;
 
-    @Column({ type: "point", nullable: true })
+    @Column({ type: "point", nullable: false })
     location! :string;
 
     @Column({ type: "varchar", nullable: false })
@@ -60,7 +63,17 @@ export default class Cat extends BaseEntity {
     @OneToMany((type) => Post, (post) => post.cat)
     posts!: Post[];
 
+    @OneToMany((type) => Report, (report) => report.cat)
+    reports!: Report[];
+
+    @ManyToOne((type) => User, (user) => user.cats, { cascade: true, nullable: true })
+    user!: User;
+
     @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })
     @JoinTable({ name: "cat_tag" })
     tags! :Tag[];
+
+    @ManyToMany((type) => User, (user) => user.id, {cascade: true})
+    @JoinTable({ name: "following_cat" })
+    users! :User[];
 }
