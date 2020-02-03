@@ -21,6 +21,7 @@ server.listen(PORT, () => {
 data
     .getConnection()
     .then(async (connection:typeorm.Connection) => {
+        console.log("연결이 되나요?");
         const catRepository:typeorm.Repository<Cat> = connection.getRepository(Cat);
         const tagRepository:typeorm.Repository<Tag> = connection.getRepository(Tag);
 
@@ -42,5 +43,4 @@ data
         console.log(testTag);
         // return;
     })
-    // eslint-disable-next-line no-console
-    .catch((err: any) => console.log(`TypeORM connection error: ${err}`));
+    .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
