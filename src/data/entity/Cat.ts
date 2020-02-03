@@ -18,7 +18,7 @@ export default class Cat extends BaseEntity {
     @Column({ type: "nvarchar", nullable: true })
     description! :string;
 
-    @Column({ type: "point", nullable: true })
+    @Column({ type: "point", nullable: false })
     location! :string;
 
     @Column({ type: "varchar", nullable: false })
