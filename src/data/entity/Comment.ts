@@ -1,11 +1,13 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, 
+    CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany
 } from "typeorm";
 
 import User from "./User";
 import Post from "./Post";
+import Report from "./Report";
 
 @Entity({ name: "comment" })
 export default class Comment extends BaseEntity {
@@ -24,9 +26,12 @@ export default class Comment extends BaseEntity {
     @UpdateDateColumn({ name: "update_at" })
     updateAt! : Date;
 
-    @ManyToOne((type) => User, (user) => user.comments)
-    users!: User;
+    @OneToMany((type) => Report, (report) => report.comment)
+    reports!: Report[];
 
-    @ManyToOne((type) => Post, (post) => post.comments)
-    posts!: Post;
+    @ManyToOne((type) => User, (user) => user.comments, { cascade: true, nullable: true })
+    user!: User;
+
+    @ManyToOne((type) => Post, (post) => post.comments, { cascade: true, nullable: true })
+    post!: Post;
 }

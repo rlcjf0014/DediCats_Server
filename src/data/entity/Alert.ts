@@ -12,13 +12,13 @@ import User from "./User";
 @Entity()
 export default class Alert extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id!: number;
 
     @Column({ type: "varchar", nullable: false })
-    content: string;
+    content!: string;
 
     @Column({ type: "varchar", nullable: false })
-    status: string;
+    status!: string;
 
     @CreateDateColumn({ name: "create_at" })
     createAt! : Date;
@@ -26,6 +26,6 @@ export default class Alert extends BaseEntity {
     @UpdateDateColumn({ name: "update_at" })
     updateAt! : Date;
 
-    @ManyToOne((type) => User, (user) => user.alerts)
-    users!: User;
+    @ManyToOne((type) => User, (user) => user.alerts, { cascade: true, nullable: true })
+    user!: User;
 }

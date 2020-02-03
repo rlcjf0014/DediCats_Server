@@ -7,7 +7,9 @@ import {
 
 import Alert from "./Alert";
 import Comment from "./Comment";
-
+import Cat from "./Cat";
+import Report from "./Report";
+import Post from "./Post";
 
 @Entity({ name: "user" })
 export default class User extends BaseEntity {
@@ -35,9 +37,21 @@ export default class User extends BaseEntity {
     @UpdateDateColumn({ name: "update_at" })
     updateAt! : Date;
 
-    @OneToMany((type) => Alert, (alert) => alert.users)
+    @OneToMany((type) => Alert, (alert) => alert.user)
     alerts! : Alert[];
 
-    @OneToMany((type) => Comment, (comment) => comment.users)
+    @OneToMany((type) => Comment, (comment) => comment.user)
     comments! : Comment[];
+
+    @OneToMany((type) => Cat, (cat) => cat.user)
+    cats! : Cat[];
+
+    @OneToMany((type) => Report, (report) => report.user)
+    reports! : Report[];
+
+    @OneToMany((type) => Post, (post) => post.user)
+    posts! : Post[];
+
+
+
 }
