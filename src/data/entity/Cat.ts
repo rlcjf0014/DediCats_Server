@@ -25,16 +25,17 @@ export default class Cat extends BaseEntity {
     nickname! :string;
 
     @Column({
-        type: "varchar", nullable: false, length: 20,
-        // default: cutDefault,
+        type: "simple-json", nullable: false,
     })
-    cut! :string;
+    cut :{Y:number, N:number, unknown:number} = { Y: 0, N: 0, unknown: 0 };
 
     @Column({
-        type: "varchar", nullable: false, length: 100,
-        // default: rainbowDefault,
+        type: "simple-json",
+        nullable: false,
     })
-    rainbow! :string;
+    rainbow :{Y:number, YDate:any, N:number, NDate:any} = {
+        Y: 0, YDate: null, N: 0, NDate: null,
+    };
 
     @Column({ type: "varchar", nullable: true })
     species! :string;
@@ -56,7 +57,7 @@ export default class Cat extends BaseEntity {
     @OneToMany((type) => Photo, (photo) => photo.cat)
     photos!: Photo[];
 
-    @OneToMany((type) => Photo, (post) => post.cat)
+    @OneToMany((type) => Post, (post) => post.cat)
     posts!: Post[];
 
     @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })

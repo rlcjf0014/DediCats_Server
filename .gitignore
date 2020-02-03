@@ -9,3 +9,6 @@ temp/
 dist/
 
 # ORM setting in local
+
+# .enc
+.env
