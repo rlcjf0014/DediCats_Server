@@ -9,4 +9,9 @@ temp/
 dist/
 
 # ORM setting in local
+<<<<<<< HEAD
+=======
+
+# .enc
+>>>>>>> 7102337647d1ccab84f76fa4167f1b8d965fc393
 .env

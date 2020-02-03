@@ -6,6 +6,7 @@ import {
 import Tag from "./Tag";
 import Photo from "./Photo";
 import Post from "./Post";
+import User from "./User";
 // const cutDefault:string = "{ Y :  0, N : 0, unknown : 0}";
 // const rainbowDefault:string = "{ Y :  0, Y_date : 2020-01-31 , N : 0, N_date : 2020-01-31  }";
 
@@ -25,16 +26,17 @@ export default class Cat extends BaseEntity {
     nickname! :string;
 
     @Column({
-        type: "varchar", nullable: false, length: 20,
-        // default: cutDefault,
+        type: "simple-json", nullable: false,
     })
-    cut! :string;
+    cut :{Y:number, N:number, unknown:number} = { Y: 0, N: 0, unknown: 0 };
 
     @Column({
-        type: "varchar", nullable: false, length: 100,
-        // default: rainbowDefault,
+        type: "simple-json",
+        nullable: false,
     })
-    rainbow! :string;
+    rainbow :{Y:number, YDate:any, N:number, NDate:any} = {
+        Y: 0, YDate: null, N: 0, NDate: null,
+    };
 
     @Column({ type: "varchar", nullable: true })
     species! :string;
@@ -62,4 +64,8 @@ export default class Cat extends BaseEntity {
     @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })
     @JoinTable({ name: "cat_tag" })
     tags! :Tag[];
+
+    @ManyToMany((type) => User, (user) => user.id, {cascade: true})
+    @JoinTable({ name: "following_cat" })
+    users! :User[];
 }

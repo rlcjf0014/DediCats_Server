@@ -6,6 +6,8 @@ import {
 } from "typeorm";
 
 import Alert from "./Alert";
+import Comment from "./Comment";
+
 
 @Entity({ name: "user" })
 export default class User extends BaseEntity {
@@ -35,4 +37,7 @@ export default class User extends BaseEntity {
 
     @OneToMany((type) => Alert, (alert) => alert.users)
     alerts! : Alert[];
+
+    @OneToMany((type) => Comment, (comment) => comment.users)
+    comments! : Comment[];
 }
