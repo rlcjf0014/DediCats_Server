@@ -1,13 +1,13 @@
 import {
-  Entity, BaseEntity, PrimaryGeneratedColumn, Column,
+  Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn
 } from 'typeorm';
 
-@Entity()
+@Entity({ name: "comment"})
 export default class Comment extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({type: "varchar"})
     firstName: string;
 
     @Column()

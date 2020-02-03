@@ -56,7 +56,7 @@ export default class Cat extends BaseEntity {
     @OneToMany((type) => Photo, (photo) => photo.cat)
     photos!: Photo[];
 
-    @OneToMany((type) => Photo, (post) => post.cat)
+    @OneToMany((type) => Post, (post) => post.cat)
     posts!: Post[];
 
     @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })
