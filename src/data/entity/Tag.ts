@@ -4,7 +4,7 @@ import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn,
 } from "typeorm";
 
-import Cat from "./Cat";
+// import Cat from "./Cat";
 
 @Entity({ name: "tag" })
 export default class Tag extends BaseEntity {
@@ -20,6 +20,6 @@ export default class Tag extends BaseEntity {
       @UpdateDateColumn()
       updateAt!: Date;
 
-      @ManyToMany((type) => Cat, (cat) => cat.id, { cascade: true })
-      cats!: Cat[];
+    //   @ManyToMany((type) => Cat, (cat) => cat.id, { cascade: true })
+    //   cats!: Cat[];
 }

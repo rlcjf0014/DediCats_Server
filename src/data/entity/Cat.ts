@@ -5,7 +5,7 @@ import {
 } from "typeorm";
 import Tag from "./Tag";
 import Photo from "./Photo";
-import Post from './Post';
+import Post from "./Post";
 // const cutDefault:string = "{ Y :  0, N : 0, unknown : 0}";
 // const rainbowDefault:string = "{ Y :  0, Y_date : 2020-01-31 , N : 0, N_date : 2020-01-31  }";
 

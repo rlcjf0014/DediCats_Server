@@ -2,6 +2,7 @@
 /* eslint-disable import/no-unresolved */
 import "reflect-metadata";
 import http from "http";
+import wkx from "wkx";
 
 import typeorm from "typeorm";
 import app from "./api";
@@ -24,15 +25,18 @@ data
         const catRepository:typeorm.Repository<Cat> = connection.getRepository(Cat);
         const tagRepository:typeorm.Repository<Tag> = connection.getRepository(Tag);
 
+        
         const cat = new Cat();
-        // cat.location = null;
-        cat.nickname = "운영냥";
+        const venue = new wkx.Point(1, 2).toWkt();
+        console.log(wkx.Geometry.parse(venue));
+        cat.location = venue;
+        cat.nickname = "고냥이";
         cat.cut = "YY";
         cat.rainbow = "dead";
         const testCat = await catRepository.save(cat);
 
         const tag = new Tag();
-        tag.content = "권위적임";
+        tag.content = "dominant";
         const testTag = await tagRepository.save(tag);
 
         console.log(testCat);

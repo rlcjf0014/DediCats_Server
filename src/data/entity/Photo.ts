@@ -4,7 +4,7 @@ import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn,
 } from "typeorm";
 import Cat from "./Cat";
-import Post from './Post'
+import Post from "./Post";
 
   @Entity({ name: "photo" })
 export default class Photo extends BaseEntity {

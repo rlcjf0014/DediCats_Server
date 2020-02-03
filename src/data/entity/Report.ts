@@ -1,6 +1,6 @@
 import {
-  Entity, BaseEntity, PrimaryGeneratedColumn, Column,
-} from 'typeorm';
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column,
+} from "typeorm";
 
 @Entity()
 export default class Report extends BaseEntity {
