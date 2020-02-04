@@ -20,13 +20,6 @@ api.use(cors());
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 
-// 잘 되는것 확인했음
-// const add = (a: number, b: number): number => a + b;
-// api.get("/", (req: Request, res: Response, next: NextFunction) => {
-//     console.log(add(5, 5));
-//     res.send("Hello");
-// });
-
 api.use("/", BasicRouter);
 api.use("/cat", catRouter);
 api.use("/comment", commentsRouter);
