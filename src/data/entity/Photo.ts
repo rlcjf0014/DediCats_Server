@@ -29,8 +29,8 @@ export default class Photo extends BaseEntity {
       updateAt! : Date;
 
       @ManyToOne((type) => Cat, (cat) => cat.photos, { cascade: true, nullable: true })
-      cat !: Cat["id"];
+      cat !: Cat[];
 
       @ManyToOne((type) => Post, (post) => post.photos, { cascade: true, nullable: true })
-      post !: Post["id"];
+      post !: Post[];
 }

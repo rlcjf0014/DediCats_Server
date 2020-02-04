@@ -31,16 +31,14 @@ export default class Post extends BaseEntity {
       photos!: Photo[];
 
       @ManyToOne((type) => Cat, (cat) => cat.posts, { cascade: true, nullable: false })
-      cat !: Cat["id"];
+      cat !: Cat;
 
       @ManyToOne((type) => User, (user) => user.posts, { cascade: true, nullable: false })
-      user !: User["id"];
+      user !: User;
 
       @OneToMany((type) => Comment, (comment) => comment.post)
       comments!: Comment[];
 
       @OneToMany((type) => Report, (report) => report.post)
       reports!: Report[];
-    
-
 }

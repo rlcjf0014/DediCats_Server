@@ -13,7 +13,7 @@ router.post("/deleteTag",(req:express.Request, res:express.Response) => {
 
 // This endpoint updates the user's following information.
 router.post("/follow", (req:express.Request, res:express.Response) => {
-    const { catId, userId }:{catId:number, userId:number} = req.body;
+    const { catId, userId }:{catId?:number, userId?:number} = req.body;
 
     // response
     // {"message": "User now follows this cat"}
@@ -44,7 +44,6 @@ router.get("/:catId", (req:express.Request, res:express.Response) => {
     // error
     // { "error" : error }
 });
-
 // update cat rainbow
 router.post("/rainbow", (req:express.Request, res:express.Response) => {
     const { catId, rainbow }:{catId:number, rainbow:object} = req.body;
@@ -111,7 +110,7 @@ router.post("/updateTag", (req:express.Request, res:express.Response) => {
     const { catId, catTag }:{catId?:number, catTag?:string} = req.body;
 
     /*
-{ "messge" : "Tag Add Successfully", "catTag": [뚱땡] }     
+{ "messge" : "Tag Add Successfully", "catTag": [뚱땡] }
     */
 });
 
