@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import {
-    Entity, BaseEntity, 
+    Entity, BaseEntity,
     PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany
 } from "typeorm";
 
@@ -10,6 +10,7 @@ import Comment from "./Comment";
 import Cat from "./Cat";
 import Report from "./Report";
 import Post from "./Post";
+import CatTag from "./CatTag";
 
 @Entity({ name: "user" })
 export default class User extends BaseEntity {
@@ -52,6 +53,8 @@ export default class User extends BaseEntity {
     @OneToMany((type) => Post, (post) => post.user)
     posts! : Post[];
 
+    @OneToMany((type) => CatTag, (catTag) => catTag.user)
+    catTags! : CatTag[];
 
 
 }

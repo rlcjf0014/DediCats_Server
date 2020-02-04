@@ -1,10 +1,10 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn,
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn,
 } from "typeorm";
 
-// import Cat from "./Cat";
+import CatTag from "./CatTag";
 
 @Entity({ name: "tag" })
 export default class Tag extends BaseEntity {
@@ -19,6 +19,9 @@ export default class Tag extends BaseEntity {
 
       @UpdateDateColumn()
       updateAt!: Date;
+
+      @OneToMany((type) => CatTag, (catTag) => catTag.tag)
+      catTags!: CatTag[];
 
     //   @ManyToMany((type) => Cat, (cat) => cat.id, { cascade: true })
     //   cats!: Cat[];
