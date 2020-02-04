@@ -7,7 +7,7 @@ const router:express.Router = express.Router();
 router.post("/new", (req:express.Request, res:express.Response) => {
     const {
         userId, catId, content, photoPath,
-    }:{userId:number, catId:number, content:string, photoPath:string} = req.body;
+    }:{userId?:number, catId?:number, content?:string, photoPath?:string} = req.body;
 
     /*
     {
@@ -25,7 +25,7 @@ router.post("/new", (req:express.Request, res:express.Response) => {
 
 // at Post Refresh button
 router.get("/:catId", (req:express.Request, res:express.Response) => {
-    const { catId }:{ catId:number} = req.body;
+    const { catId }:{ catId?:number} = req.body;
 
     /*
 [

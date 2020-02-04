@@ -7,7 +7,7 @@ const router:express.Router = express.Router();
 router.post("/new", (req:express.Request, res:express.Response) => {
     const {
         catId, postId, userId, content,
-    }:{catId:number, postId:number, userId:number, content:string} = req.body;
+    }:{catId?:number, postId?:number, userId?:number, content?:string} = req.body;
     /*
         redirect가 나을것같은데?
     */
@@ -15,7 +15,7 @@ router.post("/new", (req:express.Request, res:express.Response) => {
 
 // Comment of Post
 router.get("/:catId/:postId", (req:express.Request, res:express.Response) => {
-    const { catId, postId }:{catId:number, postId:number} = req.params;
+    const { catId, postId }:{catId?:number, postId?:number} = req.params;
     /*
 [
 {

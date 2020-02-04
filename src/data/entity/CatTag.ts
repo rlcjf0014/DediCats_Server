@@ -11,7 +11,7 @@ import Cat from "./Cat";
 import Tag from "./Tag";
 
 
-@Entity({name: "cat_tag"})
+@Entity({ name: "cat_tag"})
 export default class CatTag extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
