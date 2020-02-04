@@ -43,4 +43,28 @@ router.get("/:catId", (req:express.Request, res:express.Response) => {
     */
 });
 
+// update Post
+router.post("/update", (req:express.Request, res:express.Response) => {
+    const { content, userId, postId }:{content:string, userId:number, postId:number} = req.params;
+    /*
+{
+  "postId" : postId,
+  "content" : content,
+  "postTime" : postTime,
+  "catPhoto": binary data,
+  "userID" : userID,
+  "userNickName" : userNickName,
+  "userPhoto" : binary data,
+}
+*/
+});
+
+// delete Post
+router.post("/delete", (req:express.Request, res:express.Response) => {
+    const {userId, postId }:{userId:number, postId:number} = req.params;
+    /*
+{"deleteStatus": "Y", "message": "Successfully deleted post"}
+*/
+});
+
 export default router;
