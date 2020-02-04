@@ -1,4 +1,5 @@
-import express from "express";
+import express, { response } from "express";
+import User from "../data/entity/User";
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
@@ -16,9 +17,32 @@ router.post("/signin", (req:express.Request, res:express.Response) => {
     // {   "userId" : user_id, "nickname" : nickname, "created_at": Date, "user_photo": binaryData }
 });
 
-router.post("/signup", (req:express.Request, res:express.Response) => {
+router.post("/signup", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
 
+    try {
+        const checkEmail:number = await User.count({ where: { email } });
+        if (checkEmail) {
+            res.status(205).send("already existing user");
+            return;
+        }
+
+        const user:User = new User();
+        user.email = email;
+        user.password = password;
+        user.nickname = nickname;
+        user.status = "Y";
+
+        const result = await User.save(user);
+        if (result) {
+            const returnmessage:object = { userId: result.userId, email: result.email, nickname: result.nickname };
+            res.status(201).send(JSON.stringify(returnmessage));
+            return;
+        }
+        res.status(409).send("회원가입에 실패하였습니다.");
+    } catch (e) {
+        res.status(500).send(JSON.stringify(e));
+    }
     // response
     // { "userId" : userId , "email" : email , "nickname" : nickname }
 });
