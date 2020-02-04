@@ -4,8 +4,8 @@ import express from "express";
 const router:express.Router = express.Router();
 
 // delete tag
-router.post("/deleteTag", (req:express.Request, res:express.Response) => {
-    const { tagId, catId, userId }:{tagId?:number, catId?:number, userId?:number} = req.body;
+router.post("/deleteTag",(req:express.Request, res:express.Response) => {
+    const { tagId, catId, userId }:{tagId:number, catId:number, userId:number } = req.body;
 
     // response
     // {"message": "Successfully deleted tag}
@@ -21,7 +21,7 @@ router.post("/follow", (req:express.Request, res:express.Response) => {
 
 // This endpoint provides you with the information of the selected cat.
 router.get("/:catId", (req:express.Request, res:express.Response) => {
-    const { catId }:{catId?:number} = req.params;
+    const { catId }:{catId?: string} = req.params;
 
     // response
     /*
@@ -44,10 +44,9 @@ router.get("/:catId", (req:express.Request, res:express.Response) => {
     // error
     // { "error" : error }
 });
-git 
 // update cat rainbow
 router.post("/rainbow", (req:express.Request, res:express.Response) => {
-    const { catId, rainbow }:{catId?:number, rainbow?:object} = req.params;
+    const { catId, rainbow }:{catId:number, rainbow:object} = req.body;
 
     // response
     /*
@@ -62,7 +61,7 @@ router.post("/rainbow", (req:express.Request, res:express.Response) => {
 
 // Followers Tab
 router.get("/follower/:catId", (req:express.Request, res:express.Response) => {
-    const { catId }:{catId:number} = req.params;
+    const { catId }:{catId?: string} = req.params;
 
     // response
     /*
@@ -85,7 +84,7 @@ router.get("/follower/:catId", (req:express.Request, res:express.Response) => {
 
 // Cat's Today Status
 router.post("/addcatTody", (req:express.Request, res:express.Response) => {
-    const { catId, catToday }:{catId:number, catToday:string} = req.body;
+    const { catId, catToday }:{catId?:number, catToday?:string} = req.body;
 
     /*
     {
@@ -98,7 +97,7 @@ router.post("/addcatTody", (req:express.Request, res:express.Response) => {
 
 // Catcut
 router.post("/cut", (req:express.Request, res:express.Response) => {
-    const { catId, catCut }:{catId:number, catCut:object} = req.body;
+    const { catId, catCut }:{catId?:number, catCut?:object} = req.body;
 
     /*
 { Y : 0 , N : 0 , unknown : 0}
@@ -108,7 +107,7 @@ router.post("/cut", (req:express.Request, res:express.Response) => {
 
 // update Tag
 router.post("/updateTag", (req:express.Request, res:express.Response) => {
-    const { catId, catTag }:{catId:number, catTag:string} = req.body;
+    const { catId, catTag }:{catId?:number, catTag?:string} = req.body;
 
     /*
 { "messge" : "Tag Add Successfully", "catTag": [뚱땡] }
@@ -119,7 +118,7 @@ router.post("/updateTag", (req:express.Request, res:express.Response) => {
 router.post("/addcat", (req:express.Request, res:express.Response) => {
     const {
         catTag, catNickname, location, catDescription, catSpecies, catCut, photoPath,
-    }:{ catTag:Array<number>, catNickname:string, location:Array<number>, catDescription:string, catSpecies:string, catCut:object, photoPath:string } = req.body;
+    }:{ catTag?:Array<number>, catNickname?:string, location?:string, catDescription?:string, catSpecies?:string, catCut?:object, photoPath?:string } = req.body;
 
     /*
     {
@@ -132,7 +131,7 @@ router.post("/addcat", (req:express.Request, res:express.Response) => {
 
 // Unfollow Cat
 router.post("/unfollow", (req:express.Request, res:express.Response) => {
-    const { userId, catId }:{userId:number, catId:number} = req.body;
+    const { userId, catId }:{userId?:number, catId?:number} = req.body;
 
     // response
     // {"message": "Unfollowed this cat"}
@@ -140,19 +139,19 @@ router.post("/unfollow", (req:express.Request, res:express.Response) => {
 
 // Unfollow Cat
 router.get("/catlist/:userId", (req:express.Request, res:express.Response) => {
-    const { userId }:{userId:number} = req.params;
+    const { userId }:{userId?:string} = req.params;
 
     // response
     /*
       {
   cat_id: 1,
-  location: [latitude, longitude],
+  location: "Point (10 3)",
   cat_nickname: "돼냥이",
   cat_photo: binary data,
   },
   {
   cat_id: 2,
-  location: [latitude, longitude],
+  location: "Point (13 5)",
   cat_nickname: "냥이",
   cat_photo: binary data,
   }

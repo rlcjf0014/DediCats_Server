@@ -23,7 +23,7 @@ export default class User extends BaseEntity {
     @Column({ type: "varchar", nullable: false })
     password! : string;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: "varchar", nullable: false, unique: true })
     email! : string;
 
     @Column({ type: "varchar", nullable: false, name: "user_status" })
