@@ -4,7 +4,7 @@ import express from "express";
 const router:express.Router = express.Router();
 
 router.get("/album/:catId", (req:express.Request, res:express.Response) => {
-    const { catId }:{catId?:number} = req.params;
+    const { catId }:{catId?: string} = req.params;
     /*
 [
     {
@@ -20,7 +20,7 @@ router.get("/album/:catId", (req:express.Request, res:express.Response) => {
 });
 
 router.post("/profile", (req:express.Request, res:express.Response) => {
-    const { userId, photoPath }:{userId?:number, photoPath?:string} = req.params;
+    const { userId, photoPath }:{userId:number, photoPath:string} = req.body;
     /*
 {
     "user_photo": binary Data
