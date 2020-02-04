@@ -140,7 +140,7 @@ router.post("/unfollow", (req:express.Request, res:express.Response) => {
 
 // Unfollow Cat
 router.get("/catlist/:userId", (req:express.Request, res:express.Response) => {
-    const { userId }:{userId?:number} = req.params;
+    const { userId }:{userId?:string} = req.params;
 
     // response
     /*
