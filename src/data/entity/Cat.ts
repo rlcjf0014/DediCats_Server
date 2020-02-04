@@ -73,10 +73,6 @@ export default class Cat extends BaseEntity {
     @ManyToOne((type) => User, (user) => user.cats, { cascade: true, nullable: true })
     user!: User;
 
-    @ManyToMany((type) => Tag, (tag) => tag.id, { cascade: true })
-    @JoinTable({ name: "cat_tag" })
-    tags! :Tag[];
-
     @ManyToMany((type) => User, (user) => user.id, {cascade: true})
     @JoinTable({ name: "following_cat" })
     users! :User[];
