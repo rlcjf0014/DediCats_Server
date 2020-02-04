@@ -3,6 +3,14 @@ import express from "express";
 
 const router:express.Router = express.Router();
 
+// delete tag
+router.post("/deleteTag",(req:express.Request, res:express.Response) => {
+    const { tagId, catId, userId }:{catId:number,catId:number, userId:number} = req.body;
+
+    // response
+    // {"message": "Successfully deleted tag}
+});
+
 // This endpoint updates the user's following information.
 router.post("/follow", (req:express.Request, res:express.Response) => {
     const { catId, userId }:{catId:number, userId:number} = req.body;
@@ -93,10 +101,7 @@ router.post("/cut", (req:express.Request, res:express.Response) => {
     const { catId, catCut }:{catId:number, catCut:object} = req.body;
 
     /*
-    {
-  "cat_today" : "기운이 넘침",
-  "cat_today_time": 2020-01-30
-}
+{ Y : 0 , N : 0 , unknown : 0}
 
     */
 });
@@ -106,11 +111,7 @@ router.post("/updateTag", (req:express.Request, res:express.Response) => {
     const { catId, catTag }:{catId:number, catTag:string} = req.body;
 
     /*
-    {
-  "cat_today" : "기운이 넘침",
-  "cat_today_time": 2020-01-30
-}
-
+{ "messge" : "Tag Add Successfully", "catTag": [뚱땡] }     
     */
 });
 

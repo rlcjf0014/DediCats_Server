@@ -30,4 +30,27 @@ router.get("/:catId/:postId", (req:express.Request, res:express.Response) => {
     */
 });
 
+
+// delete Comment
+router.post("/delete", (req:express.Request, res:express.Response) => {
+    const { catId, commnetId }:{catId:number, commnetId:number} = req.params;
+    /*
+{"deleteStatus": "Y", "message": "Successfully deleted post"}
+    */
+});
+
+// Add Comment
+router.post("/add", (req:express.Request, res:express.Response) => {
+    const { content, userId, postId }:{content:string, userId:number, postId:number} = req.params;
+    /*
+{"deleteStatus": "Y", "message": "Successfully deleted post"}{
+  "commentId" : commentId,
+  "content" : content,
+  "commentTime" : commentTime,
+  "userID" : userID,
+  "userNickName" : userNickName,
+  "userPhoto" : binary data,
+}    */
+});
+
 export default router;
