@@ -3,10 +3,44 @@ import express from "express";
 
 const router:express.Router = express.Router();
 
-router.get("/", (req:express.Request, res:express.Response) => {
-    const reqData = req.body;
-    // 타입 지정시  const defunt: PersoneModel = res.body; 형태로 사용
-    console.log(`server received POST req from ip: ${req.ip}. data is ${reqData}`);
+// Add Post
+router.post("/new", (req:express.Request, res:express.Response) => {
+    const {
+        userId, catId, content, photoPath,
+    }:{userId:number, catId:number, content:string, photoPath:string} = req.body;
+
+    /*
+    {
+  "replyId" : replyId,
+  "content" : content,
+  "replyTime" : replyTime,
+  "catPhoto": binary data,
+  "userID" : userID,
+  "userNickName" : userNickName,
+  "userPhoto" : binary data,
+  "createDate" : createDate
+}
+    */
+});
+
+// at Post Refresh button
+router.get("/:catId", (req:express.Request, res:express.Response) => {
+    const { catId }:{ catId:number} = req.body;
+
+    /*
+[
+    {
+        "replyId" : replyId,
+        "content" : content,
+        "replyTime" : replyTime,
+        "catPhoto": binary data,
+        "userID" : userID,
+        "userNickName" : userNickName,
+        "userPhoto" : binary data,
+        "createDate" : createDate
+    }
+]
+    */
 });
 
 export default router;

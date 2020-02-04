@@ -3,10 +3,21 @@ import express from "express";
 
 const router:express.Router = express.Router();
 
-router.get("/", (req:express.Request, res:express.Response) => {
-    const reqData = req.body;
-    // 타입 지정시  const defunt: PersoneModel = res.body; 형태로 사용
-    console.log(`server received POST req from ip: ${req.ip}. data is ${reqData}`);
+router.post("/", (req:express.Request, res:express.Response) => {
+    const {
+        commnetId, postId, catId, criminalId, userId,
+    }:{commnetId:(number|undefined), postId:(number|undefined), catId:(number|undefined), criminalId:number, userId:number} = req.body;
+
+    /*
+     {    "userNickname": "빛",
+
+     "catNickName": "돼냥",
+     "criminalNickname": "바둑이",
+     "postId": 1,
+     "commentId": 3,
+
+}
+     */
 });
 
 export default router;
