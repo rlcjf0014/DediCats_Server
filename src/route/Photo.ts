@@ -3,10 +3,29 @@ import express from "express";
 
 const router:express.Router = express.Router();
 
-router.get("/", (req:express.Request, res:express.Response) => {
-    const reqData = req.body;
-    // 타입 지정시  const defunt: PersoneModel = res.body; 형태로 사용
-    console.log(`server received POST req from ip: ${req.ip}. data is ${reqData}`);
+router.get("/album/:catId", (req:express.Request, res:express.Response) => {
+    const { catId }:{catId:number} = req.params;
+    /*
+[
+    {
+        "replyId" : replyId,
+        "photoId" : photoId,
+        "photo" : binary data
+    }
+    .
+    .
+    .
+]
+    */
+});
+
+router.post("/profile", (req:express.Request, res:express.Response) => {
+    const { userId, photoPath }:{userId:number, photoPath:string} = req.params;
+    /*
+{
+    "user_photo": binary Data
+}
+    */
 });
 
 export default router;
