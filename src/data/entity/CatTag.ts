@@ -11,7 +11,7 @@ import Cat from "./Cat";
 import Tag from "./Tag";
 
 
-@Entity({ name: "cat_tag"})
+@Entity({ name: "cat_tag" })
 export default class CatTag extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
@@ -19,7 +19,7 @@ export default class CatTag extends BaseEntity {
     @Column({ type: "varchar", nullable: false })
     status!: string;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: "varchar", nullable: true })
     deleteUser!: string;
 
     @CreateDateColumn({ name: "create_at" })

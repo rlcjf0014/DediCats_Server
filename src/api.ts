@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import BasicRouter from "./route/BasicRouter";
 import catRouter from "./route/Cat";
-import commentsRouter from "./route/Comments";
+import commentRouter from "./route/Comment";
 import mapRouter from "./route/Map";
 import photoRouter from "./route/Photo";
 import postRouter from "./route/Post";
@@ -22,7 +22,7 @@ api.use(bodyParser.json());
 
 api.use("/", BasicRouter);
 api.use("/cat", catRouter);
-api.use("/comment", commentsRouter);
+api.use("/comment", commentRouter);
 api.use("/map", mapRouter);
 api.use("/photo", photoRouter);
 api.use("/post", postRouter);

@@ -2,7 +2,7 @@
 /* eslint-disable import/extensions */
 import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany,
-     JoinTable, OneToMany, ManyToOne
+    JoinTable, OneToMany, ManyToOne,
 } from "typeorm";
 import Tag from "./Tag";
 import Photo from "./Photo";
@@ -52,6 +52,9 @@ export default class Cat extends BaseEntity {
     })
     todayTime! :Date;
 
+    @Column({ type: "varchar", length: 2, nullable: false })
+    status! : string;
+
     @CreateDateColumn({ name: "create_at" })
     createAt! : Date;
 
@@ -71,9 +74,9 @@ export default class Cat extends BaseEntity {
     catTags!: CatTag[];
 
     @ManyToOne((type) => User, (user) => user.cats, { cascade: true, nullable: true })
-    user!: User["id"];
+    user!: User[];
 
-    @ManyToMany((type) => User, (user) => user.id, {cascade: true})
+    @ManyToMany((type) => User, (user) => user.id, { cascade: true })
     @JoinTable({ name: "following_cat" })
     users! :User[];
 }

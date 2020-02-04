@@ -2,7 +2,7 @@
 /* eslint-disable import/no-unresolved */
 import {
     Entity, BaseEntity,
-    PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany,
+    PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany,
 } from "typeorm";
 
 import Alert from "./Alert";
@@ -44,7 +44,7 @@ export default class User extends BaseEntity {
     @OneToMany((type) => Comment, (comment) => comment.user)
     comments! : Comment[];
 
-    @OneToMany((type) => Cat, (cat) => cat.user)
+    @ManyToMany((type) => Cat, (cat) => cat.user)
     cats! : Cat[];
 
     @OneToMany((type) => Report, (report) => report.user)
@@ -55,4 +55,5 @@ export default class User extends BaseEntity {
 
     @OneToMany((type) => CatTag, (catTag) => catTag.user)
     catTags! : CatTag[];
+
 }
