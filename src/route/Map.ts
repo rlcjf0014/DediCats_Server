@@ -6,7 +6,7 @@ const router:express.Router = express.Router();
 router.post("/", (req:express.Request, res:express.Response) => {
     const {location} : {location:string} = req.body;
     // 타입 지정시  const defunt: PersoneModel = res.body; 형태로 사용
-    console.log(`server received POST req from ip: ${req.ip}. data is ${reqData}`);
+    console.log(`server received POST req from ip: ${req.ip}. data is ${res}`);
 });
 
 //* request.body.location

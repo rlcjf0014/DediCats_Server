@@ -4,8 +4,8 @@ import express from "express";
 const router:express.Router = express.Router();
 
 // delete tag
-router.post("/deleteTag",(req:express.Request, res:express.Response) => {
-    const { tagId, catId, userId }:{catId:number,catId:number, userId:number} = req.body;
+router.post("/deleteTag", (req:express.Request, res:express.Response) => {
+    const { tagId, catId, userId }:{tagId?:number, catId?:number, userId?:number} = req.body;
 
     // response
     // {"message": "Successfully deleted tag}
@@ -13,7 +13,7 @@ router.post("/deleteTag",(req:express.Request, res:express.Response) => {
 
 // This endpoint updates the user's following information.
 router.post("/follow", (req:express.Request, res:express.Response) => {
-    const { catId, userId }:{catId:number, userId:number} = req.body;
+    const { catId, userId }:{catId?:number, userId?:number} = req.body;
 
     // response
     // {"message": "User now follows this cat"}
@@ -21,7 +21,7 @@ router.post("/follow", (req:express.Request, res:express.Response) => {
 
 // This endpoint provides you with the information of the selected cat.
 router.get("/:catId", (req:express.Request, res:express.Response) => {
-    const { catId }:{catId:number} = req.params;
+    const { catId }:{catId?:number} = req.params;
 
     // response
     /*
@@ -44,10 +44,10 @@ router.get("/:catId", (req:express.Request, res:express.Response) => {
     // error
     // { "error" : error }
 });
-
+git 
 // update cat rainbow
 router.post("/rainbow", (req:express.Request, res:express.Response) => {
-    const { catId, rainbow }:{catId:number, rainbow:object} = req.params;
+    const { catId, rainbow }:{catId?:number, rainbow?:object} = req.params;
 
     // response
     /*
@@ -85,7 +85,7 @@ router.get("/follower/:catId", (req:express.Request, res:express.Response) => {
 
 // Cat's Today Status
 router.post("/addcatTody", (req:express.Request, res:express.Response) => {
-    const { catId, catTody }:{catId:number, catToday:string} = req.body;
+    const { catId, catToday }:{catId:number, catToday:string} = req.body;
 
     /*
     {
@@ -111,7 +111,7 @@ router.post("/updateTag", (req:express.Request, res:express.Response) => {
     const { catId, catTag }:{catId:number, catTag:string} = req.body;
 
     /*
-{ "messge" : "Tag Add Successfully", "catTag": [뚱땡] }     
+{ "messge" : "Tag Add Successfully", "catTag": [뚱땡] }
     */
 });
 
