@@ -6,7 +6,7 @@ const router:express.Router = express.Router();
 router.post("/", (req:express.Request, res:express.Response) => {
     const {
         commnetId, postId, catId, criminalId, userId,
-    }:{commnetId?:(number|undefined), postId?:(number|undefined), catId?:(number|undefined), criminalId?:number, userId?:number} = req.body;
+    }:{commnetId:(number|undefined), postId:(number|undefined), catId:(number|undefined), criminalId?:number, userId?:number} = req.body;
 
     /*
      {    "userNickname": "빛",

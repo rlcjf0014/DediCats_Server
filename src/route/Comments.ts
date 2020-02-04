@@ -7,15 +7,16 @@ const router:express.Router = express.Router();
 router.post("/new", (req:express.Request, res:express.Response) => {
     const {
         catId, postId, userId, content,
-    }:{catId?:number, postId?:number, userId?:number, content?:string} = req.body;
+    }:{catId:number, postId:number, userId:number, content:string} = req.body;
     /*
-        redirect가 나을것같은데?
+        redirect가 나을것같은데
     */
 });
 
 // Comment of Post
 router.get("/:catId/:postId", (req:express.Request, res:express.Response) => {
-    const { catId, postId }:{catId?:number, postId?:number} = req.params;
+    const { catId }:{catId?: string} = req.params;
+    const { postId }:{postId?: string} = req.params;
     /*
 [
 {
@@ -33,7 +34,7 @@ router.get("/:catId/:postId", (req:express.Request, res:express.Response) => {
 
 // delete Comment
 router.post("/delete", (req:express.Request, res:express.Response) => {
-    const { catId, commnetId }:{catId:number, commnetId:number} = req.params;
+    const { userId, postId }:{userId:number, postId:number} = req.body;
     /*
 {"deleteStatus": "Y", "message": "Successfully deleted post"}
     */
@@ -41,7 +42,7 @@ router.post("/delete", (req:express.Request, res:express.Response) => {
 
 // Add Comment
 router.post("/add", (req:express.Request, res:express.Response) => {
-    const { content, userId, postId }:{content:string, userId:number, postId:number} = req.params;
+    const { content, userId, postId }:{content:string, userId:number, postId:number} = req.body;
     /*
 {"deleteStatus": "Y", "message": "Successfully deleted post"}{
   "commentId" : commentId,

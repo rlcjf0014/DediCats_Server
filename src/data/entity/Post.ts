@@ -41,5 +41,6 @@ export default class Post extends BaseEntity {
 
       @OneToMany((type) => Report, (report) => report.post)
       reports!: Report[];
+    
 
 }
