@@ -28,12 +28,12 @@ export default class CatTag extends BaseEntity {
     @UpdateDateColumn({ name: "update_at" })
     updateAt! : Date;
 
-    @ManyToOne((type) => User, (user) => user.catTags, { cascade: true, nullable: true })
+    @ManyToOne((type) => User, (user) => user.catTags, { cascade: true, nullable: false })
     user!: User;
 
-    @ManyToOne((type) => Cat, (cat) => cat.catTags, { cascade: true, nullable: true })
+    @ManyToOne((type) => Cat, (cat) => cat.catTags, { cascade: true, nullable: false })
     cat!: Cat;
 
-    @ManyToOne((type) => Tag, (tag) => tag.catTags, { cascade: true, nullable: true })
+    @ManyToOne((type) => Tag, (tag) => tag.catTags, { cascade: true, nullable: false })
     tag!: Tag;
 }
