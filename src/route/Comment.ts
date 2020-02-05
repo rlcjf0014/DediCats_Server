@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    InsertResult, getConnection, getManager, UpdateResult,
+    InsertResult, getConnection, getManager, UpdateResult, getRepository,
 } from "typeorm";
 import Comment from "../data/entity/Comment";
 import Post from "../data/entity/Post";
@@ -62,14 +62,26 @@ router.post("/add", async (req:express.Request, res:express.Response) => {
 router.post("/update", async (req:express.Request, res:express.Response) => {
     try {
         const { userId, commentId, content } : {userId:number, commentId:number, content:string} = req.body;
-        const reuslt:UpdateResult = await getConnection().createQueryBuilder().update(Comment).set({ content })
+        const result:UpdateResult = await getConnection().createQueryBuilder().update(Comment).set({ content })
             .where({ id: commentId })
             .execute();
+        if (!result.raw.changedRows) {
+            res.status(400).send("{'message' : 'Fail to updating comment'}");
+        }
 
-        if (reuslt.raw.affectedRows) {
-            res.status(201).send(" { message: 'update success' }");
+        const returnObj:object|undefined = await getRepository(Comment)
+            .createQueryBuilder("comment")
+            .where("comment.id = :id AND comment.status = :status", { id: commentId, status: "Y" })
+            .leftJoinAndSelect("comment.user", "commentUser")
+            .select(["comment", "commentUser.id", "commentUser.nickname", "commentUser.photo_path"])
+            .getOne();
+
+        if (returnObj) {
+            res.status(201).send(returnObj);
             return;
         }
+
+        res.status(500).send("comment 정보를 불러오는데 실패하였습니다.");
     } catch (e) {
         console.log(e);
         res.status(500).send("Error in update Comment");

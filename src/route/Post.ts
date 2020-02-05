@@ -64,7 +64,6 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
         const post = await getRepository(Post)
             .createQueryBuilder("post")
             .where("post.cat = :cat AND post.status = :status", { cat: catId, status: "Y" })
-            // .addSelect("user.id")
             .leftJoinAndSelect("post.user", "perry")
             .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
             .leftJoinAndSelect("post.photos", "joshua")
