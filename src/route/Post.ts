@@ -1,11 +1,11 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import express from "express";
+import { getRepository } from "typeorm";
 import Post from "../data/entity/Post";
 import Photo from "../data/entity/Photo";
 import User from "../data/entity/User";
 import Cat from "../data/entity/Cat";
-
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
@@ -58,8 +58,22 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
 });
 
 // at Post Refresh button
-router.get("/:catId", (req:express.Request, res:express.Response) => {
+router.get("/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
+    try {
+        const post = await getRepository(Post)
+            .createQueryBuilder("post")
+            .where("post.cat = :cat", { cat: catId })
+            .getMany();
+        if (!post) {
+            res.status(404).send("오류로 인해 포스트 불러오기가 실패했습니다. 유감.");
+            return;
+        }
+        res.status(200).send(post);
+    } catch (e) {
+        res.status(404).send(e);
+    }
+
 
     /*
 [
