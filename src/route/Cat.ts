@@ -1,27 +1,73 @@
 import express from "express";
+import { getConnection } from "typeorm";
+import CatTag from "../data/entity/CatTag";
+import Cat from "../data/entity/Cat";
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
 
 // delete tag
-router.post("/deleteTag",(req:express.Request, res:express.Response) => {
-    const { tagId, catId, userId }:{tagId:number, catId:number, userId:number } = req.body;
-
+router.post("/deleteTag", async (req:express.Request, res:express.Response) => {
+    const { catTagId, userId }:{tagId:number, catTagId:number, userId:number } = req.body;
+    try {
+        const deleteTag:any = await getConnection().createQueryBuilder()
+            .update(CatTag).set({ status: "D", deleteUser: userId })
+            .where("cat_tag.id= id", { id: catTagId })
+            .execute();
+        if (!deleteTag) {
+            res.status(404).send("오류로 인해 태그 삭제가 실패했습니다");
+            return;
+        }
+        res.status(200).send("Successfully deleted tag");
+    } catch (e) {
+        res.status(404).send(e);
+    }
     // response
     // {"message": "Successfully deleted tag}
 });
 
 // This endpoint updates the user's following information.
-router.post("/follow", (req:express.Request, res:express.Response) => {
+router.post("/follow", async (req:express.Request, res:express.Response) => {
     const { catId, userId }:{catId?:number, userId?:number} = req.body;
 
+    try {
+        const updateFollow:any = await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into("following_cat")
+            .values([
+                { catId, userId },
+            ])
+            .execute();
+        if (!updateFollow) {
+            res.status(404).send("오류로 인해 팔로우가 실패했습니다");
+        }
+        res.status(200).send("User now follows this cat");
+    } catch (e) {
+        res.status(404).send(e);
+    }
     // response
     // {"message": "User now follows this cat"}
 });
 
 // This endpoint provides you with the information of the selected cat.
-router.get("/:catId", (req:express.Request, res:express.Response) => {
+router.get("/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
+    try {
+        const getCat = await getConnection()
+            .createQueryBuilder()
+            .select("cat")
+            .from(Cat, "cat")
+            .where("cat.id = :id", { id: catId })
+            .getOne();
+        if (!getCat) {
+            res.status(404).send("Cat not found");
+            return;
+        }
+        res.status(200).send(getCat);
+    } catch (e) {
+        res.status(409).send(e);
+    }
 
     // response
     /*

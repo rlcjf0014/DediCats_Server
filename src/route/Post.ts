@@ -26,7 +26,6 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
             res.status(500).send("serverError aboud find user of cat");
             return;
         }
-
         newPost.user = user;
         newPost.cat = cat;
         newPost.content = content;
@@ -108,7 +107,7 @@ router.post("/update", async (req:express.Request, res:express.Response) => {
             res.status(404).send("오류로 인해 포스트 업데이트가 실패했습니다. 유감.");
             return;
         }
-        console.log(updatePost);
+       
         res.status(200).send("successfully updated post");
     } catch (e) {
         res.status(404).send(e);

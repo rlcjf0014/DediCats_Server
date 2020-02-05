@@ -16,11 +16,11 @@ export default class CatTag extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: "varchar", nullable: false, width: 2 })
     status!: string;
 
     @Column({ type: "varchar", nullable: true })
-    deleteUser!: string;
+    deleteUser!: number;
 
     @CreateDateColumn({ name: "create_at" })
     createAt! : Date;
