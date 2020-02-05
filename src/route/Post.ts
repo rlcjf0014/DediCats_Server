@@ -3,63 +3,55 @@
 import express from "express";
 import { getRepository, getConnection, InsertResult } from "typeorm";
 import Post from "../data/entity/Post";
-import Photo from "../data/entity/Photo";
-import User from "../data/entity/User";
-import Cat from "../data/entity/Cat";
+
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
 
 // Add Post
 router.post("/new", async (req:express.Request, res:express.Response) => {
+
     const {
-        userId, catId, content, photoPath,
-    }:{userId:number, catId:number, content:string, photoPath?:string} = req.body;
-    let postId:number;
+        userId1, catId1, content, photoPath,
+    }:{userId1:number, catId1:number, content:string, photoPath:string} = req.body;
 
     try {
-        const user:User|undefined = await User.findOne({ where: { id: userId } });
-        const cat:Cat|undefined = await Cat.findOne({ where: { id: catId } });
-
-        if (!user || !cat) { res.status(500).send("serverError aboud find user of cat"); return; }
-
-        const result:InsertResult = await getConnection().createQueryBuilder().insert().into(Post)
-            .values({
-                user, cat, content, status: "Y",
-            })
+        const addPost:InsertResult = await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into("post")
+            .values([
+                {
+                    userId: userId1, catId: catId1, content, status: "Y",
+                },
+            ])
             .execute();
-
-        if (!result.raw.affectedRows) { res.status(404).send("오류로 인해 포스트 저장이 실패했습니다. 유감."); return; }
-
-        postId = result.identifiers[0].id;
+        if (!addPost) {
+            res.status(404).send("오류로 인해 포스트가 실패했습니다");
+        }
+        // result.identifiers[0].id
+        if (!photoPath) {
+            res.status(200).send("Successfully added post");
+            return;
+        }
+        const addPhoto:InsertResult = await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into("photo")
+            .values([
+                { path: photoPath, status: "Y", postId: addPost.identifiers[0].id },
+            ])
+            .execute();
+        if (!addPhoto) {
+            res.status(404).send("오류로 인해 사진 저장에 실패했습니다");
+            return;
+        }
+        res.status(200).send("Successfully added post");
     } catch (e) {
         res.status(404).send(e);
-        return;
     }
 
     //! 사진 데이터를 S3에 저장 후 그 주소를 데이터베이스 저장해야 함. 그 이후에 클라이언트가 요청할 시 주소를 보내줘야 함.
-    // if (photoPath) {
-    //     try {
-    //         // const post:any = await Post.findOne({ where: { id: postId } });
-    //         // const cat:any = await Post.findOne({ where: { id: catId } });
-
-    //         // if (!post || !cat) { res.status(500).send("게시물 조회 또는 고양이 조회를 실패하였습니다."); return; }
-
-    //         const result:InsertResult = await getConnection().createQueryBuilder().insert().into(Photo)
-    //             .values({
-    //                 catId, userId, postId, status: "Y", isProfile: "N",
-    //             })
-    //             .execute();
-
-    //         if (!result.raw.affectedRows) { res.status(404).send("오류로 인해 포스트 사진 경로 저장에 실패했습니다. 유감."); return; }
-
-    //         res.status(200).send("{message: Adding photo and post was successful}");
-    //     } catch (e) {
-    //         res.status(404).send(e);
-    //     }
-    // } else {
-    //     res.status(200).send("{message: Adding post was successful}");
-    // }
 });
 
 // at Post Refresh button
@@ -96,7 +88,7 @@ router.post("/update", async (req:express.Request, res:express.Response) => {
             res.status(404).send("오류로 인해 포스트 업데이트가 실패했습니다. 유감.");
             return;
         }
-       
+
         res.status(200).send("successfully updated post");
     } catch (e) {
         res.status(404).send(e);
