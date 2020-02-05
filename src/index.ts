@@ -77,7 +77,8 @@ data
                 catTag.status = "Y";
                 catTag.user = user;
                 catTag.tag = tag;
-                catTag.user = user;
+                console.log(devCat);
+                catTag.cat = devCat;
                 const result = await CatTag.save(catTag);
                 /*
                 CatTag {
