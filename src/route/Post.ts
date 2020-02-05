@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import express from "express";
-import { getRepository } from "typeorm";
+import { getRepository, getConnection } from "typeorm";
 import Post from "../data/entity/Post";
 import Photo from "../data/entity/Photo";
 import User from "../data/entity/User";
@@ -59,12 +59,17 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
 
 // at Post Refresh button
 router.get("/:catId", async (req:express.Request, res:express.Response) => {
-    const { catId }:{catId?: string} = req.params;
+    const { userId, catId }:{userId?:number, catId?: string} = req.params;
     try {
         const post = await getRepository(Post)
             .createQueryBuilder("post")
-            .where("post.cat = :cat", { cat: catId })
+            .where("post.cat = :cat AND post.status = :status", { cat: catId, status: "Y" })
+            .select(["post.content", "post.id"])
+            // .addSelect("user.id")
+            .leftJoinAndSelect("post.user", "posts")
+            .addSelect("")
             .getMany();
+        console.log(post)
         if (!post) {
             res.status(404).send("오류로 인해 포스트 불러오기가 실패했습니다. 유감.");
             return;
@@ -92,8 +97,24 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
 });
 
 // update Post
-router.post("/update", (req:express.Request, res:express.Response) => {
-    const { content, userId, postId }:{content:string, userId:number, postId:number} = req.body;
+router.post("/update", async (req:express.Request, res:express.Response) => {
+    const { content, postId }:{content:string, postId:number} = req.body;
+    try {
+        const updatePost = await getConnection().createQueryBuilder()
+            .update(Post).set({ content })
+            .where("post.id= :id", { id: postId })
+            .execute();
+        if (!updatePost) {
+            res.status(404).send("오류로 인해 포스트 업데이트가 실패했습니다. 유감.");
+            return;
+        }
+        console.log(updatePost)
+        res.status(200).send("successfully updated post");
+    } catch (e) {
+        res.status(404).send(e);
+    }
+
+
     /*
 {
   "postId" : postId,
@@ -108,8 +129,22 @@ router.post("/update", (req:express.Request, res:express.Response) => {
 });
 
 // delete Post
-router.post("/delete", (req:express.Request, res:express.Response) => {
-    const { userId, postId }:{userId:number, postId:number} = req.body;
+router.post("/delete", async (req:express.Request, res:express.Response) => {
+    const { postId }:{postId:number} = req.body;
+    try {
+        const deletePost = await getConnection().createQueryBuilder()
+            .update(Post).set({ status: "N"})
+            .where("post.id= :id", { id: postId })
+            .execute();
+        if (!deletePost) {
+            res.status(404).send("오류로 인해 포스트 삭제가 실패했습니다. 유감.");
+            return;
+        }
+        res.status(200).send("successfully deleted post");
+    } catch (e) {
+        res.status(404).send(e);
+    }
+
     /*
 {"deleteStatus": "Y", "message": "Successfully deleted post"}
 */
