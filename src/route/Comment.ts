@@ -1,21 +1,12 @@
 import express from "express";
-import { InsertResult, getConnection, getManager } from "typeorm";
-import { raw } from "body-parser";
+import {
+    InsertResult, getConnection, getManager, UpdateResult,
+} from "typeorm";
 import Comment from "../data/entity/Comment";
 import Post from "../data/entity/Post";
 import User from "../data/entity/User";
 
 const router:express.Router = express.Router();
-
-// New Comment of Post
-router.post("/new", (req:express.Request, res:express.Response) => {
-    const {
-        catId, postId, userId, content,
-    }:{catId:number, postId:number, userId:number, content:string} = req.body;
-    /*
-        redirect가 나을것같은데
-    */
-});
 
 // Comment of Post
 router.get("/:catId/:postId", (req:express.Request, res:express.Response) => {
@@ -65,6 +56,23 @@ router.post("/add", async (req:express.Request, res:express.Response) => {
         res.status(409).send("{'message' : 'Adding comment has failed'}");
     } catch (e) {
         res.status(500).send(e);
+    }
+});
+
+router.post("/update", async (req:express.Request, res:express.Response) => {
+    try {
+        const { userId, commentId, content } : {userId:number, commentId:number, content:string} = req.body;
+        const reuslt:UpdateResult = await getConnection().createQueryBuilder().update(Comment).set({ content })
+            .where({ id: commentId })
+            .execute();
+
+        if (reuslt.raw.affectedRows) {
+            res.status(201).send(" { message: 'update success' }");
+            return;
+        }
+    } catch (e) {
+        console.log(e);
+        res.status(500).send("Error in update Comment");
     }
 });
 
