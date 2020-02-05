@@ -64,12 +64,12 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
         const post = await getRepository(Post)
             .createQueryBuilder("post")
             .where("post.cat = :cat AND post.status = :status", { cat: catId, status: "Y" })
-            .select(["post.content", "post.id"])
             // .addSelect("user.id")
-            .leftJoinAndSelect("post.user", "posts")
-            .addSelect("")
+            .leftJoinAndSelect("post.user", "perry")
+            .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
+            .leftJoinAndSelect("post.photos", "joshua")
+            .select(["post", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
             .getMany();
-        console.log(post)
         if (!post) {
             res.status(404).send("오류로 인해 포스트 불러오기가 실패했습니다. 유감.");
             return;
@@ -108,7 +108,7 @@ router.post("/update", async (req:express.Request, res:express.Response) => {
             res.status(404).send("오류로 인해 포스트 업데이트가 실패했습니다. 유감.");
             return;
         }
-        console.log(updatePost)
+        console.log(updatePost);
         res.status(200).send("successfully updated post");
     } catch (e) {
         res.status(404).send(e);
@@ -133,7 +133,7 @@ router.post("/delete", async (req:express.Request, res:express.Response) => {
     const { postId }:{postId:number} = req.body;
     try {
         const deletePost = await getConnection().createQueryBuilder()
-            .update(Post).set({ status: "N"})
+            .update(Post).set({ status: "N" })
             .where("post.id= :id", { id: postId })
             .execute();
         if (!deletePost) {
