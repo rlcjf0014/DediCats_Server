@@ -61,7 +61,7 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
 router.get("/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{ catId?: string} = req.params;
     try {
-        const post = await getRepository(Post)
+        const post:any = await getRepository(Post)
             .createQueryBuilder("post")
             .where("post.cat = :cat AND post.status = :status", { cat: catId, status: "Y" })
             // .addSelect("user.id")
@@ -100,7 +100,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
 router.post("/update", async (req:express.Request, res:express.Response) => {
     const { content, postId }:{content:string, postId:number} = req.body;
     try {
-        const updatePost = await getConnection().createQueryBuilder()
+        const updatePost:any = await getConnection().createQueryBuilder()
             .update(Post).set({ content })
             .where("post.id= :id", { id: postId })
             .execute();
