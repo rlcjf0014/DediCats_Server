@@ -46,7 +46,7 @@ data
                 cat.description = "test용 고양이입니다.";
                 cat.location = new wkx.Point(1, 2).toWkt();
                 cat.nickname = "devCat";
-                cat.user = [testUser];
+                cat.user = testUser;
                 cat.status = "Y";
                 const devCat:Cat = await Cat.save(cat);
                 if (!devCat) {
