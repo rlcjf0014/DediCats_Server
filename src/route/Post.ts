@@ -59,7 +59,7 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
 
 // at Post Refresh button
 router.get("/:catId", async (req:express.Request, res:express.Response) => {
-    const { userId, catId }:{userId?:number, catId?: string} = req.params;
+    const { catId }:{ catId?: string} = req.params;
     try {
         const post = await getRepository(Post)
             .createQueryBuilder("post")
