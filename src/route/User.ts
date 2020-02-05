@@ -1,4 +1,7 @@
 import express, { response } from "express";
+import {
+    getConnection, InsertResult, UpdateResult,
+} from "typeorm";
 import User from "../data/entity/User";
 // import storage from "../data/storage";
 
@@ -25,16 +28,14 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
             res.status(205).send("already existing user");
             return;
         }
+        const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)
+            .values({
+                email, password, nickname, status: "Y",
+            })
+            .execute();
 
-        const user:User = new User();
-        user.email = email;
-        user.password = password;
-        user.nickname = nickname;
-        user.status = "Y";
-
-        const result = await User.save(user);
-        if (result) {
-            const returnmessage:object = { userId: result.id, email: result.email, nickname: result.nickname };
+        if (result.raw.affectedRows) {
+            const returnmessage:object = { userId: result.identifiers[0].id, email, nickname };
             res.status(201).send(JSON.stringify(returnmessage));
             return;
         }
@@ -48,14 +49,16 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
 router.patch("/changepw", async (req:express.Request, res:express.Response) => {
     try {
         const { userId, password, newPassword }:{userId:number, password:string, newPassword:string } = req.body;
-        const result:any = await User.update({ id: userId }, { password: newPassword });
+        const result:UpdateResult = await getConnection().createQueryBuilder().update(User).set({ password: newPassword })
+            .where({ id: userId })
+            .execute();
 
         if (result.raw.changedRows) {
             const returnmessage:object = { message: "password successfully changed" };
             res.status(201).send(JSON.stringify(returnmessage));
         }
     } catch (e) {
-        res.status(500).send(" { message: 'password successfully changed' }");
+        res.status(500).send(" { message: 'password change has failed' }");
     }
 });
 
