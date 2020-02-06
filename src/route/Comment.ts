@@ -36,12 +36,12 @@ router.post("/delete", async (req:express.Request, res:express.Response) => {
             .set({ status: "D" })
             .where({ id: commentId })
             .execute();
-
+        console.log(result);
         if (result.raw.changedRows === 1) {
             res.status(200).send("{'deleteStatus': 'Y', 'message':'Successfully deleted post'}");
             return;
         }
-        res.sendStatus(500).send("{'message': 'completed delete request but there was somthing error !'}");
+        res.status(500).send("{'message': 'completed delete request but there was somthing error..check the commentId exist!'}");
     } catch (e) {
         console.log(e);
         res.status(404).send("{'message': 'Comments not found'}");
