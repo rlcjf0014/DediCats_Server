@@ -28,11 +28,24 @@ router.get("/:postId", async (req:express.Request, res:express.Response) => {
 
 
 // delete Comment
-router.post("/delete", (req:express.Request, res:express.Response) => {
-    const { userId, postId }:{userId:number, postId:number} = req.body;
-    /*
-{"deleteStatus": "Y", "message": "Successfully deleted post"}
-    */
+router.post("/delete", async (req:express.Request, res:express.Response) => {
+    const { userId, commentId }:{userId:number, commentId:number} = req.body;
+    try {
+        const result:UpdateResult = await getConnection().createQueryBuilder()
+            .update(Comment)
+            .set({ status: "D" })
+            .where({ id: commentId })
+            .execute();
+
+        if (result.raw.changedRows === 1) {
+            res.status(200).send("{'deleteStatus': 'Y', 'message':'Successfully deleted post'}");
+            return;
+        }
+        res.status(500).send("{'message': 'completed delete request but there was somthing error..check the commentId exist!'}");
+    } catch (e) {
+        console.log(e);
+        res.status(404).send("{'message': 'Comments not found'}");
+    }
 });
 
 // Add Comment

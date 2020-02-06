@@ -1,42 +1,40 @@
 import express from "express";
-import wkx from "wkx";
-// import storage from "../data/storage";
+// import wkx from "wkx";
 //* "location": "POINT(1 2)",
 //* new wkx.Point(1, 2).toWkt();
+import { getConnection, getRepository, getManager } from "typeorm";
+import Cat from "../data/entity/Cat";
+
 const router:express.Router = express.Router();
 
-router.post("/", (req:express.Request, res:express.Response) => {
-    const {location} : {location:string} = req.body;
-    
+router.post("/", async (req:express.Request, res:express.Response):Promise<any> => {
+    const { location } : {location:string} = req.body;
 
-    // 타입 지정시  const defunt: PersoneModel = res.body; 형태로 사용
-    console.log(`server received POST req from ip: ${req.ip}. data is ${req.body}`);
+    const locationConverTer:Function = (locationStr:string):Object => {
+        const trimLocation = locationStr.trim();
+        const startPoint:string = trimLocation.substring(2, trimLocation.indexOf(")"));
+        const endPoint:string = trimLocation.substring(trimLocation.lastIndexOf("(") + 1, trimLocation.lastIndexOf("))"));
+
+        const startLatitude:number = Number(startPoint.substring(0, startPoint.indexOf(",")));
+        const startLongitude:number = Number(startPoint.substring(startPoint.indexOf(",") + 1).trim());
+        const endLatitude:number = Number(endPoint.substring(0, endPoint.indexOf(",")));
+        const endLongitude:number = Number(endPoint.substring(endPoint.indexOf(",") + 1).trim());
+
+        const start:{type:string, coordinates:Array<number>} = { type: "Point", coordinates: [startLatitude, startLongitude] };
+        const end:{type:string, coordinates:Array<number>} = { type: "Point", coordinates: [endLatitude, endLongitude] };
+        return { start, end };
+    };
+
+    const point:{start:object, end:object} = locationConverTer(location);
+
+    const result:Array<object> = await getManager().createQueryBuilder(Cat, "cat")
+        .where("X > 0")
+        // .setParameters({
+        //     startPoint: JSON.stringify(point.start),
+        // })
+        .getMany();
+
+    res.status(200).send(result);
 });
-
-//* request.body.location
-//! "((33.44843745687413, 126.56798357402302), (33.452964008206735, 126.57333898904454))"
-
-// ? response
-/*
-[
-    {
-        cat_id:1,
-        cat_nickname: "돼냥이",
-        location:
-            [
-               latitude, longitude
-            ]
-    },
-    {
-        cat_id:2,
-        cat_nickname: "고라파덕",
-        location:
-            [
-               latitude, longitude
-            ]
-    }
-]
-*/
-
 
 export default router;
