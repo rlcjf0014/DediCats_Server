@@ -29,7 +29,9 @@ export default class User extends BaseEntity {
     @Column({ type: "varchar", nullable: false })
     status! : string;
 
-    @Column({ type: "varchar", nullable: true, name: "photo_path" })
+    @Column({
+        type: "varchar", nullable: true, name: "photo_path", default: null,
+    })
     photoPath! : string;
 
     @CreateDateColumn({ name: "create_at" })
@@ -55,5 +57,4 @@ export default class User extends BaseEntity {
 
     @OneToMany((type) => CatTag, (catTag) => catTag.user)
     catTags! : CatTag[];
-
 }
