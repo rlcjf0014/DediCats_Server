@@ -9,21 +9,21 @@ import User from "../data/entity/User";
 const router:express.Router = express.Router();
 
 // Comment of Post
-router.get("/:catId/:postId", (req:express.Request, res:express.Response) => {
-    const { catId }:{catId?: string} = req.params;
+router.get("/:postId", async (req:express.Request, res:express.Response) => {
     const { postId }:{postId?: string} = req.params;
-    /*
-[
-{
-  "userNickname": "김대연",
-  "commentId": 1,
-  "content" : "졸귀탱~~~",
-  "userPhoto": binary Data,
-  "createdAt": 시
-}
-...
-]
-    */
+    const postIdNumber:number = Number(postId);
+
+    try {
+        const resultArr:Array<Comment> = await await getConnection().createQueryBuilder()
+            .select("comment")
+            .from(Comment, "comment")
+            .where({ postIdNumber, state: "Y" })
+            .execute();
+        res.status(201).send(resultArr);
+    } catch (e) {
+        console.log(e);
+        res.status(500).send("{'message': 'Comments not found'}");
+    }
 });
 
 

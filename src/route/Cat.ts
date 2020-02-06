@@ -103,8 +103,6 @@ router.get("/follower/:catId", async (req:express.Request, res:express.Response)
             .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
             .getMany();
 
-        console.log(getFollower);
-
         res.status(200).send(getFollower);
     } catch (e) {
         console.log(e);
