@@ -46,8 +46,8 @@ export default class User extends BaseEntity {
     @OneToMany((type) => Comment, (comment) => comment.user)
     comments! : Comment[];
 
-    @OneToMany((type) => Cat, (cat) => cat.user)
-    cats! : Cat[];
+    // @OneToMany((type) => Cat, (cat) => cat.user)
+    // cats! : Cat[];
 
     @OneToMany((type) => Report, (report) => report.user)
     reports! : Report[];
@@ -57,4 +57,7 @@ export default class User extends BaseEntity {
 
     @OneToMany((type) => CatTag, (catTag) => catTag.user)
     catTags! : CatTag[];
+
+    @ManyToMany((type) => Cat, (cat) => cat.users)
+    cats! : Cat[];
 }
