@@ -1,5 +1,5 @@
 import express from "express";
-import { getConnection } from "typeorm";
+import { getConnection, UpdateResult } from "typeorm";
 import CatTag from "../data/entity/CatTag";
 import Cat from "../data/entity/Cat";
 // import storage from "../data/storage";
@@ -22,8 +22,6 @@ router.post("/deleteTag", async (req:express.Request, res:express.Response) => {
     } catch (e) {
         res.status(404).send(e);
     }
-    // response
-    // {"message": "Successfully deleted tag}
 });
 
 // This endpoint updates the user's following information.
@@ -46,8 +44,6 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
     } catch (e) {
         res.status(404).send(e);
     }
-    // response
-    // {"message": "User now follows this cat"}
 });
 
 // This endpoint provides you with the information of the selected cat.
@@ -68,41 +64,33 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
     } catch (e) {
         res.status(409).send(e);
     }
-
-    // response
-    /*
-    {
-    catId: 1,
-    description: "This cat is a beauty",
-    nickName: "네로",
-    tag: ["뚱뚱", "슬픔"],
-    isfollowing: true,
-    photo: binary data,//고양이 프로필사진,
-    location: [latitude, logitude],
-    cut: {Y: 3, N: 2, unknown: 1},
-    rainbow: {Y: 3, N: 2},
-    species: "러시안 블루",
-    today: "건강하다...!",
-    todayTime: 2020-01-30
-}
-     */
-
-    // error
-    // { "error" : error }
 });
 // update cat rainbow
-router.post("/rainbow", (req:express.Request, res:express.Response) => {
+router.post("/rainbow", async (req:express.Request, res:express.Response) => {
     const { catId, rainbow }:{catId:number, rainbow:object} = req.body;
 
-    // response
-    /*
-    {
-     "rainbow": { Y :  0, Y_date : 2020-01-31 , N : 0, N_date : 2020-01-31  }
-}
-     */
+    try {
+        const updateCat:UpdateResult = await getConnection()
+            .createQueryBuilder()
+            .update(Cat)
+            .set({ rainbow })
+            .where({ id: catId })
+            .execute();
 
-    // error
-    // { "error" : error }
+        if (updateCat.raw.changedRows) {
+            const returnObj:Cat|undefined = await getConnection()
+                .createQueryBuilder()
+                .select(["cat.id", "cat.rainbow"])
+                .from(Cat, "cat")
+                .where("cat.id = :id", { id: catId })
+                .getOne();
+            res.status(200).send(returnObj);
+            return;
+        }
+        res.status(407).send("{'message': 'Could not update rainbow'}");
+    } catch (e) {
+        res.status(409).send(e);
+    }
 });
 
 // Followers Tab

@@ -30,10 +30,10 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
         }
         const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)
             .values({
-                email, password, nickname, status: "Y",
+                nickname, email, password, status: "Y",
             })
             .execute();
-
+        console.log(InsertResult);
         if (result.raw.affectedRows) {
             const returnmessage:object = { userId: result.identifiers[0].id, email, nickname };
             res.status(201).send(JSON.stringify(returnmessage));
@@ -41,7 +41,8 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
         }
         res.status(409).send("회원가입에 실패하였습니다.");
     } catch (e) {
-        res.status(500).send(JSON.stringify(e));
+        console.log(e);
+        res.status(500).send(e);
     }
 });
 
