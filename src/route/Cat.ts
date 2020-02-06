@@ -2,12 +2,12 @@ import express from "express";
 import {
     getConnection, UpdateResult, InsertResult, getRepository,
 } from "typeorm";
+import wkx from "wkx";
 import CatTag from "../data/entity/CatTag";
 import Cat from "../data/entity/Cat";
 import Tag from "../data/entity/Tag";
 import Photo from "../data/entity/Photo";
 import User from "../data/entity/User";
-import wkx from "wkx";
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
@@ -95,18 +95,49 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
 });
 // update cat rainbow
 router.post("/rainbow", async (req:express.Request, res:express.Response) => {
-    const { catId, rainbow }:{catId:number, rainbow:string} = req.body;
+    const { catId, rainbow }:{catId:number, rainbow:{Y:number, YDate:string|null, N:number, NDate:string|null}} = req.body;
 
     try {
-        const updateCat:UpdateResult = await getConnection()
+        const selectedRainbow:Cat|undefined = await getConnection()
+            .createQueryBuilder()
+            .select("cat.rainbow")
+            .from(Cat, "cat")
+            .where({ id: catId })
+            .getOne();
+
+        if (!selectedRainbow) {
+            res.status(500).send("cat이 조회되지 않습니다.");
+            return;
+        }
+
+        const objSelectedRainbow:{Y:number, YDate:string|null, N:number, NDate:string|null} = JSON.parse(selectedRainbow.rainbow);
+
+        // Y업데이트 일때!
+        if (rainbow.YDate) {
+            objSelectedRainbow.Y += rainbow.Y;
+            objSelectedRainbow.YDate = rainbow.YDate;
+        } else {
+            objSelectedRainbow.N += rainbow.N;
+            objSelectedRainbow.NDate = rainbow.NDate;
+        }
+
+        const strRainbow = JSON.stringify(objSelectedRainbow);
+
+        const updateResult:UpdateResult = await getConnection()
             .createQueryBuilder()
             .update(Cat)
-            .set({ rainbow })
+            .set({ rainbow: strRainbow })
             .where({ id: catId })
             .execute();
 
-        if (updateCat.raw.changedRows) {
-            res.status(200).send(rainbow);
+        if (updateResult.raw.changedRows) {
+            const updatedCat:Cat|undefined = await getConnection()
+                .createQueryBuilder()
+                .select("cat.rainbow")
+                .from(Cat, "cat")
+                .where({ id: catId })
+                .getOne();
+            res.status(200).send(updatedCat);
             return;
         }
         res.status(407).send("{'message': 'Could not update rainbow'}");
@@ -160,27 +191,45 @@ router.post("/addcatToday", async (req:express.Request, res:express.Response) =>
 
 // Catcut
 router.post("/cut", async (req:express.Request, res:express.Response) => {
-    const { catId, catCut }:{catId:number, catCut:string} = req.body;
+    const { catId, catCut }:{catId:number, catCut:{Y:number, N:number, unknown:number}} = req.body;
     try {
+        const selectedCut:Cat|undefined = await getConnection().createQueryBuilder()
+            .select("cat.cut")
+            .from(Cat, "cat")
+            .where({ id: catId })
+            .getOne();
+
+        if (!selectedCut) {
+            res.status(500).send("cat이 조회되지 않습니다.");
+            return;
+        }
+
+        const objSelectedCut:{Y:number, N:number, unknown:number} = JSON.parse(selectedCut.cut);
+        objSelectedCut.Y += catCut.Y;
+        objSelectedCut.N += catCut.N;
+        objSelectedCut.unknown += catCut.unknown;
+
         const updateCut:UpdateResult = await getConnection().createQueryBuilder()
-            .update(Cat).set({ cut: catCut })
+            .update(Cat).set({ cut: JSON.stringify(objSelectedCut) })
             .where("cat.id= :id", { id: catId })
             .execute();
         if (!updateCut) {
             res.status(404).send("땅콩 업데이트가 실패했습니다");
         }
         if (updateCut.raw.changedRows) {
-            res.status(200).send(catCut);
+            const updatedCat:Cat|undefined = await getConnection()
+                .createQueryBuilder()
+                .select("cat.cut")
+                .from(Cat, "cat")
+                .where({ id: catId })
+                .getOne();
+            res.status(200).send(updatedCat);
             return;
         }
         res.status(407).send("{'message': 'Could not update catcut'}");
     } catch (e) {
         res.status(409).send(e);
     }
-    /*
-{ Y : 0 , N : 0 , unknown : 0}
-
-    */
 });
 
 // update Tag
@@ -248,22 +297,22 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
 // Add Cat
 //! new wkx.Point(1, 2).toWkt()
 router.post("/addcat", async (req:express.Request, res:express.Response) => {
-    const {
-        catTag, catNickname, location, catDescription, catSpecies, photoPath, cut, rainbow
-    }:{ catTag:Array<string>, catNickname:string, location:Array<number>, catDescription:string,
-        catSpecies?:string, photoPath:string } = req.body;
-    const coordinate = new wkx.Point(location[0], location[1]).toWkt();
-     
-    const addCat:InsertResult = await getConnection()
-    .createQueryBuilder()
-    .insert()
-    .into("cat")
-    .values([
-      {
-          description: catDescription, location: coordinate, nickname: catNickname,     
-      }  
-        ])    
-   
+    // const {
+    //     catTag, catNickname, location, catDescription, catSpecies, photoPath, cut, rainbow
+    // }:{ catTag:Array<string>, catNickname:string, location:Array<number>, catDescription:string,
+    //     catSpecies?:string, photoPath:string } = req.body;
+    // const coordinate = new wkx.Point(location[0], location[1]).toWkt();
+
+    // const addCat:InsertResult = await getConnection()
+    // .createQueryBuilder()
+    // .insert()
+    // .into("cat")
+    // .values([
+    //   {
+    //       description: catDescription, location: coordinate, nickname: catNickname,
+    //   }
+    //     ])
+
 });
 
 // Unfollow Cat
