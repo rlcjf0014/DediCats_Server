@@ -1,6 +1,6 @@
 import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
-    OneToMany, ManyToOne
+    OneToMany, ManyToOne,
 } from "typeorm";
 
 import Post from "./Post";
@@ -14,7 +14,7 @@ export default class Report extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ name: "criminal_id", type: "integer", nullable: false})
+    @Column({ name: "criminal_id", type: "integer", nullable: false })
     criminalId! : number;
 
     @CreateDateColumn({ name: "create_at" })
@@ -31,8 +31,7 @@ export default class Report extends BaseEntity {
 
     @ManyToOne((type) => Cat, (cat) => cat.reports, { cascade: true, nullable: true })
     cat!: Cat;
-    
+
     @ManyToOne((type) => User, (user) => user.reports, { cascade: true, nullable: true })
     user!: User;
-
 }
