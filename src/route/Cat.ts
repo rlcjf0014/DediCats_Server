@@ -94,26 +94,22 @@ router.post("/rainbow", async (req:express.Request, res:express.Response) => {
 });
 
 // Followers Tab
-router.get("/follower/:catId", (req:express.Request, res:express.Response) => {
+router.get("/follower/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
+    try {
+        const getFollower:Array<object> = await getConnection().createQueryBuilder(Cat, "cat")
+            .leftJoinAndSelect("cat.user", "user")
+            .where({ catId })
+            .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
+            .getMany();
 
-    // response
-    /*
-[
-  {
-    "userID" : userID,
-    "nickname" : nickName,
-    "userPhoto" : binarydata,
-    "createDate" : createDate
-  }
-  .
-  .
-  .
-]
-     */
+        console.log(getFollower);
 
-    // error
-    // {"message": "Unable to find followers"}
+        res.status(200).send(getFollower);
+    } catch (e) {
+        console.log(e);
+        res.status(500).send("{'message': 'Unable to find followers'}");
+    }
 });
 
 // Cat's Today Status
