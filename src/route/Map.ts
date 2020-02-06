@@ -20,21 +20,19 @@ router.post("/", async (req:express.Request, res:express.Response):Promise<any> 
         const endLatitude:number = Number(endPoint.substring(0, endPoint.indexOf(",")));
         const endLongitude:number = Number(endPoint.substring(endPoint.indexOf(",") + 1).trim());
 
-        const start:{type:string, coordinates:Array<number>} = { type: "Point", coordinates: [startLatitude, startLongitude] };
-        const end:{type:string, coordinates:Array<number>} = { type: "Point", coordinates: [endLatitude, endLongitude] };
-        return { start, end };
+
+        return {
+            startLatitude, startLongitude, endLatitude, endLongitude,
+        };
     };
 
-    const point:{start:object, end:object} = locationConverTer(location);
+    const point:{startLatitude:number, startLongitude:number, endLatitude:number, endLongitude:number} = locationConverTer(location);
 
-    const result:Array<object> = await getManager().createQueryBuilder(Cat, "cat")
-        .where("X > 0")
-        // .setParameters({
-        //     startPoint: JSON.stringify(point.start),
-        // })
-        .getMany();
+    const result1:Array<object> = await getConnection()
+        .query("select * from (select id as `catId`, nickname as `catNickname` , X(`location`) as `latitude`, Y(`location`) As `longitude` from cat) as `innertable` where innertable.latitude >= ? and innertable.latitude <= ? and innertable.longitude >= ? and innertable.longitude <= ? ;",
+            [point.startLatitude, point.endLatitude, point.startLongitude, point.endLongitude]);
 
-    res.status(200).send(result);
+    res.status(200).send(result1);
 });
 
 export default router;
