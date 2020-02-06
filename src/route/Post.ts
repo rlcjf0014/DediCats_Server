@@ -10,11 +10,9 @@ const router:express.Router = express.Router();
 
 // Add Post
 router.post("/new", async (req:express.Request, res:express.Response) => {
-
     const {
-        userId1, catId1, content, photoPath,
-    }:{userId1:number, catId1:number, content:string, photoPath:string} = req.body;
-
+        userId, catId, content, photoPath,
+    }:{userId:number, catId:number, content:string, photoPath:string} = req.body;
     try {
         const addPost:InsertResult = await getConnection()
             .createQueryBuilder()
@@ -22,7 +20,7 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
             .into("post")
             .values([
                 {
-                    userId: userId1, catId: catId1, content, status: "Y",
+                    user: userId, cat: catId, content, status: "Y",
                 },
             ])
             .execute();
@@ -39,7 +37,9 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
             .insert()
             .into("photo")
             .values([
-                { path: photoPath, status: "Y", postId: addPost.identifiers[0].id },
+                {
+                    path: photoPath, status: "Y", cat: catId, post: addPost.identifiers[0].id,
+                },
             ])
             .execute();
         if (!addPhoto) {
@@ -64,7 +64,9 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             .leftJoinAndSelect("post.user", "perry")
             .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
             .leftJoinAndSelect("post.photos", "joshua")
-            .select(["post", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
+            // .where("photo.status = :status", { status: "Y" })
+            .select(["post", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id", "joshua.status = 'Y'"])
+            .orderBy("post.id", "ASC")
             .getMany();
         if (!post) {
             res.status(404).send("오류로 인해 포스트 불러오기가 실패했습니다. 유감.");
