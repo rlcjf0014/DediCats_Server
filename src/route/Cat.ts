@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import express from "express";
 import {
     getConnection, UpdateResult, InsertResult, getRepository,
@@ -297,22 +298,51 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
 // Add Cat
 //! new wkx.Point(1, 2).toWkt()
 router.post("/addcat", async (req:express.Request, res:express.Response) => {
-    // const {
-    //     catTag, catNickname, location, catDescription, catSpecies, photoPath, cut, rainbow
-    // }:{ catTag:Array<string>, catNickname:string, location:Array<number>, catDescription:string,
-    //     catSpecies?:string, photoPath:string } = req.body;
-    // const coordinate = new wkx.Point(location[0], location[1]).toWkt();
+    const {
+        catNickname, location, catDescription, catSpecies, photoPath, cut, rainbow,
+    }:{ catNickname:string, location:Array<number>, catDescription:string,
+        catSpecies:string, photoPath:string, cut:string, rainbow:string } = req.body;
+    try {
+        const coordinate = new wkx.Point(location[0], location[1]).toWkt();
 
-    // const addCat:InsertResult = await getConnection()
-    // .createQueryBuilder()
-    // .insert()
-    // .into("cat")
-    // .values([
-    //   {
-    //       description: catDescription, location: coordinate, nickname: catNickname,
-    //   }
-    //     ])
-
+        const addCat:InsertResult = await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into("cat")
+            .values([
+                {
+                    description: catDescription,
+                    location: coordinate,
+                    nickname: catNickname,
+                    species: catSpecies,
+                    cut: JSON.stringify(cut),
+                    rainbow: JSON.stringify(rainbow),
+                    status: "Y",
+                },
+            ])
+            .execute();
+        if (addCat.raw.affectedRows === 0) {
+            res.status(404).send("오류로 인해 고양이 추가가 실패했습니다");
+            return;
+        }
+        const addPhoto:InsertResult = await getConnection()
+            .createQueryBuilder()
+            .insert()
+            .into("photo")
+            .values([
+                {
+                    path: photoPath, cat: addCat.identifiers[0].id, status: "Y", isProfile: "Y",
+                },
+            ])
+            .execute();
+        if (addPhoto.raw.affectedRows === 0) {
+            res.status(404).send("오류로 인해 고양이 추가가 실패했습니다");
+            return;
+        }
+        res.status(200).send("Successfully added cat");
+    } catch (e) {
+        res.status(404).send(e);
+    }
 });
 
 // Unfollow Cat
