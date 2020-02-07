@@ -48,6 +48,12 @@ data
                 cat.nickname = "devCat";
                 cat.user = testUser;
                 cat.status = "Y";
+                cat.rainbow = JSON.stringify({
+                    Y: 0, YDate: null, N: 0, NDate: null,
+                });
+                cat.cut = JSON.stringify({
+                    Y: 0, N: 0, unknown: 0,
+                });
                 const devCat:Cat = await Cat.save(cat);
                 if (!devCat) {
                     console.log("Failed to save cat.");
