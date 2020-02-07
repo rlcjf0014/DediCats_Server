@@ -1,23 +1,13 @@
-import express, { response } from "express";
+import express from "express";
 import {
     getConnection, InsertResult, UpdateResult,
 } from "typeorm";
 import User from "../data/entity/User";
-// import storage from "../data/storage";
 
 const router:express.Router = express.Router();
 
-// router.get("/", (req:express.Request, res:express.Response) => {
-//     const reqData = req.body;
-//     // 타입 지정시  const defunt: PersoneModel = res.body; 형태로 사용
-//     console.log(`server received POST req from ip: ${req.ip}. data is ${reqData}`);
-// });
-
 router.post("/signin", (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
-
-    // response
-    // {   "userId" : user_id, "nickname" : nickname, "created_at": Date, "user_photo": binaryData }
 });
 
 router.post("/signup", async (req:express.Request, res:express.Response) => {
@@ -42,6 +32,7 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
 
         res.status(404).send("User creation failed");
     } catch (e) {
+        // eslint-disable-next-line no-console
         console.log(e);
         res.status(400).send("There is an error while deleting the comments in the server.");
     }
