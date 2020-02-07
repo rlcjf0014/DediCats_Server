@@ -250,12 +250,11 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
 //! new wkx.Point(1, 2).toWkt()
 router.post("/addcat", async (req:express.Request, res:express.Response) => {
     const {
-        catTags, catNickname, location, catDescription, catSpecies, photoPath, cut, rainbow,
-    }:{ catTags:Array<string>, catNickname:string, location:Array<number>, catDescription:string,
+        catNickname, location, catDescription, catSpecies, photoPath, cut, rainbow,
+    }:{ catNickname:string, location:Array<number>, catDescription:string,
         catSpecies:string, photoPath:string, cut:string, rainbow:string } = req.body;
     try {
-        const coordinate = new wkx.Point(1, 3).toWkt();
-        console.log(coordinate);
+        const coordinate = new wkx.Point(location[0], location[1]).toWkt();
 
         const addCat:InsertResult = await getConnection()
             .createQueryBuilder()
@@ -267,14 +266,15 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
                     location: coordinate,
                     nickname: catNickname,
                     species: catSpecies,
-                    cut,
-                    rainbow,
+                    cut: JSON.stringify(cut),
+                    rainbow: JSON.stringify(rainbow),
                     status: "Y",
                 },
             ])
             .execute();
-        if (addCat.raw.changedRows === 0) {
+        if (addCat.raw.affectedRows === 0) {
             res.status(404).send("오류로 인해 고양이 추가가 실패했습니다");
+            return;
         }
         const addPhoto:InsertResult = await getConnection()
             .createQueryBuilder()
@@ -286,10 +286,11 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
                 },
             ])
             .execute();
-        if (addPhoto.raw.changedRows === 0) {
+        if (addPhoto.raw.affectedRows === 0) {
             res.status(404).send("오류로 인해 고양이 추가가 실패했습니다");
+            return;
         }
-        res.status(200).send("성공!");
+        res.status(200).send("Successfully added cat");
     } catch (e) {
         res.status(404).send(e);
     }
