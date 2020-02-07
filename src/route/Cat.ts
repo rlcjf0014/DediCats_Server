@@ -98,15 +98,16 @@ router.post("/rainbow", async (req:express.Request, res:express.Response) => {
     const { catId, rainbow }:{catId:number, rainbow:{Y:number, YDate:string|null, N:number, NDate:string|null}} = req.body;
 
     try {
-        const selectedRainbow:Cat|undefined = await getConnection()
-            .createQueryBuilder()
+        const queryManager = getConnection().createQueryBuilder();
+
+        const selectedRainbow:Cat|undefined = await queryManager
             .select("cat.rainbow")
             .from(Cat, "cat")
             .where({ id: catId })
             .getOne();
 
         if (!selectedRainbow) {
-            res.status(500).send("cat이 조회되지 않습니다.");
+            res.status(206).send("Cat ID does not exist.");
             return;
         }
 
@@ -122,27 +123,24 @@ router.post("/rainbow", async (req:express.Request, res:express.Response) => {
         }
 
         const strRainbow = JSON.stringify(objSelectedRainbow);
-
-        const updateResult:UpdateResult = await getConnection()
-            .createQueryBuilder()
+        const updateResult:UpdateResult = await queryManager
             .update(Cat)
             .set({ rainbow: strRainbow })
             .where({ id: catId })
             .execute();
 
         if (updateResult.raw.changedRows) {
-            const updatedCat:Cat|undefined = await getConnection()
-                .createQueryBuilder()
+            const changedRainbow:Cat|undefined = await getConnection().createQueryBuilder()
                 .select("cat.rainbow")
                 .from(Cat, "cat")
                 .where({ id: catId })
                 .getOne();
-            res.status(200).send(updatedCat);
+            res.status(200).send(changedRainbow);
             return;
         }
-        res.status(407).send("{'message': 'Could not update rainbow'}");
+        res.status(404).send("Could not update rainbow");
     } catch (e) {
-        res.status(409).send(e);
+        res.status(400).send("Failed to update rainbow");
     }
 });
 
@@ -188,14 +186,15 @@ router.post("/addcatToday", async (req:express.Request, res:express.Response) =>
 router.post("/cut", async (req:express.Request, res:express.Response) => {
     const { catId, catCut }:{catId:number, catCut:{Y:number, N:number, unknown:number}} = req.body;
     try {
-        const selectedCut:Cat|undefined = await getConnection().createQueryBuilder()
+        const queryManager = getConnection().createQueryBuilder();
+        const selectedCut:Cat|undefined = await queryManager
             .select("cat.cut")
             .from(Cat, "cat")
             .where({ id: catId })
             .getOne();
 
         if (!selectedCut) {
-            res.status(500).send("cat이 조회되지 않습니다.");
+            res.status(206).send("Cat ID does not exist.");
             return;
         }
 
@@ -204,12 +203,12 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
         objSelectedCut.N += catCut.N;
         objSelectedCut.unknown += catCut.unknown;
 
-        const updateCut:UpdateResult = await getConnection().createQueryBuilder()
+        const updateCut:UpdateResult = await queryManager
             .update(Cat).set({ cut: JSON.stringify(objSelectedCut) })
             .where("cat.id= :id", { id: catId })
             .execute();
         if (!updateCut) {
-            res.status(404).send("땅콩 업데이트가 실패했습니다");
+            res.status(404).send("Failed to update peanuts.");
         }
         if (updateCut.raw.changedRows) {
             const updatedCat:Cat|undefined = await getConnection()
@@ -218,12 +217,12 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
                 .from(Cat, "cat")
                 .where({ id: catId })
                 .getOne();
-            res.status(200).send(updatedCat);
+            res.status(201).send(updatedCat);
             return;
         }
-        res.status(407).send("{'message': 'Could not update catcut'}");
+        res.status(404).send("Could not update catcut");
     } catch (e) {
-        res.status(409).send(e);
+        res.status(400).send("There is and error about updating the peanuts");
     }
 });
 
@@ -292,7 +291,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
     const {
         catNickname, location, catDescription, catSpecies, photoPath, cut, rainbow,
     }:{ catNickname:string, location:Array<number>, catDescription:string,
-        catSpecies:string, photoPath:string, cut:string, rainbow:string } = req.body;
+        catSpecies:string, photoPath:string, cut:object, rainbow:object } = req.body;
     try {
         const coordinate = new wkx.Point(location[0], location[1]).toWkt();
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
