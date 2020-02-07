@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import express from "express";
 import {
-    getConnection, UpdateResult, InsertResult, getRepository,
+    getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
 } from "typeorm";
 import wkx from "wkx";
 import CatTag from "../data/entity/CatTag";
@@ -17,26 +17,26 @@ const router:express.Router = express.Router();
 router.post("/deleteTag", async (req:express.Request, res:express.Response) => {
     const { tagId, catId, userId }:{tagId:number, catId:number, userId:number } = req.body;
     try {
-        const deleteTag:any = await getConnection().createQueryBuilder()
+        const deleteTag:UpdateResult = await getConnection().createQueryBuilder()
             .update(CatTag).set({ status: "D", deleteUser: userId })
             .where({ tag: tagId, cat: catId })
             .execute();
-        if (!deleteTag) {
-            res.status(404).send("오류로 인해 태그 삭제가 실패했습니다");
+        if (deleteTag.raw.changedRows === 0) {
+            res.status(404).send("Failed to delete tag");
             return;
         }
-        res.status(200).send("Successfully deleted tag");
+        res.status(201).send("Successfully deleted tag");
     } catch (e) {
-        res.status(404).send(e);
+        res.status(400).send(`{'error': ${e}}`);
     }
 });
 
 // This endpoint updates the user's following information.
 router.post("/follow", async (req:express.Request, res:express.Response) => {
-    const { catId, userId }:{catId?:number, userId?:number} = req.body;
+    const { catId, userId }:{catId:number, userId:number} = req.body;
 
     try {
-        const updateFollow:any = await getConnection()
+        const updateFollow:InsertResult = await getConnection()
             .createQueryBuilder()
             .insert()
             .into("following_cat")
@@ -44,12 +44,12 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
                 { catId, userId },
             ])
             .execute();
-        if (!updateFollow) {
-            res.status(404).send("오류로 인해 팔로우가 실패했습니다");
+        if (updateFollow.raw.affectedRows === 0) {
+            res.status(404).send("Failed to follow this cat");
         }
-        res.status(200).send("User now follows this cat");
+        res.status(201).send("User now follows this cat");
     } catch (e) {
-        res.status(404).send(e);
+        res.status(400).send(e);
     }
 });
 
@@ -58,8 +58,8 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
 router.get("/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
     try {
-        const getCat:any = await getConnection()
-            .createQueryBuilder()
+        const connection = await getConnection().createQueryBuilder();
+        const getCat:Cat|undefined = await connection
             .select("cat")
             .from(Cat, "cat")
             .where("cat.id = :id", { id: catId })
@@ -68,30 +68,29 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             res.status(404).send("Cat not found");
             return;
         }
-        const getTag:any = await getRepository(CatTag)
+        const getTag:Array<object> = await getRepository(CatTag)
             .createQueryBuilder("cat_tag")
             .where({ cat: catId, status: "Y" })
             .leftJoinAndSelect("cat_tag.tag", "tag")
             .select(["cat_tag.id", "tag.content"])
             .getMany();
         if (!getTag) {
-            res.status(404).send("Cat not found");
+            res.status(404).send("Cat found, but tag not found");
             return;
         }
-        const getPhoto:any = await getConnection()
-            .createQueryBuilder()
+        const getPhoto:Photo|undefined = await connection
             .select("photo")
             .from(Photo, "photo")
             .where("photo.cat = :cat", { cat: catId, isProfile: "Y" })
             .select(["photo.path"])
             .getOne();
         if (!getPhoto) {
-            res.status(404).send("Cat not found");
+            res.status(404).send("Cat and tag found, but photo not found");
             return;
         }
         res.status(200).send([getCat, getTag, getPhoto]);
     } catch (e) {
-        res.status(409).send(e);
+        res.status(400).send(e);
     }
 });
 // update cat rainbow
@@ -154,10 +153,12 @@ router.get("/follower/:catId", async (req:express.Request, res:express.Response)
             .leftJoinAndSelect("cat.users", "user")
             .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
             .getMany();
-
+        if (!getFollower){
+            res.status(404).send("Followers not found");
+        }
         res.status(200).send(getFollower);
     } catch (e) {
-        res.status(500).send("{'message': 'Unable to find followers'}");
+        res.status(400).send(e);
     }
 });
 
@@ -166,26 +167,19 @@ router.post("/addcatToday", async (req:express.Request, res:express.Response) =>
     const { catId, catToday }:{catId:number, catToday:string} = req.body;
     try {
         const now = Date();
-        const updateToday:any = await getConnection().createQueryBuilder()
+        const updateToday:UpdateResult = await getConnection().createQueryBuilder()
             .update(Cat).set({ today: catToday, todayTime: now })
             .where("cat.id= :id", { id: catId })
             .execute();
-        if (!updateToday) {
-            res.status(404).send("오늘의 상태 업데이트가 실패했습니다");
+        if (updateToday.raw.changedRows === 0) {
+            res.status(404).send("Cat's today update failed");
             return;
         }
         const result = `{'cat_today': ${catToday}, 'cat_today_time': ${now}}`;
-        res.status(200).send(result);
+        res.status(201).send(result);
     } catch (e) {
-        res.status(409).send(e);
+        res.status(400).send(e);
     }
-    /*
-    {
-  "cat_today" : "기운이 넘침",
-  "cat_today_time": 2020-01-30
-}
-
-    */
 });
 
 // Catcut
@@ -236,29 +230,27 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
 router.post("/updateTag", async (req:express.Request, res:express.Response) => {
     const { userId, catId, catTag }:{userId: number, catId:number, catTag:string} = req.body;
     try {
-        const checkTag:any = await getConnection()
-            .createQueryBuilder()
+        const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
+        const checkTag:Tag|undefined = await connection
             .select("tag").from(Tag, "tag")
             .where("tag.content = :content", { content: catTag })
             .select(["tag.id"])
             .getOne();
         if (checkTag) {
-            const updateTag:any = await getConnection()
-                .createQueryBuilder()
+            const updateTag:InsertResult = await connection
                 .insert()
                 .into("cat_tag")
                 .values([{
                     user: userId, cat: catId, tag: checkTag.id, status: "Y",
                 }])
                 .execute();
-            if (!updateTag) {
-                res.status(404).send("오류로 인해 태그 업데이트가 실패했습니다");
+            if (updateTag.raw.affectedRows === 0) {
+                res.status(404).send("Tag update failed");
             }
-            const result = `{"message": "Tag updated successfully", "catTag": ${catTag}}`;
+            const result = `{"message": "Tag updated successfully", "addedcatTag": ${catTag}}`;
             res.status(200).send(result);
         } else {
-            const newTag:InsertResult = await getConnection()
-                .createQueryBuilder()
+            const newTag:InsertResult = await connection
                 .insert()
                 .into("tag")
                 .values([
@@ -267,26 +259,25 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
                     },
                 ])
                 .execute();
-            if (!newTag) {
-                res.status(404).send("오류로 인해 태그 업데이트가 실패했습니다");
+            if (newTag.raw.affectedRows === 0) {
+                res.status(404).send("Tag update failed");
                 return;
             }
-            const updateTag:any = await getConnection()
-                .createQueryBuilder()
+            const updateTag:InsertResult = await connection
                 .insert()
                 .into("cat_tag")
                 .values([{
                     user: userId, cat: catId, tag: newTag.identifiers[0].id, status: "Y",
                 }])
                 .execute();
-            if (!updateTag) {
-                res.status(404).send("오류로 인해 태그 업데이트가 실패했습니다");
+            if (updateTag.raw.affectedRows === 0) {
+                res.status(404).send("Tag update failed");
             }
-            const result = `{"message": "Tag updated successfully", "catTag": ${catTag}}`;
-            res.status(200).send(result);
+            const result = `{"message": "Tag updated successfully", "addedcatTag": ${catTag}}`;
+            res.status(201).send(result);
         }
     } catch (e) {
-        res.status(409).send(e);
+        res.status(400).send(e);
     }
 
     /*
@@ -303,9 +294,8 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
         catSpecies:string, photoPath:string, cut:object, rainbow:object } = req.body;
     try {
         const coordinate = new wkx.Point(location[0], location[1]).toWkt();
-
-        const addCat:InsertResult = await getConnection()
-            .createQueryBuilder()
+        const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
+        const addCat:InsertResult = await connection
             .insert()
             .into("cat")
             .values([
@@ -321,11 +311,10 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (addCat.raw.affectedRows === 0) {
-            res.status(404).send("오류로 인해 고양이 추가가 실패했습니다");
+            res.status(404).send("Failed to add cat");
             return;
         }
-        const addPhoto:InsertResult = await getConnection()
-            .createQueryBuilder()
+        const addPhoto:InsertResult = await connection
             .insert()
             .into("photo")
             .values([
@@ -335,10 +324,10 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (addPhoto.raw.affectedRows === 0) {
-            res.status(404).send("오류로 인해 고양이 추가가 실패했습니다");
+            res.status(404).send("Added cat, but failed to add its photo");
             return;
         }
-        res.status(200).send("Successfully added cat");
+        res.status(201).send("Successfully added cat");
     } catch (e) {
         res.status(404).send(e);
     }
@@ -346,23 +335,22 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
 
 // Unfollow Cat
 router.post("/unfollow", async (req:express.Request, res:express.Response) => {
-    const { userId, catId }:{userId?:number, catId?:number} = req.body;
+    const { userId, catId }:{userId:number, catId:number} = req.body;
     try {
-        const updateFollow:any = await getConnection()
+        const updateFollow:DeleteResult = await getConnection()
             .createQueryBuilder()
             .delete()
             .from("following_cat")
             .where({ catId, userId })
             .execute();
-        if (!updateFollow) {
-            res.status(404).send("오류로 인해 팔로우 취소가 실패했습니다");
+            console.log(updateFollow)
+        if (updateFollow.raw.affectedRows === 0) {
+            res.status(404).send("Failed to unfollow cat");
         }
-        res.status(200).send("User unfollowed this cat");
+        res.status(201).send("User unfollowed this cat");
     } catch (e) {
-        res.status(404).send(e);
+        res.status(400).send(e);
     }
-    // response
-    // {"message": "Unfollowed this cat"}
 });
 
 // This endpoint allows you to get the list of cats you follow.
@@ -380,28 +368,13 @@ router.get("/catlist/:userId", async (req:express.Request, res:express.Response)
                 "photo.path"])
             .getMany();
         if (!getCat) {
-            res.status(404).send("{'message': 'User's list not found'}");
+            res.status(404).send("User's list not found");
         }
         res.status(200).send(getCat);
     } catch (e) {
-        res.status(409).send(e);
+        res.status(400).send(e);
     }
-    // response
-    /*
-      {
-  cat_id: 1,
-  location: "Point (10 3)",
-  cat_nickname: "돼냥이",
-  cat_photo: binary data,
-  },
-  {
-  cat_id: 2,
-  location: "Point (13 5)",
-  cat_nickname: "냥이",
-  cat_photo: binary data,
-  }
-]
-    */
+   
 });
 
 export default router;
