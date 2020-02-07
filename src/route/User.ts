@@ -25,7 +25,7 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
     try {
         const checkEmail:number = await User.count({ where: { email } });
         if (checkEmail) {
-            res.status(205).send("already existing user");
+            res.status(202).send("User already exists.");
             return;
         }
         const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)
@@ -33,16 +33,17 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
                 nickname, email, password, status: "Y",
             })
             .execute();
-        console.log(InsertResult);
+
         if (result.raw.affectedRows) {
             const returnmessage:object = { userId: result.identifiers[0].id, email, nickname };
             res.status(201).send(JSON.stringify(returnmessage));
             return;
         }
-        res.status(409).send("회원가입에 실패하였습니다.");
+
+        res.status(404).send("User creation failed");
     } catch (e) {
         console.log(e);
-        res.status(500).send(e);
+        res.status(400).send("There is an error while deleting the comments in the server.");
     }
 });
 
@@ -55,11 +56,14 @@ router.patch("/changepw", async (req:express.Request, res:express.Response) => {
             .execute();
 
         if (result.raw.changedRows) {
-            const returnmessage:object = { message: "password successfully changed" };
-            res.status(201).send(JSON.stringify(returnmessage));
+            res.status(201).send("password successfully changed");
+            return;
         }
+
+        res.status(404).send("Failed to change user password");
     } catch (e) {
-        res.status(500).send(" { message: 'password change has failed' }");
+        console.log(e);
+        res.status(400).send("There is an error while updating the paasword in the server.");
     }
 });
 
