@@ -54,15 +54,20 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
 
 // This endpoint provides you with the information of the selected cat.
 // ? 캣 태그, 사진 같이 보내줘야 함.
-router.get("/:catId", async (req:express.Request, res:express.Response) => {
-    const { catId }:{catId?: string} = req.params;
+router.get("/:catId/:userId", async (req:express.Request, res:express.Response) => {
+    const { userId, catId }:{userId?: string, catId?: string} = req.params;
     try {
         const connection = await getConnection().createQueryBuilder();
-        const getCat:Cat|undefined = await connection
+        const getCat:Cat | undefined = await connection
             .select("cat")
             .from(Cat, "cat")
             .where("cat.id = :id", { id: catId })
             .getOne();
+        const checkFollow:Array<{count: string}> = await getConnection()
+            .query("select count(*) as `count` from following_cat where userId = ? and catId = ?;", [userId, catId]);
+        const follow:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
+
+
         if (!getCat) {
             res.status(409).send("Cat not found");
             return;
@@ -87,7 +92,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Cat and tag found, but photo not found");
             return;
         }
-        res.status(200).send([getCat, getTag, getPhoto]);
+        res.status(200).send([getCat, follow, getTag, getPhoto]);
     } catch (e) {
         res.status(400).send(e);
     }
@@ -339,7 +344,6 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
             .from("following_cat")
             .where({ catId, userId })
             .execute();
-        console.log(updateFollow);
         if (updateFollow.raw.affectedRows === 0) {
             res.status(409).send("Failed to unfollow cat");
         }

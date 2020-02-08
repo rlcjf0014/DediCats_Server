@@ -19,7 +19,7 @@ export default class Cat extends BaseEntity {
     @PrimaryGeneratedColumn()
     id! :number;
 
-    @Column({ type: "nvarchar", nullable: true })
+    @Column({ type: "nvarchar", nullable: false })
     description! :string;
 
     @Column({ type: "point", nullable: false })
@@ -40,7 +40,7 @@ export default class Cat extends BaseEntity {
     })
     rainbow!: string;
 
-    @Column({ type: "varchar", nullable: true })
+    @Column({ type: "varchar", nullable: false })
     species! :string;
 
     @Column({ type: "varchar", nullable: true })
