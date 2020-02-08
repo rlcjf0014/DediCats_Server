@@ -1,7 +1,9 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import express from "express";
-import { getRepository, getConnection, InsertResult, QueryBuilder, UpdateResult, DeleteResult } from "typeorm";
+import {
+    getRepository, getConnection, InsertResult, QueryBuilder, UpdateResult,
+} from "typeorm";
 import Post from "../data/entity/Post";
 
 // import storage from "../data/storage";
@@ -14,7 +16,7 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
         userId, catId, content, photoPath,
     }:{userId:number, catId:number, content:string, photoPath?:string} = req.body;
     try {
-        const createConnection:QueryBuilder<any> = await getConnection().createQueryBuilder(); 
+        const createConnection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const addPost:InsertResult = await createConnection
             .insert()
             .into("post")
@@ -62,7 +64,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             .where("post.cat = :cat AND post.status = :status", { cat: catId, status: "Y" })
             .leftJoinAndSelect("post.user", "perry")
             .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
-            .leftJoinAndSelect("post.photos", "joshua", "joshua.status = :status", {status: "Y"})
+            .leftJoinAndSelect("post.photos", "joshua", "joshua.status = :status", { status: "Y" })
             .select(["post.id", "post.content", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
             .orderBy("post.id", "ASC")
             .getMany();
@@ -88,7 +90,7 @@ router.post("/update", async (req:express.Request, res:express.Response) => {
             res.status(404).send("Failed to update post");
             return;
         }
-        const result = {postId: postId, content: content}
+        const result = { postId, content };
         res.status(201).send(result);
     } catch (e) {
         res.status(400).send(e);

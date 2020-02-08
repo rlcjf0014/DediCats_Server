@@ -9,7 +9,6 @@ import Cat from "../data/entity/Cat";
 import Tag from "../data/entity/Tag";
 import Photo from "../data/entity/Photo";
 import User from "../data/entity/User";
-// import storage from "../data/storage";
 
 const router:express.Router = express.Router();
 
@@ -93,6 +92,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
         res.status(400).send(e);
     }
 });
+
 // update cat rainbow
 router.post("/rainbow", async (req:express.Request, res:express.Response) => {
     const { catId, rainbow }:{catId:number, rainbow:{Y:number, YDate:string|null, N:number, NDate:string|null}} = req.body;
@@ -153,7 +153,7 @@ router.get("/follower/:catId", async (req:express.Request, res:express.Response)
             .leftJoinAndSelect("cat.users", "user")
             .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
             .getMany();
-        if (!getFollower){
+        if (!getFollower) {
             res.status(404).send("Followers not found");
         }
         res.status(200).send(getFollower);
@@ -279,10 +279,6 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
     } catch (e) {
         res.status(400).send(e);
     }
-
-    /*
-{ "messge" : "Tag Add Successfully", "catTag": [뚱땡] }
-    */
 });
 
 // Add Cat
@@ -343,7 +339,7 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
             .from("following_cat")
             .where({ catId, userId })
             .execute();
-            console.log(updateFollow)
+        console.log(updateFollow);
         if (updateFollow.raw.affectedRows === 0) {
             res.status(404).send("Failed to unfollow cat");
         }
@@ -374,7 +370,6 @@ router.get("/catlist/:userId", async (req:express.Request, res:express.Response)
     } catch (e) {
         res.status(400).send(e);
     }
-   
 });
 
 export default router;
