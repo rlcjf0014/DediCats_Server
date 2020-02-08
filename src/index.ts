@@ -1,10 +1,10 @@
+/* eslint-disable no-console */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import "reflect-metadata";
 import http from "http";
 import wkx from "wkx";
 
-import typeorm from "typeorm";
 import app from "./api";
 import data from "./data";
 

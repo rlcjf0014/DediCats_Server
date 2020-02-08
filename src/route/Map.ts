@@ -32,6 +32,7 @@ router.post("/", async (req:express.Request, res:express.Response):Promise<any> 
 
         res.status(200).send(result);
     } catch (e) {
+        // eslint-disable-next-line no-console
         console.log(e);
         res.status(500).send("somthing error to get cats!");
     }
