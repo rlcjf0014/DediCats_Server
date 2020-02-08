@@ -27,7 +27,7 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (addPost.raw.affectedRows === 0) {
-            res.status(404).send("Failed to save post");
+            res.status(409).send("Failed to save post");
         }
         // result.identifiers[0].id
         if (!photoPath) {
@@ -44,7 +44,7 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (addPhoto.raw.affectedRows === 0) {
-            res.status(404).send("Saved post, but failed to save photo");
+            res.status(409).send("Saved post, but failed to save photo");
             return;
         }
         res.status(201).send("Successfully added post");
@@ -69,7 +69,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             .orderBy("post.id", "ASC")
             .getMany();
         if (!post) {
-            res.status(404).send("Failed to get post");
+            res.status(409).send("Failed to get post");
             return;
         }
         res.status(200).send(post);
@@ -87,7 +87,7 @@ router.post("/update", async (req:express.Request, res:express.Response) => {
             .where("post.id= :id", { id: postId })
             .execute();
         if (updatePost.raw.changedRows === 0) {
-            res.status(404).send("Failed to update post");
+            res.status(409).send("Failed to update post");
             return;
         }
         const result = { postId, content };
@@ -106,7 +106,7 @@ router.post("/delete", async (req:express.Request, res:express.Response) => {
             .where("post.id= :id", { id: postId })
             .execute();
         if (deletePost.raw.changedRows === 0) {
-            res.status(404).send("Failed to delete post");
+            res.status(409).send("Failed to delete post");
             return;
         }
         res.status(201).send("Successfully deleted post");

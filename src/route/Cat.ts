@@ -21,12 +21,12 @@ router.post("/deleteTag", async (req:express.Request, res:express.Response) => {
             .where({ tag: tagId, cat: catId })
             .execute();
         if (deleteTag.raw.changedRows === 0) {
-            res.status(404).send("Failed to delete tag");
+            res.status(409).send("Failed to delete tag");
             return;
         }
         res.status(201).send("Successfully deleted tag");
     } catch (e) {
-        res.status(400).send(`{'error': ${e}}`);
+        res.status(400).send(e);
     }
 });
 
@@ -44,7 +44,7 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (updateFollow.raw.affectedRows === 0) {
-            res.status(404).send("Failed to follow this cat");
+            res.status(409).send("Failed to follow this cat");
         }
         res.status(201).send("User now follows this cat");
     } catch (e) {
@@ -64,7 +64,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             .where("cat.id = :id", { id: catId })
             .getOne();
         if (!getCat) {
-            res.status(404).send("Cat not found");
+            res.status(409).send("Cat not found");
             return;
         }
         const getTag:Array<object> = await getRepository(CatTag)
@@ -74,7 +74,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             .select(["cat_tag.id", "tag.content"])
             .getMany();
         if (!getTag) {
-            res.status(404).send("Cat found, but tag not found");
+            res.status(409).send("Cat found, but tag not found");
             return;
         }
         const getPhoto:Photo|undefined = await connection
@@ -84,7 +84,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             .select(["photo.path"])
             .getOne();
         if (!getPhoto) {
-            res.status(404).send("Cat and tag found, but photo not found");
+            res.status(409).send("Cat and tag found, but photo not found");
             return;
         }
         res.status(200).send([getCat, getTag, getPhoto]);
@@ -138,9 +138,9 @@ router.post("/rainbow", async (req:express.Request, res:express.Response) => {
             res.status(200).send(changedRainbow);
             return;
         }
-        res.status(404).send("Could not update rainbow");
+        res.status(409).send("Could not update rainbow");
     } catch (e) {
-        res.status(400).send("Failed to update rainbow");
+        res.status(400).send(e);
     }
 });
 
@@ -154,7 +154,7 @@ router.get("/follower/:catId", async (req:express.Request, res:express.Response)
             .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
             .getMany();
         if (!getFollower) {
-            res.status(404).send("Followers not found");
+            res.status(409).send("Followers not found");
         }
         res.status(200).send(getFollower);
     } catch (e) {
@@ -172,7 +172,7 @@ router.post("/addcatToday", async (req:express.Request, res:express.Response) =>
             .where("cat.id= :id", { id: catId })
             .execute();
         if (updateToday.raw.changedRows === 0) {
-            res.status(404).send("Cat's today update failed");
+            res.status(409).send("Cat's today update failed");
             return;
         }
         const result = `{'cat_today': ${catToday}, 'cat_today_time': ${now}}`;
@@ -208,7 +208,7 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
             .where("cat.id= :id", { id: catId })
             .execute();
         if (!updateCut) {
-            res.status(404).send("Failed to update peanuts.");
+            res.status(409).send("Failed to update peanuts.");
         }
         if (updateCut.raw.changedRows) {
             const updatedCat:Cat|undefined = await getConnection()
@@ -220,9 +220,9 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
             res.status(201).send(updatedCat);
             return;
         }
-        res.status(404).send("Could not update catcut");
+        res.status(409).send("Could not update catcut");
     } catch (e) {
-        res.status(400).send("There is and error about updating the peanuts");
+        res.status(400).send(e);
     }
 });
 
@@ -245,7 +245,7 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
                 }])
                 .execute();
             if (updateTag.raw.affectedRows === 0) {
-                res.status(404).send("Tag update failed");
+                res.status(409).send("Tag update failed");
             }
             const result = `{"message": "Tag updated successfully", "addedcatTag": ${catTag}}`;
             res.status(200).send(result);
@@ -260,7 +260,7 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
                 ])
                 .execute();
             if (newTag.raw.affectedRows === 0) {
-                res.status(404).send("Tag update failed");
+                res.status(409).send("Tag update failed");
                 return;
             }
             const updateTag:InsertResult = await connection
@@ -271,7 +271,7 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
                 }])
                 .execute();
             if (updateTag.raw.affectedRows === 0) {
-                res.status(404).send("Tag update failed");
+                res.status(409).send("Tag update failed");
             }
             const result = `{"message": "Tag updated successfully", "addedcatTag": ${catTag}}`;
             res.status(201).send(result);
@@ -307,7 +307,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (addCat.raw.affectedRows === 0) {
-            res.status(404).send("Failed to add cat");
+            res.status(409).send("Failed to add cat");
             return;
         }
         const addPhoto:InsertResult = await connection
@@ -320,12 +320,12 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (addPhoto.raw.affectedRows === 0) {
-            res.status(404).send("Added cat, but failed to add its photo");
+            res.status(409).send("Added cat, but failed to add its photo");
             return;
         }
         res.status(201).send("Successfully added cat");
     } catch (e) {
-        res.status(404).send(e);
+        res.status(400).send(e);
     }
 });
 
@@ -341,7 +341,7 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
             .execute();
         console.log(updateFollow);
         if (updateFollow.raw.affectedRows === 0) {
-            res.status(404).send("Failed to unfollow cat");
+            res.status(409).send("Failed to unfollow cat");
         }
         res.status(201).send("User unfollowed this cat");
     } catch (e) {
@@ -364,7 +364,7 @@ router.get("/catlist/:userId", async (req:express.Request, res:express.Response)
                 "photo.path"])
             .getMany();
         if (!getCat) {
-            res.status(404).send("User's list not found");
+            res.status(409).send("User's list not found");
         }
         res.status(200).send(getCat);
     } catch (e) {

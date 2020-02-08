@@ -22,7 +22,7 @@ router.post("/", async (req:express.Request, res:express.Response) => {
                 ])
                 .execute();
             if (reportPost.raw.affectedRows === 0) {
-                res.status(404).send("Failed to report post");
+                res.status(409).send("Failed to report post");
             }
             res.status(201).send("Successfully reported post");
         }
@@ -37,7 +37,7 @@ router.post("/", async (req:express.Request, res:express.Response) => {
                 ])
                 .execute();
             if (reportCat.raw.affectedRows === 0) {
-                res.status(404).send("Failed to report cat");
+                res.status(409).send("Failed to report cat");
             }
             res.status(201).send("Successfully reported cat");
         }
@@ -52,7 +52,7 @@ router.post("/", async (req:express.Request, res:express.Response) => {
                 ])
                 .execute();
             if (reportComment.raw.affectedRows === 0) {
-                res.status(404).send("Failed to report comment");
+                res.status(409).send("Failed to report comment");
             }
             res.status(201).send("Successfully reported comment");
         }

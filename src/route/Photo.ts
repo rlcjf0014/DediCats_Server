@@ -17,7 +17,7 @@ router.get("/album/:catId", async (req:express.Request, res:express.Response) =>
             .orderBy("photo.id", "ASC")
             .getMany();
         if (!getPhoto) {
-            res.status(404).send("Photo not found");
+            res.status(409).send("Photo not found");
         }
         res.status(200).send(getPhoto);
     } catch (e) {
