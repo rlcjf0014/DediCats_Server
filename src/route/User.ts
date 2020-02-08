@@ -15,7 +15,7 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
     try {
         const checkEmail:number = await User.count({ where: { email } });
         if (checkEmail) {
-            res.status(202).send("User already exists.");
+            res.status(409).send("User already exists.");
             return;
         }
         const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)
@@ -30,11 +30,11 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
             return;
         }
 
-        res.status(404).send("User creation failed");
+        res.status(409).send("User creation failed");
     } catch (e) {
         // eslint-disable-next-line no-console
-        console.log(e);
-        res.status(400).send("There is an error while deleting the comments in the server.");
+
+        res.status(400).send(e);
     }
 });
 
@@ -51,10 +51,9 @@ router.patch("/changepw", async (req:express.Request, res:express.Response) => {
             return;
         }
 
-        res.status(404).send("Failed to change user password");
+        res.status(409).send("Failed to change user password");
     } catch (e) {
-        console.log(e);
-        res.status(400).send("There is an error while updating the paasword in the server.");
+        res.status(400).send(e);
     }
 });
 
