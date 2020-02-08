@@ -290,11 +290,11 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
 //! new wkx.Point(1, 2).toWkt()
 router.post("/addcat", async (req:express.Request, res:express.Response) => {
     const {
-        catNickname, location, catDescription, catSpecies, photoPath, cut, rainbow,
-    }:{ catNickname:string, location:Array<number>, catDescription:string,
+        catNickname, location, address, catDescription, catSpecies, photoPath, cut, rainbow,
+    }:{ catNickname:string, location:{latitude:number, longitude:number}, address:string, catDescription:string,
         catSpecies:string, photoPath:string, cut:object, rainbow:object } = req.body;
     try {
-        const coordinate = new wkx.Point(location[0], location[1]).toWkt();
+        const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const addCat:InsertResult = await connection
             .insert()
@@ -303,6 +303,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
                 {
                     description: catDescription,
                     location: coordinate,
+                    address,
                     nickname: catNickname,
                     species: catSpecies,
                     cut: JSON.stringify(cut),

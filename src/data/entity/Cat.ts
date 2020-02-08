@@ -26,6 +26,9 @@ export default class Cat extends BaseEntity {
     location! :string;
 
     @Column({ type: "varchar", nullable: false })
+    address! :string;
+
+    @Column({ type: "varchar", nullable: false })
     nickname! :string;
 
     @Column({
