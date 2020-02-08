@@ -31,7 +31,7 @@ router.get("/:postId", async (req:express.Request, res:express.Response) => {
 
 // delete Comment
 router.post("/delete", async (req:express.Request, res:express.Response) => {
-    const { userId, commentId }:{userId:number, commentId:number} = req.body;
+    const { commentId }:{commentId:number} = req.body;
     try {
         const result:UpdateResult = await getConnection().createQueryBuilder()
             .update(Comment)

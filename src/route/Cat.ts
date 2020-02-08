@@ -153,7 +153,7 @@ router.get("/follower/:catId", async (req:express.Request, res:express.Response)
             .leftJoinAndSelect("cat.users", "user")
             .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
             .getMany();
-        if (!getFollower){
+        if (!getFollower) {
             res.status(404).send("Followers not found");
         }
         res.status(200).send(getFollower);
@@ -343,7 +343,7 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
             .from("following_cat")
             .where({ catId, userId })
             .execute();
-            console.log(updateFollow)
+        console.log(updateFollow);
         if (updateFollow.raw.affectedRows === 0) {
             res.status(404).send("Failed to unfollow cat");
         }
@@ -374,7 +374,6 @@ router.get("/catlist/:userId", async (req:express.Request, res:express.Response)
     } catch (e) {
         res.status(400).send(e);
     }
-   
 });
 
 export default router;
