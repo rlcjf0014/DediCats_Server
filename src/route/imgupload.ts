@@ -1,3 +1,4 @@
+
 require("dotenv").config();
 const AWS = require("aws-sdk");
 const fs = require("fs");
@@ -13,8 +14,9 @@ const s3 = new AWS.S3({
     region: "ap-northeast-2",
 });
 
-const uploadFile:any = (imageName, imageData) => {
-    const params:{Bucket:string, ACL:string, Key:string, Body:any} = {
+// eslint-disable-next-line func-names
+export default function uploadFile(imageName:string, imageData:string) {
+    const params:{Bucket:any, ACL:string, Key:string, Body:any} = {
         Bucket: BUCKET_NAME,
         ACL: "public-read",
         Key: imageName,
@@ -25,14 +27,17 @@ const uploadFile:any = (imageName, imageData) => {
         //* 하지만 HTTP에서 주로 사용하는 확장자가 아닐 때는 자동으로 설정되지 않으므로 MIME 타입을 설정해주어야 한다.
     };
 
-    s3.upload(params, (err:any, data:any) => {
+    s3.upload.promise()(params, (err:Error, data:any) => {
         if (err) {
             throw err;
         }
         console.log(data);
         console.log(`File uploaded successfully. ${data.Location}`);
+        return data.Location;
     });
-};
+}
+
+// export default uploadFile;
 
 //! npx tsc index.ts && node index.js
 
