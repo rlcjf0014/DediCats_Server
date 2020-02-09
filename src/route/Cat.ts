@@ -290,11 +290,9 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
 //! new wkx.Point(1, 2).toWkt()
 router.post("/addcat", async (req:express.Request, res:express.Response) => {
     const {
-        catNickname, location, catDescription, catSpecies, photoPath, cut,
-        // rainbow 제거!
-    }:{ catNickname:string, location:Array<number>, catDescription:string,
-        catSpecies:string, photoPath:string, cut:object } = req.body;
-        // , rainbow:object
+        catNickname, location, address, catDescription, catSpecies, photoPath, cut,
+    }:{ catNickname:string, location:{latitude:number, longitude:number}, address:string, catDescription:string,
+        catSpecies:string, photoPath:string, cut:object, } = req.body;
     try {
         const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
@@ -310,7 +308,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
                     species: catSpecies,
                     cut: JSON.stringify(cut),
                     rainbow: JSON.stringify({
-                        Y: 0, YDate: "", N: 0, NDate: "",
+                        Y: 0, YDate: null, N: 0, NDate: null,
                     }),
                     status: "Y",
                 },
