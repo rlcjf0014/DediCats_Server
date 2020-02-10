@@ -48,6 +48,10 @@ data
                 cat.nickname = "devCat";
                 cat.user = testUser;
                 cat.status = "Y";
+                cat.cut = "";
+                cat.rainbow = "";
+                cat.species = "";
+                cat.address = "";
                 cat.rainbow = JSON.stringify({
                     Y: 0, YDate: null, N: 0, NDate: null,
                 });
@@ -86,31 +90,7 @@ data
                 console.log(devCat);
                 catTag.cat = devCat;
                 const result = await CatTag.save(catTag);
-                /*
-                CatTag {
-                status: 'Y',
-                user: User {
-                    nickname: 'testUser',
-                    password: '1234',
-                    email: 'admin@codestates.com',
-                    status: 'Y',
-                    photoPath: null,
-                    id: 1,
-                    createAt: 2020-02-04T20:31:25.738Z,
-                    updateAt: 2020-02-04T20:31:25.738Z
-                },
-                tag: Tag {
-                    content: '권위적인 데브',
-                    id: 1,
-                    createAt: 2020-02-04T20:31:25.803Z,
-                    updateAt: 2020-02-04T20:31:25.803Z
-                },
-                deleteUser: null,
-                id: 1,
-                createAt: 2020-02-04T20:31:25.817Z,
-                updateAt: 2020-02-04T20:31:25.817Z
-                }
-                */
+
                 if (!result) {
                     console.log("Failed to save CatTag");
                     return;
