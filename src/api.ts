@@ -3,7 +3,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import compression from "compression";
 
 import BasicRouter from "./route/BasicRouter";
 import catRouter from "./route/Cat";
@@ -16,12 +15,10 @@ import userRouter from "./route/User";
 
 
 const api: express.Application = express();
-
-
 api.use(cors());
+
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
-api.use(compression());
 
 api.use("/cat", catRouter);
 api.use("/comment", commentRouter);
