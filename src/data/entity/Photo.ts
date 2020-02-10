@@ -19,6 +19,9 @@ export default class Photo extends BaseEntity {
       })
       isProfile!: string;
 
+      // @Column({ type: "varchar", nullable: true })
+      // key!: string;
+
       @Column({ type: "varchar", length: 2, nullable: false })
       status!: string;
 
