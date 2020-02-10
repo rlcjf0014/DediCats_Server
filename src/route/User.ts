@@ -3,40 +3,68 @@ import util from "util";
 import {
     getConnection, InsertResult, UpdateResult,
 } from "typeorm";
-
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
+import { refreshTokens } from "../auth";
 import User from "../data/entity/User";
 
 const router:express.Router = express.Router();
 
 router.post("/signin", async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
-    const user:User|undefined = await getConnection()
-        .createQueryBuilder()
-        .select("user")
-        .from(User, "user")
-        .where("user.email = :email", { email })
-        .getOne();
 
-    // ! 유호하징 않은 이메일
-    if (!user) {
-        res.status(409).send("Invalid Email");
+    if (!email) {
+        res.status(409).send("email is required!");
+        return;
+    }
+    if (!password) {
+        res.status(409).send("password is required!");
         return;
     }
 
-    // ? 암호화 후 비교
-    const pdkdf2Promise:Function = util.promisify(crypto.pbkdf2);
-    const key:Buffer = await pdkdf2Promise(password, user.salt, 105123, 64, "sha512");
-    const encryPassword:string = key.toString("base64");
 
-    if (encryPassword !== user.password) {
-        res.status(409).send("Incorrect password.");
-        return;
+    try {
+        const user:User|undefined = await getConnection()
+            .createQueryBuilder()
+            .select("user")
+            .from(User, "user")
+            .where("user.email = :email", { email })
+            .getOne();
+
+        // ! 유호하징 않은 이메일
+        if (!user) {
+            res.status(409).send("Invalid Email");
+            return;
+        }
+
+        // ? 암호화 후 비교
+        const pdkdf2Promise:Function = util.promisify(crypto.pbkdf2);
+        const key:Buffer = await pdkdf2Promise(password, user.salt, 105123, 64, "sha512");
+        const encryPassword:string = key.toString("base64");
+
+        if (encryPassword !== user.password) {
+            res.status(409).send("Incorrect password.");
+            return;
+        }
+
+        // ! 토큰 발급
+        const payload:{id:number, nickname:string, email:string} = {
+            id: user.id,
+            nickname: user.nickname,
+            email: user.email,
+        };
+        const secretOrPrivateKey:any = process.env.JWT_SECRET;
+        const options:{expiresIn:number} = { expiresIn: 60 * 60 * 24 };
+
+        jwt.sign(payload, secretOrPrivateKey, options, (err:Error, token) => {
+            if (err) return res.status(409).send("Failed to issue JWT Token.");
+            res.status(200).json({ token });
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(400).send(e);
     }
-
-    // ! 로그인 성공
-    res.status(200).send("login success!");
 });
 
 router.post("/signup", async (req:express.Request, res:express.Response) => {
