@@ -5,7 +5,8 @@ import {
     getRepository, getConnection, InsertResult, QueryBuilder, UpdateResult,
 } from "typeorm";
 import Post from "../data/entity/Post";
-
+import uploadFile from "../imgupload";
+import deleteFile from "../imgdelete";
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
@@ -14,7 +15,7 @@ const router:express.Router = express.Router();
 router.post("/new", async (req:express.Request, res:express.Response) => {
     const {
         userId, catId, content, photoPath,
-    }:{userId:number, catId:number, content:string, photoPath?:string} = req.body;
+    }:{userId:number, catId:number, content:string, photoPath: string | undefined} = req.body;
     try {
         const createConnection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const addPost:InsertResult = await createConnection
@@ -30,16 +31,18 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Failed to save post");
         }
         // result.identifiers[0].id
-        if (!photoPath) {
+        if (photoPath === undefined) {
             res.status(201).send("Successfully added post");
             return;
         }
+        const key:string = `POST #${addPost.identifiers[0].id}`;      
+        const imagepath:any = await uploadFile(key, photoPath);
         const addPhoto:InsertResult = await createConnection
             .insert()
             .into("photo")
             .values([
                 {
-                    path: photoPath, status: "Y", cat: catId, post: addPost.identifiers[0].id,
+                    path: imagepath, status: "Y", cat: catId, post: addPost.identifiers[0].id,
                 },
             ])
             .execute();
@@ -105,6 +108,8 @@ router.post("/delete", async (req:express.Request, res:express.Response) => {
             .update(Post).set({ status: "N" })
             .where("post.id= :id", { id: postId })
             .execute();
+        const result:any = await deleteFile(`POST #${postId}`);
+
         if (deletePost.raw.changedRows === 0) {
             res.status(409).send("Failed to delete post");
             return;

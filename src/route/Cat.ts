@@ -53,51 +53,6 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
     }
 });
 
-// This endpoint provides you with the information of the selected cat.
-// ? 캣 태그, 사진 같이 보내줘야 함.
-router.get("/:catId/:userId", async (req:express.Request, res:express.Response) => {
-    const { userId, catId }:{userId?: string, catId?: string} = req.params;
-    try {
-        const connection = await getConnection().createQueryBuilder();
-        const getCat:Cat | undefined = await connection
-            .select("cat")
-            .from(Cat, "cat")
-            .where("cat.id = :id", { id: catId })
-            .getOne();
-        const checkFollow:Array<{count: string}> = await getConnection()
-            .query("select count(*) as `count` from following_cat where userId = ? and catId = ?;", [userId, catId]);
-        const follow:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
-
-
-        if (!getCat) {
-            res.status(409).send("Cat not found");
-            return;
-        }
-        const getTag:Array<object> = await getRepository(CatTag)
-            .createQueryBuilder("cat_tag")
-            .where({ cat: catId, status: "Y" })
-            .leftJoinAndSelect("cat_tag.tag", "tag")
-            .select(["cat_tag.id", "tag.content"])
-            .getMany();
-        if (!getTag) {
-            res.status(409).send("Cat found, but tag not found");
-            return;
-        }
-        const getPhoto:Photo|undefined = await connection
-            .select("photo")
-            .from(Photo, "photo")
-            .where("photo.cat = :cat", { cat: catId, isProfile: "Y" })
-            .select(["photo.path"])
-            .getOne();
-        if (!getPhoto) {
-            res.status(409).send("Cat and tag found, but photo not found");
-            return;
-        }
-        res.status(200).send([getCat, follow, getTag, getPhoto]);
-    } catch (e) {
-        res.status(400).send(e);
-    }
-});
 
 // update cat rainbow
 router.post("/rainbow", async (req:express.Request, res:express.Response) => {
@@ -319,7 +274,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Failed to add cat");
             return;
         }
-        const imagepath:string|unknown = await uploadFile((catNickname + addCat.identifiers[0].id), photoPath);
+        const imagepath:string|unknown = await uploadFile(`CAT #${addCat.identifiers[0].id}`, photoPath);
         const addPhoto:InsertResult = await connection
             .insert()
             .into("photo")
@@ -362,7 +317,7 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
 router.get("/catlist/:userId", async (req:express.Request, res:express.Response) => {
     const { userId }:{userId?:string} = req.params;
     try {
-        const getCat:Array<object> = await getRepository(User).createQueryBuilder("user")
+        const getCat1:Array<object> = await getRepository(User).createQueryBuilder("user")
             .where("user.id = :id", { id: Number(userId) })
             .leftJoinAndSelect("user.cats", "cat")
             .select(["user.id", "user.nickname", "user.photoPath", "user.createAt",
@@ -372,13 +327,60 @@ router.get("/catlist/:userId", async (req:express.Request, res:express.Response)
                 "cat.id", "cat.description", "cat.location", "cat.nickname", "cat.species",
                 "photo.path"])
             .getMany();
-        if (!getCat) {
+        if (!getCat1) {
             res.status(409).send("User's list not found");
         }
-        res.status(200).send(getCat);
+        res.status(200).send(getCat1);
     } catch (e) {
         res.status(400).send(e);
     }
 });
+
+// This endpoint provides you with the information of the selected cat.
+// ? 캣 태그, 사진 같이 보내줘야 함.
+router.get("/:catId/:userId", async (req:express.Request, res:express.Response) => {
+    const { userId, catId }:{userId?: string, catId?: string} = req.params;
+    try {
+        console.log("캣낫파운드")
+        const connection = await getConnection().createQueryBuilder();
+        const getCat:Cat | undefined = await connection
+            .select("cat")
+            .from(Cat, "cat")
+            .where("cat.id = :id", { id: catId })
+            .getOne();
+        const checkFollow:Array<{count: string}> = await getConnection()
+            .query("select count(*) as `count` from following_cat where userId = ? and catId = ?;", [userId, catId]);
+        const follow:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
+
+        if (!getCat) {
+            res.status(409).send("Cat not found");
+            return;
+        }
+        const getTag:Array<object> = await getRepository(CatTag)
+            .createQueryBuilder("cat_tag")
+            .where({ cat: catId, status: "Y" })
+            .leftJoinAndSelect("cat_tag.tag", "tag")
+            .select(["cat_tag.id", "tag.content"])
+            .getMany();
+        if (!getTag) {
+            res.status(409).send("Cat found, but tag not found");
+            return;
+        }
+        const getPhoto:Photo|undefined = await connection
+            .select("photo")
+            .from(Photo, "photo")
+            .where("photo.cat = :cat", { cat: catId, isProfile: "Y" })
+            .select(["photo.path"])
+            .getOne();
+        if (!getPhoto) {
+            res.status(409).send("Cat and tag found, but photo not found");
+            return;
+        }
+        res.status(200).send([getCat, follow, getTag, getPhoto]);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
 
 export default router;
