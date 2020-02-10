@@ -9,6 +9,7 @@ import Cat from "../data/entity/Cat";
 import Tag from "../data/entity/Tag";
 import Photo from "../data/entity/Photo";
 import User from "../data/entity/User";
+import uploadFile from "../imgupload";
 
 const router:express.Router = express.Router();
 
@@ -316,12 +317,13 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Failed to add cat");
             return;
         }
+        const imagepath:string|unknown = await uploadFile((catNickname + addCat.identifiers[0].id), photoPath);
         const addPhoto:InsertResult = await connection
             .insert()
             .into("photo")
             .values([
                 {
-                    path: photoPath, cat: addCat.identifiers[0].id, status: "Y", isProfile: "Y",
+                    path: imagepath, cat: addCat.identifiers[0].id, status: "Y", isProfile: "Y",
                 },
             ])
             .execute();
