@@ -12,7 +12,7 @@ require("dotenv").config();
 
 const router:express.Router = express.Router();
 
-function getnerateAcessToken(payload:{id:number, nickname:string, email:string}) {
+function generateAccessToken(payload:{id:number, nickname:string, email:string}) {
     const accessKey:any = process.env.JWT_SECRET_ACCESS;
     const options:{expiresIn:string} = { expiresIn: "1d" };
     return jwt.sign(payload, accessKey, options);
@@ -46,7 +46,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
             return;
         }
         if (decode) {
-            const accessToken = getnerateAcessToken({ id: user.id, nickname: user.nickname, email: user.email });
+            const accessToken = generateAccessToken({ id: user.id, nickname: user.nickname, email: user.email });
             res.status(200).json({ accessToken });
         } else {
             res.status(401).send("The requstToken has expired.");
@@ -54,10 +54,10 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     });
 });
 
-function generateAccessToken(user:{id: number, nickname:string, email:string}) {
-    const accessKey:any = process.env.JWT_SECRET_ACCESS;
-    return jwt.sign(user, accessKey, { expiresIn: "15s" });
-}
+// function generateAccessToken(user:{id: number, nickname:string, email:string}) {
+//     const accessKey:any = process.env.JWT_SECRET_ACCESS;
+//     return jwt.sign(user, accessKey, { expiresIn: "15s" });
+// }
 router.post("/signin", async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
     if (!email) {
@@ -69,17 +69,20 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         return;
     }
     try {
+        console.log(email, password);
         const user:User|undefined = await getConnection()
             .createQueryBuilder()
             .select("user")
             .from(User, "user")
             .where("user.email = :email", { email })
             .getOne();
+        console.log(user);
         // ! 유효하지 않은 이메일
         if (!user) {
             res.status(409).send("Invalid Email");
             return;
         }
+
         // ? 암호화 후 비교
         const pdkdf2Promise:Function = util.promisify(crypto.pbkdf2);
         const key:Buffer = await pdkdf2Promise(password, user.salt, 105123, 64, "sha512");
@@ -96,14 +99,24 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         };
 
         // ? accessToken
-        const accessToken = getnerateAcessToken(payload);
+        const accessToken = generateAccessToken(payload);
 
         // ? refresh Token
         const refresKey:any = process.env.JWT_SECRET_Refresh;
         const refreshToken = jwt.sign({ id: user.id }, refresKey, { expiresIn: "30d" });
 
+        const result:UpdateResult = await getConnection().createQueryBuilder()
+            .update(User).set({ refreshToken })
+            .where({ id: user.id })
+            .execute();
+
+        if (result.raw.affectedRows === 0) {
+            res.status(409).send("Fail to insert Token");
+            return;
+        }
+
         // * token을 어디에 저장할것인가?
-        res.json({ accessToken, refreshToken });
+        res.status(200).json({ accessToken, refreshToken });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
@@ -131,7 +144,7 @@ router.post("/signout", async (req:express.Request, res:express.Response) => {
 
     const updateRefreshToken:UpdateResult = await queryManager
         .update(User).set({ refreshToken: null })
-        .where("user.id = id", { id: decode.id })
+        .where({ id: decode.id })
         .execute();
 
     if (updateRefreshToken.raw.changedRows === 0) return res.status(400).send("fail to delete refreshToken");
