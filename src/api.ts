@@ -3,7 +3,8 @@
 import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-
+import jwt from "jsonwebtoken";
+require("dotenv").config();
 import BasicRouter from "./route/BasicRouter";
 import catRouter from "./route/Cat";
 import commentRouter from "./route/Comment";
@@ -11,8 +12,21 @@ import mapRouter from "./route/Map";
 import photoRouter from "./route/Photo";
 import postRouter from "./route/Post";
 import reportRouter from "./route/Report";
+import userRouter from "./route/User";
+import { runInNewContext } from "vm";
 
+function authenticateToken(req:Request, res:Response, next:NextFunction) {
+    const authHeader = req.headers.authorization;
+    const accesskey:any = process.env.JWT_SECRET_ACCESS;
+    const token:any = authHeader && authHeader.split(" ")[1];
+    if (token === null) return res.sendStatus(401);
 
+    jwt.verify(token, accesskey, (err:Error, user:any) => {
+        if (err) return res.sendStatus(403)
+        req.user = user;
+        next()
+    });
+}
 
 const api: express.Application = express();
 api.use(cors());
@@ -20,6 +34,7 @@ api.use(cors());
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 
+api.use("/user", userRouter);
 api.use("/cat", catRouter);
 api.use("/comment", commentRouter);
 api.use("/map", mapRouter);
