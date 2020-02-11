@@ -38,7 +38,7 @@ export default class User extends BaseEntity {
     photoPath! : string | null;
 
     @Column({ type: "varchar", nullable: true })
-    refreshToken! : string;
+    refreshToken! : string|null;
 
     @CreateDateColumn({ name: "create_at" })
     createAt! : Date;

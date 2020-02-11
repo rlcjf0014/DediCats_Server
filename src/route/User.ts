@@ -1,4 +1,4 @@
-import express, { NextFunction } from "express";
+import express from "express";
 import util from "util";
 import {
     getConnection, InsertResult, UpdateResult,
@@ -11,14 +11,13 @@ require("dotenv").config();
 const router:express.Router = express.Router();
 
 
-
 router.post("/signup", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
-    console.log(email,password,nickname)
+    console.log(email, password, nickname);
     try {
         // ! 유저 체크
         const checkEmail:number = await User.count({ where: { email } });
-        
+
         if (checkEmail) {
             res.status(409).send("User already exists.");
             return;

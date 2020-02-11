@@ -4,7 +4,6 @@ import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import jwt from "jsonwebtoken";
-require("dotenv").config();
 import BasicRouter from "./route/BasicRouter";
 import catRouter from "./route/Cat";
 import commentRouter from "./route/Comment";
@@ -13,7 +12,8 @@ import photoRouter from "./route/Photo";
 import postRouter from "./route/Post";
 import reportRouter from "./route/Report";
 import userRouter from "./route/User";
-import { runInNewContext } from "vm";
+
+require("dotenv").config();
 
 function authenticateToken(req:Request, res:Response, next:NextFunction) {
     const authHeader = req.headers.authorization;
@@ -22,9 +22,9 @@ function authenticateToken(req:Request, res:Response, next:NextFunction) {
     if (token === null) return res.sendStatus(401);
 
     jwt.verify(token, accesskey, (err:Error, user:any) => {
-        if (err) return res.sendStatus(403)
+        if (err) return res.sendStatus(403);
         req.user = user;
-        next()
+        next();
     });
 }
 
@@ -50,7 +50,7 @@ api.use((req:Request, res:Response) => {
 api.use((err:Error, req:Request, res:Response, next:NextFunction) => {
     // eslint-disable-next-line no-console
     console.error(err.stack);
-    res.status(500).send("Something broke!");
+    res.status(500).send("There's an error.");
 });
 
 export default api;
