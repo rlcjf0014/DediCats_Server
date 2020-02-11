@@ -341,7 +341,8 @@ router.get("/catlist/:userId", async (req:express.Request, res:express.Response)
 router.get("/:catId/:userId", async (req:express.Request, res:express.Response) => {
     const { userId, catId }:{userId?: string, catId?: string} = req.params;
     try {
-        console.log("캣낫파운드")
+        console.log(req.signedCookies.accessToken);
+        console.log(req.signedCookies.refreshToken);
         const connection = await getConnection().createQueryBuilder();
         const getCat:Cat | undefined = await connection
             .select("cat")

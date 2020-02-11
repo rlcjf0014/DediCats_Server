@@ -3,6 +3,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import authRouter from "./route/Authentication";
 import BasicRouter from "./route/BasicRouter";
@@ -13,7 +14,7 @@ api.use(cors());
 
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
-
+api.use(cookieParser("secret"));
 
 api.use("/auth", authRouter);
 api.use("/", BasicRouter);

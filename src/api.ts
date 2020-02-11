@@ -34,7 +34,7 @@ function authenticateToken(req:Request, res:Response, next:NextFunction) {
 const api: express.Application = express();
 api.use(cors());
 api.use(authenticateToken);
-api.use(cookieParser());
+api.use(cookieParser("secret"));
 
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
