@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import util from "util";
 import {
     getConnection, InsertResult, UpdateResult,
@@ -6,8 +6,9 @@ import {
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
-import { refreshTokens } from "../auth";
 import User from "../data/entity/User";
+
+require("dotenv").config();
 
 const router:express.Router = express.Router();
 
@@ -23,7 +24,6 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         return;
     }
 
-
     try {
         const user:User|undefined = await getConnection()
             .createQueryBuilder()
@@ -31,6 +31,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
             .from(User, "user")
             .where("user.email = :email", { email })
             .getOne();
+
 
         // ! 유호하징 않은 이메일
         if (!user) {
@@ -54,18 +55,31 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
             nickname: user.nickname,
             email: user.email,
         };
-        const secretOrPrivateKey:any = process.env.JWT_SECRET;
+        const accessKey:any = process.env.JWT_SECRET_ACCESS;
         const options:{expiresIn:number} = { expiresIn: 60 * 60 * 24 };
 
-        jwt.sign(payload, secretOrPrivateKey, options, (err:Error, token) => {
-            if (err) return res.status(409).send("Failed to issue JWT Token.");
-            res.status(200).json({ token });
-        });
+        const accessToken = jwt.sign(payload, accessKey, options);
+
+        res.json({ accessToken });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
     }
 });
+
+function authenticationToken(req:express.Request, res:express.Response, next:NextFunction) {
+    const authHeader = req.headers.authorization;
+    const token:any = authHeader && authHeader.split(" ")[1];
+    if (token === null) return res.sendStatus(401);
+
+    const accessKey:any = process.env.JWT_SECRET_ACCESS;
+    jwt.verify(token, accessKey, (err:Error, user) => {
+        if (err) return res.sendStatus(403);
+
+        req.user = user;
+        next();
+    });
+}
 
 router.post("/signup", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;

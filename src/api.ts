@@ -36,7 +36,7 @@ api.use((req:Request, res:Response) => {
 api.use((err:Error, req:Request, res:Response, next:NextFunction) => {
     // eslint-disable-next-line no-console
     console.error(err.stack);
-    res.status(500).send("Something broke!");
+    res.status(500).send("There's an error.");
 });
 
 export default api;
