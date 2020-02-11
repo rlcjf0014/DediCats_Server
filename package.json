@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && node dist/index.js",
+    "server": "npm run build && node dist/serverIndex.js",
     "dev": "ts-node src/index.ts",
     "build": "rm -rf dist && tsc -p .",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,6 +22,7 @@
   "homepage": "https://github.com/rlcjf0014/DediCats-server#readme",
   "dependencies": {
     "@types/cors": "^2.8.6",
+    "@types/express-session": "^1.15.16",
     "aws-sdk": "^2.614.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
