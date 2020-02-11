@@ -4,7 +4,7 @@ import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 
-import userRouter from "./route/User";
+import authRouter from "./route/Authentication";
 import BasicRouter from "./route/BasicRouter";
 
 
@@ -15,7 +15,7 @@ api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 api.use("/", BasicRouter);
 
-api.use("/user", userRouter);
+api.use("/auth", authRouter);
 
 api.use((req:Request, res:Response) => {
     res.status(404).send("Invalid address.Please check the address again");
