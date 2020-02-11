@@ -35,13 +35,13 @@ api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 
 api.use("/user", userRouter);
-api.use("/cat", catRouter);
+api.use("/cat", authenticateToken, catRouter);
 api.use("/comment", commentRouter);
 api.use("/map", mapRouter);
 api.use("/photo", photoRouter);
 api.use("/post", postRouter);
 api.use("/report", reportRouter);
-api.use("/", BasicRouter);
+api.use("/", authenticateToken, BasicRouter);
 
 api.use((req:Request, res:Response) => {
     res.status(404).send("Invalid address.Please check the address again");
