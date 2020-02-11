@@ -2,6 +2,7 @@ import express from "express";
 import {
     getConnection, UpdateResult, getRepository, QueryBuilder, InsertResult,
 } from "typeorm";
+import jwt from "jsonwebtoken";
 
 import User from "../data/entity/User";
 import Photo from "../data/entity/Photo";
@@ -10,6 +11,7 @@ import uploadFile from "../imgupload";
 import deleteFile from "../imgdelete";
 
 const router:express.Router = express.Router();
+const accessKey:any = process.env.JWT_SECRET_ACCESS;
 
 router.get("/album/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
@@ -30,8 +32,13 @@ router.get("/album/:catId", async (req:express.Request, res:express.Response) =>
 });
 
 router.post("/profile/delete", async (req: express.Request, res:express.Response) => {
-    const { userId }:{userId:number} = req.body;
+    // const { userId }:{userId:number} = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
+
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const updatePic:UpdateResult = await connection
             .update(User).set({ photoPath: null })
@@ -49,8 +56,11 @@ router.post("/profile/delete", async (req: express.Request, res:express.Response
 
 //! S3에 데이터 저장 후 그 주소를 받아와 데이터베이스에 저장 및 클라이언트에 보내줘야 함.
 router.post("/profile", async (req:express.Request, res:express.Response) => {
-    const { userId, photoPath }:{userId:number, photoPath:string} = req.body;
+    const { photoPath }:{ photoPath:string} = req.body;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const getProfile:User | undefined = await connection
             .select("user")

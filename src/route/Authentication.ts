@@ -11,17 +11,17 @@ import User from "../data/entity/User";
 require("dotenv").config();
 
 const router:express.Router = express.Router();
+const refresKey:any = process.env.JWT_SECRET_REFRESH;
 
-function generateAccessToken(payload:{id:number, nickname:string, email:string}) {
+const generateAccessToken = (payload:{id:number, nickname:string, email:string}) => {
     const accessKey:any = process.env.JWT_SECRET_ACCESS;
     const options:{expiresIn:string} = { expiresIn: "1d" };
     return jwt.sign(payload, accessKey, options);
-}
+};
 
 
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", async (req:express.Request, res:express.Response) => {
-    // const refreshToken = req.body.token;
     const { refreshToken } = req.signedCookies;
 
     if (!refreshToken) {
@@ -30,7 +30,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
         return res.status(401).send("Refresh Token does not exist");
     }
 
-    const refresKey:any = process.env.JWT_SECRET_Refresh;
+    // const refresKey:any = process.env.JWT_SECRET_REFRESH;
     const decodeReq:any = jwt.verify(refreshToken, refresKey);
     if (!decodeReq) {
         res.clearCookie("accessToken");
@@ -57,7 +57,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
         }
         if (decode) {
             const accessToken = generateAccessToken({ id: user.id, nickname: user.nickname, email: user.email });
-            res.clearCookie("accessToken");
+            res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
             res.status(200).json({ accessToken });
         } else {
             res.clearCookie("accessToken");
@@ -67,10 +67,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     });
 });
 
-// function generateAccessToken(user:{id: number, nickname:string, email:string}) {
-//     const accessKey:any = process.env.JWT_SECRET_ACCESS;
-//     return jwt.sign(user, accessKey, { expiresIn: "15s" });
-// }
+
 router.post("/signin", async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
     if (!email) {
@@ -113,7 +110,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         const accessToken = generateAccessToken(payload);
 
         // ? refresh Token
-        const refresKey:any = process.env.JWT_SECRET_Refresh;
+        // const refresKey:any = process.env.JWT_SECRET_REFRESH;
         const refreshToken = jwt.sign({ id: user.id }, refresKey, { expiresIn: "30d" });
 
         const result:UpdateResult = await getConnection().createQueryBuilder()
@@ -133,7 +130,6 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30, signed: true });
 
         res.status(201).send("User signed in");
-        // res.status(201).send({ accessToken, refreshToken });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
@@ -146,7 +142,6 @@ router.post("/signout", async (req:express.Request, res:express.Response) => {
 
     if (!refreshToken) return res.status(409).send("Refresh Token is not defined");
 
-    const refresKey:any = process.env.JWT_SECRET_Refresh;
     const decode:any = jwt.verify(refreshToken, refresKey);
     if (!decode) return res.status(403).send("Refresh Token has already expired");
 

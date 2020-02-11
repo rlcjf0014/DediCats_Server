@@ -4,6 +4,8 @@ import express from "express";
 import {
     getRepository, getConnection, InsertResult, QueryBuilder, UpdateResult,
 } from "typeorm";
+import jwt from "jsonwebtoken";
+
 import Post from "../data/entity/Post";
 import uploadFile from "../imgupload";
 import deleteFile from "../imgdelete";
@@ -14,9 +16,14 @@ const router:express.Router = express.Router();
 // Add Post
 router.post("/new", async (req:express.Request, res:express.Response) => {
     const {
-        userId, catId, content, photoPath,
-    }:{userId:number, catId:number, content:string, photoPath: string | undefined} = req.body;
+        catId, content, photoPath,
+    }:{catId:number, content:string, photoPath: string | undefined} = req.body;
+    const accessKey:any = process.env.JWT_SECRET_ACCESS;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const createConnection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const addPost:InsertResult = await createConnection
             .insert()
@@ -35,7 +42,7 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
             res.status(201).send("Successfully added post");
             return;
         }
-        const key:string = `POST #${addPost.identifiers[0].id}`;      
+        const key:string = `POST #${addPost.identifiers[0].id}`;
         const imagepath:any = await uploadFile(key, photoPath);
         const addPhoto:InsertResult = await createConnection
             .insert()
