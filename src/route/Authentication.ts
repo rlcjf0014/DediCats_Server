@@ -27,7 +27,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     if (!refreshToken) {
         res.clearCookie("accessToken");
         res.clearCookie("refreshToken");
-        return res.status(401).send("refreshToken does not exist");
+        return res.status(401).send("Refresh Token does not exist");
     }
 
     const refresKey:any = process.env.JWT_SECRET_Refresh;
@@ -35,7 +35,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     if (!decodeReq) {
         res.clearCookie("accessToken");
         res.clearCookie("refreshToken");
-        return res.status(401).send("The requested requstToken has expired.");
+        return res.status(401).send("Refresh token has expired.");
     }
 
     const queryManager = getConnection().createQueryBuilder();
@@ -46,9 +46,9 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
         .getOne();
 
     // ? db에 refreshTokens가 없는경우
-    if (!user?.refreshToken) return res.status(403).send("refreshToken does not exist");
+    if (!user?.refreshToken) return res.status(403).send("Refresh Token does not exist");
     // ? 요청받은 refreshToken과 다른경우
-    if (user?.refreshToken !== refreshToken) return res.status(409).send("invalid requestToken");
+    if (user?.refreshToken !== refreshToken) return res.status(409).send("Invalid Request Token");
 
     jwt.verify(refreshToken, refresKey, (err:Error, decode:any):void => {
         if (err) {
@@ -62,7 +62,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
         } else {
             res.clearCookie("accessToken");
             res.clearCookie("refreshToken");
-            res.status(401).send("The requstToken has expired.");
+            res.status(401).send("The Requst Token has expired.");
         }
     });
 });
@@ -74,11 +74,11 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
 router.post("/signin", async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
     if (!email) {
-        res.status(409).send("email is required!");
+        res.status(409).send("Email is required");
         return;
     }
     if (!password) {
-        res.status(409).send("password is required!");
+        res.status(409).send("Password is required");
         return;
     }
     try {
@@ -87,10 +87,10 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
             .select("user")
             .from(User, "user")
             .where("user.email = :email", { email })
-            .getOne();      
+            .getOne();
         // ! 유효하지 않은 이메일
         if (!user) {
-            res.status(409).send("Invalid Email");
+            res.status(401).send("Invalid Email");
             return;
         }
 
@@ -99,7 +99,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         const key:Buffer = await pdkdf2Promise(password, user.salt, 105123, 64, "sha512");
         const encryPassword:string = key.toString("base64");
         if (encryPassword !== user.password) {
-            res.status(409).send("Incorrect password.");
+            res.status(401).send("Incorrect Password.");
             return;
         }
         // ! 토큰 발급
@@ -122,7 +122,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
             .execute();
 
         if (result.raw.affectedRows === 0) {
-            res.status(409).send("Fail to insert Token");
+            res.status(409).send("Failed to insert Token");
             return;
         }
 
@@ -132,7 +132,8 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
         res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30, signed: true });
 
-        res.status(201).send({ accessToken, refreshToken });
+        res.status(201).send("User signed in");
+        // res.status(201).send({ accessToken, refreshToken });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
@@ -143,11 +144,11 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
 router.post("/signout", async (req:express.Request, res:express.Response) => {
     const { refreshToken }:{refreshToken:string} = req.signedCookies;
 
-    if (!refreshToken) return res.status(400).send("refreshToken is not defined");
+    if (!refreshToken) return res.status(409).send("Refresh Token is not defined");
 
     const refresKey:any = process.env.JWT_SECRET_Refresh;
     const decode:any = jwt.verify(refreshToken, refresKey);
-    if (!decode) return res.status(400).send("refreshToken already expired");
+    if (!decode) return res.status(403).send("Refresh Token has already expired");
 
     const queryManager = getConnection().createQueryBuilder();
     const userRefreshToken:User|undefined = await queryManager
@@ -156,18 +157,18 @@ router.post("/signout", async (req:express.Request, res:express.Response) => {
         .where({ id: decode.id })
         .getOne();
 
-    if (userRefreshToken?.refreshToken !== refreshToken) return res.status(400).send("invalid refreshToken");
+    if (userRefreshToken?.refreshToken !== refreshToken) return res.status(401).send("Invalid Refresh Token");
 
     const updateRefreshToken:UpdateResult = await queryManager
         .update(User).set({ refreshToken: null })
         .where({ id: decode.id })
         .execute();
 
-    if (updateRefreshToken.raw.changedRows === 0) return res.status(400).send("fail to delete refreshToken");
+    if (updateRefreshToken.raw.changedRows === 0) return res.status(400).send("Failed to delete Refresh Token");
 
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
-    res.status(201).send("logout Success!");
+    res.status(201).send("Signout Success!");
 });
 
 export default router;
