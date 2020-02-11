@@ -2,11 +2,14 @@ import express from "express";
 import {
     InsertResult, getConnection, getManager, UpdateResult, getRepository,
 } from "typeorm";
+import jwt from "jsonwebtoken";
+
 import Comment from "../data/entity/Comment";
 import Post from "../data/entity/Post";
 import User from "../data/entity/User";
 
 const router:express.Router = express.Router();
+const accessKey:any = process.env.JWT_SECRET_ACCESS;
 
 // Comment of Post
 router.get("/:postId", async (req:express.Request, res:express.Response) => {
@@ -53,8 +56,12 @@ router.post("/delete", async (req:express.Request, res:express.Response) => {
 
 // Add Comment
 router.post("/add", async (req:express.Request, res:express.Response) => {
-    const { content, userId, postId }:{content:string, userId:number, postId:number} = req.body;
+    const { content, postId }:{content:string, postId:number} = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const manager = await getManager();
         const user:User|undefined = await manager.createQueryBuilder(User, "user").where("user.id = :id", { id: userId }).getOne();
         const post:Post|undefined = await manager.createQueryBuilder(Post, "post").where("post.id = :id", { id: postId }).getOne();
@@ -79,10 +86,13 @@ router.post("/add", async (req:express.Request, res:express.Response) => {
 });
 
 router.post("/update", async (req:express.Request, res:express.Response) => {
+    const { commentId, content } : { commentId:number, content:string} = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const { userId, commentId, content } : {userId:number, commentId:number, content:string} = req.body;
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
         const result:UpdateResult = await getConnection().createQueryBuilder().update(Comment).set({ content })
-            .where({ id: commentId })
+            .where({ id: commentId, userId })
             .execute();
         if (!result.raw.changedRows) {
             res.status(409).send("Failed to update comment");

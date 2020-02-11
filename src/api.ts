@@ -18,6 +18,7 @@ import userRouter from "./route/User";
 require("dotenv").config();
 
 // eslint-disable-next-line consistent-return
+/*
 function authenticateToken(req:Request, res:Response, next:NextFunction) {
     const authHeader = req.headers.authorization;
     const accesskey:any = process.env.JWT_SECRET_ACCESS;
@@ -30,15 +31,24 @@ function authenticateToken(req:Request, res:Response, next:NextFunction) {
         next();
     });
 }
-
+ */
 const api: express.Application = express();
 api.use(cors());
-api.use(authenticateToken);
 api.use(cookieParser("secret"));
 
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
-api.use(authenticateToken);
+// api.use(authenticateToken);
+api.use("/*", (req:Request, res:Response, next:NextFunction) => {
+    const { accessToken } = req.signedCookies;
+    try {
+        const accessKey:any = process.env.JWT_SECRET_ACCESS;
+        jwt.verify(accessToken, accessKey);
+        next();
+    } catch {
+        res.status(400).send("accessToken is invalid");
+    }
+});
 
 api.use("/user", userRouter);
 api.use("/cat", catRouter);
@@ -53,7 +63,7 @@ api.use((req:Request, res:Response) => {
     res.status(404).send("Invalid address.Please check the address again");
 });
 
-api.use((err:Error, req:Request, res:Response, next:NextFunction) => {
+api.use((err:Error, req:Request, res:Response) => {
     // eslint-disable-next-line no-console
     console.error(err.stack);
     res.status(500).send("There's an error.");

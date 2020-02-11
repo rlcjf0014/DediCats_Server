@@ -11,66 +11,14 @@ import User from "../data/entity/User";
 require("dotenv").config();
 
 const router:express.Router = express.Router();
+const refresKey:any = process.env.JWT_SECRET_REFRESH;
 
-function generateAccessToken(payload:{id:number, nickname:string, email:string}) {
+const generateAccessToken = (payload:{id:number, nickname:string, email:string}) => {
     const accessKey:any = process.env.JWT_SECRET_ACCESS;
     const options:{expiresIn:string} = { expiresIn: "1d" };
     return jwt.sign(payload, accessKey, options);
-}
+};
 
-
-// ! requestToekn으로 accessToken새로 요청
-router.post("/token", async (req:express.Request, res:express.Response) => {
-    // const refreshToken = req.body.token;
-    const { refreshToken } = req.signedCookies;
-
-    if (!refreshToken) {
-        res.clearCookie("accessToken");
-        res.clearCookie("refreshToken");
-        return res.status(401).send("Refresh Token does not exist");
-    }
-
-    const refresKey:any = process.env.JWT_SECRET_Refresh;
-    const decodeReq:any = jwt.verify(refreshToken, refresKey);
-    if (!decodeReq) {
-        res.clearCookie("accessToken");
-        res.clearCookie("refreshToken");
-        return res.status(401).send("Refresh token has expired.");
-    }
-
-    const queryManager = getConnection().createQueryBuilder();
-    const user:User|undefined = await queryManager
-        .select("user")
-        .from(User, "user")
-        .where({ id: decodeReq.id })
-        .getOne();
-
-    // ? db에 refreshTokens가 없는경우
-    if (!user?.refreshToken) return res.status(403).send("Refresh Token does not exist");
-    // ? 요청받은 refreshToken과 다른경우
-    if (user?.refreshToken !== refreshToken) return res.status(409).send("Invalid Request Token");
-
-    jwt.verify(refreshToken, refresKey, (err:Error, decode:any):void => {
-        if (err) {
-            res.sendStatus(403);
-            return;
-        }
-        if (decode) {
-            const accessToken = generateAccessToken({ id: user.id, nickname: user.nickname, email: user.email });
-            res.clearCookie("accessToken");
-            res.status(200).json({ accessToken });
-        } else {
-            res.clearCookie("accessToken");
-            res.clearCookie("refreshToken");
-            res.status(401).send("The Requst Token has expired.");
-        }
-    });
-});
-
-// function generateAccessToken(user:{id: number, nickname:string, email:string}) {
-//     const accessKey:any = process.env.JWT_SECRET_ACCESS;
-//     return jwt.sign(user, accessKey, { expiresIn: "15s" });
-// }
 router.post("/signin", async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
     if (!email) {
@@ -113,7 +61,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         const accessToken = generateAccessToken(payload);
 
         // ? refresh Token
-        const refresKey:any = process.env.JWT_SECRET_Refresh;
+        // const refresKey:any = process.env.JWT_SECRET_REFRESH;
         const refreshToken = jwt.sign({ id: user.id }, refresKey, { expiresIn: "30d" });
 
         const result:UpdateResult = await getConnection().createQueryBuilder()
@@ -133,22 +81,57 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30, signed: true });
 
         res.status(201).send("User signed in");
-        // res.status(201).send({ accessToken, refreshToken });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
     }
 });
 
+// ! 로그인 이외부분 refresh Token만료 먼저 확인 -> 만료시 DB : refreshToken을 지움
+router.post("/*", async (req:express.Request, res:express.Response, next:express.NextFunction) => {
+    const { refreshToken } = req.signedCookies;
+
+    if (!refreshToken) {
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+        return res.status(401).send("Refresh Token does not exist");
+    }
+
+    try {
+        jwt.verify(refreshToken, refresKey);
+        next();
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log(e);
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+        res.status(400).send("refreshToken is invalid");
+    }
+});
+
+// ! requestToekn으로 accessToken새로 요청
+router.post("/token", async (req:express.Request, res:express.Response) => {
+    const { refreshToken } = req.signedCookies;
+    const decodeReq:any = jwt.verify(refreshToken, refresKey);
+
+    const queryManager = getConnection().createQueryBuilder();
+    const user:User|undefined = await queryManager
+        .select("user")
+        .from(User, "user")
+        .where({ id: decodeReq.id })
+        .getOne();
+
+    // ? 요청받은 refreshToken과 다른경우
+    if (!user?.refreshToken || user?.refreshToken !== refreshToken) return res.status(409).send("Invalid Request Token");
+
+    const accessToken = generateAccessToken({ id: user.id, nickname: user.nickname, email: user.email });
+    res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
+    res.status(200).json({ accessToken });
+});
 
 router.post("/signout", async (req:express.Request, res:express.Response) => {
     const { refreshToken }:{refreshToken:string} = req.signedCookies;
-
-    if (!refreshToken) return res.status(409).send("Refresh Token is not defined");
-
-    const refresKey:any = process.env.JWT_SECRET_Refresh;
     const decode:any = jwt.verify(refreshToken, refresKey);
-    if (!decode) return res.status(403).send("Refresh Token has already expired");
 
     const queryManager = getConnection().createQueryBuilder();
     const userRefreshToken:User|undefined = await queryManager

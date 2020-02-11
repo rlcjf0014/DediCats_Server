@@ -4,6 +4,8 @@ import {
     getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
 } from "typeorm";
 import wkx from "wkx";
+import jwt from "jsonwebtoken";
+
 import CatTag from "../data/entity/CatTag";
 import Cat from "../data/entity/Cat";
 import Tag from "../data/entity/Tag";
@@ -12,11 +14,16 @@ import User from "../data/entity/User";
 import uploadFile from "../imgupload";
 
 const router:express.Router = express.Router();
+const accessKey:any = process.env.JWT_SECRET_ACCESS;
 
 // delete tag
 router.post("/deleteTag", async (req:express.Request, res:express.Response) => {
-    const { tagId, catId, userId }:{tagId:number, catId:number, userId:number } = req.body;
+    const { tagId, catId }:{tagId:number, catId:number } = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const deleteTag:UpdateResult = await getConnection().createQueryBuilder()
             .update(CatTag).set({ status: "D", deleteUser: userId })
             .where({ tag: tagId, cat: catId })
@@ -33,9 +40,12 @@ router.post("/deleteTag", async (req:express.Request, res:express.Response) => {
 
 // This endpoint updates the user's following information.
 router.post("/follow", async (req:express.Request, res:express.Response) => {
-    const { catId, userId }:{catId:number, userId:number} = req.body;
-
+    const { catId }:{catId:number} = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const updateFollow:InsertResult = await getConnection()
             .createQueryBuilder()
             .insert()
@@ -189,8 +199,12 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
 
 // update Tag
 router.post("/updateTag", async (req:express.Request, res:express.Response) => {
-    const { userId, catId, catTag }:{userId: number, catId:number, catTag:string} = req.body;
+    const { catId, catTag }:{catId:number, catTag:string} = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const checkTag:Tag|undefined = await connection
             .select("tag").from(Tag, "tag")
@@ -296,8 +310,11 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
 
 // Unfollow Cat
 router.post("/unfollow", async (req:express.Request, res:express.Response) => {
-    const { userId, catId }:{userId:number, catId:number} = req.body;
+    const { catId }:{catId:number} = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
         const updateFollow:DeleteResult = await getConnection()
             .createQueryBuilder()
             .delete()
@@ -314,9 +331,12 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
 });
 
 // This endpoint allows you to get the list of cats you follow.
-router.get("/catlist/:userId", async (req:express.Request, res:express.Response) => {
-    const { userId }:{userId?:string} = req.params;
+router.get("/catlist", async (req:express.Request, res:express.Response) => {
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const getCat1:Array<object> = await getRepository(User).createQueryBuilder("user")
             .where("user.id = :id", { id: Number(userId) })
             .leftJoinAndSelect("user.cats", "cat")
@@ -338,11 +358,14 @@ router.get("/catlist/:userId", async (req:express.Request, res:express.Response)
 
 // This endpoint provides you with the information of the selected cat.
 // ? 캣 태그, 사진 같이 보내줘야 함.
-router.get("/:catId/:userId", async (req:express.Request, res:express.Response) => {
-    const { userId, catId }:{userId?: string, catId?: string} = req.params;
+router.get("/:catId", async (req:express.Request, res:express.Response) => {
+    const { catId }:{catId?: string} = req.params;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        console.log(req.signedCookies.accessToken);
-        console.log(req.signedCookies.refreshToken);
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+        // console.log(req.signedCookies.accessToken);
+        // console.log(req.signedCookies.refreshToken);
         const connection = await getConnection().createQueryBuilder();
         const getCat:Cat | undefined = await connection
             .select("cat")

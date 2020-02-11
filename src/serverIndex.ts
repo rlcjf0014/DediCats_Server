@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import "reflect-metadata";
@@ -21,6 +22,6 @@ data
         if (!checkDB) {
             console.log("Error occurred during server setup.");
         }
-        console.log("Server is now connected with databse!")
+        console.log("Server is now connected with databse!");
     })
     .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
