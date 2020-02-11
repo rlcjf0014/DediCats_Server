@@ -4,7 +4,6 @@ import {
     getConnection, InsertResult, UpdateResult,
 } from "typeorm";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
 import User from "../data/entity/User";
 
 require("dotenv").config();
@@ -15,9 +14,11 @@ const router:express.Router = express.Router();
 
 router.post("/signup", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
+    console.log(email,password,nickname)
     try {
         // ! 유저 체크
         const checkEmail:number = await User.count({ where: { email } });
+        
         if (checkEmail) {
             res.status(409).send("User already exists.");
             return;
@@ -29,6 +30,7 @@ router.post("/signup", async (req:express.Request, res:express.Response) => {
         const salt:string = buf.toString("base64");
         const key:Buffer = await pdkdf2Promise(password, salt, 105123, 64, "sha512");
         const encryPassword:string = key.toString("base64");
+        console.log(encryPassword);
         // ! insert
         const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)
             .values({

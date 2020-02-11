@@ -13,9 +13,10 @@ api.use(cors());
 
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
-api.use("/", BasicRouter);
+
 
 api.use("/auth", authRouter);
+api.use("/", BasicRouter);
 
 api.use((req:Request, res:Response) => {
     res.status(404).send("Invalid address.Please check the address again");

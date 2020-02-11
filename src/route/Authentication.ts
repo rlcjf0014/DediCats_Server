@@ -5,6 +5,7 @@ import {
 } from "typeorm";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+
 import User from "../data/entity/User";
 
 require("dotenv").config();
@@ -53,6 +54,10 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     });
 });
 
+function generateAccessToken(user:{id: number, nickname:string, email:string}) {
+    const accessKey:any = process.env.JWT_SECRET_ACCESS;
+    return jwt.sign(user, accessKey, { expiresIn: "15s" });
+}
 router.post("/signin", async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
     if (!email) {
