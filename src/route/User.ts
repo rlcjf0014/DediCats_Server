@@ -59,10 +59,11 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
 });
 function authenticationToken (req:express.Request, res:express.Response, next:NextFunction) {
     const authHeader = req.headers.authorization;
-    const token:string|undefined = authHeader && authHeader.split(" ")[1];
+    const token:any = authHeader && authHeader.split(" ")[1];
     if (token === null) return res.sendStatus(401);
     const accessKey:any = process.env.JWT_SECRET_ACCESS;
-    jwt.verify(token, accessKey, (err, user) => {
+    // eslint-disable-next-line consistent-return
+    jwt.verify(token, accessKey, (err:Error, user:any) => {
         if (err) return res.send(403);
         req.user = user;
         next();

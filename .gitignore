@@ -10,5 +10,3 @@ dist/
 
 # ORM setting in local
 .env
-
-types/
