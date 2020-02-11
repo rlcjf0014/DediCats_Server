@@ -35,7 +35,7 @@ export default class User extends BaseEntity {
     @Column({
         type: "varchar", nullable: true, name: "photo_path", default: null,
     })
-    photoPath! : string;
+    photoPath! : string | null;
 
     @Column({ type: "varchar", nullable: true })
     refreshToken! : string;

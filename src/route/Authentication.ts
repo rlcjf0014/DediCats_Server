@@ -1,3 +1,5 @@
+/* eslint-disable import/extensions */
+/* eslint-disable import/no-unresolved */
 import express, { NextFunction } from "express";
 import util from "util";
 import {
@@ -5,6 +7,7 @@ import {
 } from "typeorm";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+
 import User from "../data/entity/User";
 
 require("dotenv").config();
@@ -12,6 +15,10 @@ require("dotenv").config();
 const router:express.Router = express.Router();
 
 
+function generateAccessToken(user:{id: number, nickname:string, email:string}) {
+    const accessKey:any = process.env.JWT_SECRET_ACCESS;
+    return jwt.sign(user, accessKey, { expiresIn: "15s" });
+}
 router.post("/signin", async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
     if (!email) {
@@ -48,27 +55,31 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
             nickname: user.nickname,
             email: user.email,
         };
-        const accessKey:any = process.env.JWT_SECRET_ACCESS;
-        const options:{expiresIn:number} = { expiresIn: 60 * 60 * 24 };
-        const accessToken = jwt.sign(payload, accessKey, options);
-        res.json({ accessToken });
+        // const accessKey:any = process.env.JWT_SECRET_ACCESS;
+        const refreshKey:any = process.env.JWT_SECRET_REFRESH;
+        // const options:{expiresIn:number} = { expiresIn: 60 * 60 * 24 };
+        const accessToken:string = generateAccessToken(payload);
+        const refreshToken:string = jwt.sign(payload, refreshKey); 
+        res.json({ accessToken, refreshToken });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
     }
 });
-function authenticationToken (req:express.Request, res:express.Response, next:NextFunction) {
-    const authHeader = req.headers.authorization;
-    const token:any = authHeader && authHeader.split(" ")[1];
-    if (token === null) return res.sendStatus(401);
-    const accessKey:any = process.env.JWT_SECRET_ACCESS;
-    // eslint-disable-next-line consistent-return
-    jwt.verify(token, accessKey, (err:Error, user:any) => {
-        if (err) return res.send(403);
-        req.user = user;
-        next();
-    });
-}
+
+
+// function authenticateToken (req:express.Request, res:express.Response, next:NextFunction) {
+//     const authHeader = req.headers.authorization;
+//     const token:any = authHeader && authHeader.split(" ")[1];
+//     if (token === null) return res.sendStatus(401);
+//     const accessKey:any = process.env.JWT_SECRET_ACCESS;
+//     // eslint-disable-next-line consistent-return
+//     jwt.verify(token, accessKey, (err:Error, user:any) => {
+//         if (err) return res.send(403);
+//         req.user = user;
+//         next();
+//     });
+// }
 
 // ! 비밀번호 확인단계필요 ( 비밀번호 보안 필요함! )
 router.post("/signout", (req:express.Request, res:express.Response) => {
