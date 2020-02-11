@@ -127,7 +127,7 @@ router.get("/follower/:catId", async (req:express.Request, res:express.Response)
 router.post("/addcatToday", async (req:express.Request, res:express.Response) => {
     const { catId, catToday }:{catId:number, catToday:string} = req.body;
     try {
-        const now = Date();
+        const now = `${new Date().toISOString().slice(0, 23)}Z`;
         const updateToday:UpdateResult = await getConnection().createQueryBuilder()
             .update(Cat).set({ today: catToday, todayTime: now })
             .where("cat.id= :id", { id: catId })
@@ -341,7 +341,8 @@ router.get("/catlist/:userId", async (req:express.Request, res:express.Response)
 router.get("/:catId/:userId", async (req:express.Request, res:express.Response) => {
     const { userId, catId }:{userId?: string, catId?: string} = req.params;
     try {
-        console.log("캣낫파운드")
+        console.log(req.signedCookies.accessToken);
+        console.log(req.signedCookies.refreshToken);
         const connection = await getConnection().createQueryBuilder();
         const getCat:Cat | undefined = await connection
             .select("cat")

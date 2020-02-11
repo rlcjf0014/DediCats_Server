@@ -22,7 +22,7 @@ function generateAccessToken(payload:{id:number, nickname:string, email:string})
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", async (req:express.Request, res:express.Response) => {
     // const refreshToken = req.body.token;
-    const { refreshToken } = req.cookies;
+    const { refreshToken } = req.signedCookies;
 
     if (!refreshToken) {
         res.clearCookie("accessToken");
@@ -82,14 +82,12 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         return;
     }
     try {
-        console.log(email, password);
         const user:User|undefined = await getConnection()
             .createQueryBuilder()
             .select("user")
             .from(User, "user")
             .where("user.email = :email", { email })
-            .getOne();
-        console.log(user);
+            .getOne();      
         // ! 유효하지 않은 이메일
         if (!user) {
             res.status(409).send("Invalid Email");
@@ -131,10 +129,10 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         // * token을 어디에 저장할것인가?
         // * -> 일단 cookie
         res.clearCookie("refreshToken");
-        res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24 });
-        res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 });
+        res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
+        res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30, signed: true });
 
-        res.status(200).json({ accessToken, refreshToken });
+        res.status(201).send({ accessToken, refreshToken });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
@@ -143,7 +141,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
 
 
 router.post("/signout", async (req:express.Request, res:express.Response) => {
-    const { refreshToken }:{refreshToken:string} = req.cookies;
+    const { refreshToken }:{refreshToken:string} = req.signedCookies;
 
     if (!refreshToken) return res.status(400).send("refreshToken is not defined");
 
@@ -169,7 +167,7 @@ router.post("/signout", async (req:express.Request, res:express.Response) => {
 
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
-    res.status(200).send("logout Success!");
+    res.status(201).send("logout Success!");
 });
 
 export default router;
