@@ -127,7 +127,7 @@ router.get("/follower/:catId", async (req:express.Request, res:express.Response)
 router.post("/addcatToday", async (req:express.Request, res:express.Response) => {
     const { catId, catToday }:{catId:number, catToday:string} = req.body;
     try {
-        const now = Date();
+        const now = `${new Date().toISOString().slice(0, 23)}Z`;
         const updateToday:UpdateResult = await getConnection().createQueryBuilder()
             .update(Cat).set({ today: catToday, todayTime: now })
             .where("cat.id= :id", { id: catId })
