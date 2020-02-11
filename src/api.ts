@@ -13,7 +13,6 @@ import postRouter from "./route/Post";
 import reportRouter from "./route/Report";
 
 
-
 const api: express.Application = express();
 api.use(cors());
 
