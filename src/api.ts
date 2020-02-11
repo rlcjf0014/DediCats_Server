@@ -46,7 +46,7 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
         jwt.verify(accessToken, accessKey);
         next();
     } catch {
-        res.status(400).send("token is invalid");
+        res.status(400).send("accessToken is invalid");
     }
 });
 
