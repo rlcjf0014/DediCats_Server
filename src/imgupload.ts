@@ -16,7 +16,6 @@ const s3 = new AWS.S3({
 
 // eslint-disable-next-line func-names
 export default function uploadFile(imageName: string, imageData:string) {
-    
     return new Promise(((resolve, reject) => {
         const params:{Bucket:any, ACL:string, Key: string, Body:any} = {
             Bucket: BUCKET_NAME,
@@ -38,6 +37,7 @@ export default function uploadFile(imageName: string, imageData:string) {
     }));
 }
 
+//! svg test
 
 // export default uploadFile;
 

@@ -33,15 +33,6 @@ router.post("/profile/delete", async (req: express.Request, res:express.Response
     const { userId }:{userId:number} = req.body;
     try {
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
-        // const getProfile:User | undefined = await connection
-        //     .select("user")
-        //     .from(User, "user")
-        //     .where("user.id = :id", { id: userId })
-        //     .getOne();
-        // if (!getProfile) {
-        //     res.status(409).send("Failed to delete profile picture");
-        //     return;
-        // }
         const updatePic:UpdateResult = await connection
             .update(User).set({ photoPath: undefined })
             .where({ id: userId }).execute();
