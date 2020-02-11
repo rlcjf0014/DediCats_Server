@@ -1,7 +1,7 @@
-import express, { NextFunction } from "express";
+import express from "express";
 import util from "util";
 import {
-    getConnection, InsertResult, UpdateResult,
+    getConnection, UpdateResult,
 } from "typeorm";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
