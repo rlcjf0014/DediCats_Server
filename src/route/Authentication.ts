@@ -21,12 +21,22 @@ function generateAccessToken(payload:{id:number, nickname:string, email:string})
 
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", async (req:express.Request, res:express.Response) => {
-    const refreshToken = req.body.token;
-    if (!refreshToken) return res.status(401).send("refreshToken does not exist");
+    // const refreshToken = req.body.token;
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+        return res.status(401).send("refreshToken does not exist");
+    }
 
     const refresKey:any = process.env.JWT_SECRET_Refresh;
     const decodeReq:any = jwt.verify(refreshToken, refresKey);
-    if (!decodeReq) return res.status(401).send("The requested requstToken has expired.");
+    if (!decodeReq) {
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+        return res.status(401).send("The requested requstToken has expired.");
+    }
 
     const queryManager = getConnection().createQueryBuilder();
     const user:User|undefined = await queryManager
@@ -47,8 +57,11 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
         }
         if (decode) {
             const accessToken = generateAccessToken({ id: user.id, nickname: user.nickname, email: user.email });
+            res.clearCookie("accessToken");
             res.status(200).json({ accessToken });
         } else {
+            res.clearCookie("accessToken");
+            res.clearCookie("refreshToken");
             res.status(401).send("The requstToken has expired.");
         }
     });
@@ -116,6 +129,11 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         }
 
         // * token을 어디에 저장할것인가?
+        // * -> 일단 cookie
+        res.clearCookie("refreshToken");
+        res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24 });
+        res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 });
+
         res.status(200).json({ accessToken, refreshToken });
     } catch (e) {
         console.log(e);
@@ -125,7 +143,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
 
 
 router.post("/signout", async (req:express.Request, res:express.Response) => {
-    const { refreshToken }:{refreshToken:string} = req.body;
+    const { refreshToken }:{refreshToken:string} = req.cookies;
 
     if (!refreshToken) return res.status(400).send("refreshToken is not defined");
 
@@ -149,6 +167,8 @@ router.post("/signout", async (req:express.Request, res:express.Response) => {
 
     if (updateRefreshToken.raw.changedRows === 0) return res.status(400).send("fail to delete refreshToken");
 
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
     res.status(200).send("logout Success!");
 });
 
