@@ -47,13 +47,13 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
         <p>Thanks for joining Dedicats! We really appreciate it. Please insert this code into email verfication to verify your account</p>
         <h1>Your code is  <br><span style="text-decoration:underline">${signupCode}<span></h1>
         <h2>This code will only be valid for 1hour.</h2>
-        <p>if you have any problems, please contack us : dediCats16@gmail.com</p>
-        <script></script>`,
+        <p>if you have any problems, please contack us : dediCats16@gmail.com</p>`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.log(error);
+            console.log("Failed to send email");
+            res.status(409).send("Failed to send email");
         } else {
             console.log(`Email sent: ${info.response}`);
             res.cookie("signupCode", signupCode, { maxAge: 1000 * 60 * 10, signed: true });
