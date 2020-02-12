@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && node dist/index.js",
-    "server": "npm run build && node dist/serverIndex.js",
+    "server": "npm run build && node dist/AuthenticationServer/serverIndex.js",
     "dev": "ts-node src/index.ts",
     "build": "rm -rf dist && tsc -p .",
     "test": "echo \"Error: no test specified\" && exit 1"

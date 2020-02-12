@@ -7,8 +7,8 @@ import jwt from "jsonwebtoken";
 import User from "../data/entity/User";
 import Photo from "../data/entity/Photo";
 // import storage from "../data/storage";
-import uploadFile from "../imgupload";
-import deleteFile from "../imgdelete";
+import uploadFile from "../ImageFunction/imgupload";
+import deleteFile from "../ImageFunction/imgdelete";
 
 const router:express.Router = express.Router();
 const accessKey:any = process.env.JWT_SECRET_ACCESS;

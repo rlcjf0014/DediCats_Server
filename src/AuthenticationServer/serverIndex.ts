@@ -4,8 +4,8 @@
 import "reflect-metadata";
 import http from "http";
 import app from "./serverApi";
-import data from "./data";
-import User from "./data/entity/User";
+import data from "../data";
+import User from "../data/entity/User";
 
 const PORT : Number = 8080;
 const server = http.createServer(app);

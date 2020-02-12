@@ -11,7 +11,7 @@ import Cat from "../data/entity/Cat";
 import Tag from "../data/entity/Tag";
 import Photo from "../data/entity/Photo";
 import User from "../data/entity/User";
-import uploadFile from "../imgupload";
+import uploadFile from "../ImageFunction/imgupload";
 
 const router:express.Router = express.Router();
 const accessKey:any = process.env.JWT_SECRET_ACCESS;
@@ -146,7 +146,7 @@ router.post("/addcatToday", async (req:express.Request, res:express.Response) =>
             res.status(409).send("Cat's today update failed");
             return;
         }
-        const result = `{'cat_today': ${catToday}, 'cat_today_time': ${now}}`;
+        const result = { cat_today: catToday, cat_today_time: now };
         res.status(201).send(result);
     } catch (e) {
         res.status(400).send(e);
@@ -199,7 +199,7 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
 
 // update Tag
 router.post("/updateTag", async (req:express.Request, res:express.Response) => {
-    const { catId, catTag }:{catId:number, catTag:string} = req.body;
+    const { catId, catTag }:{catId:number, catTag:string } = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
         const decode:any = jwt.verify(accessToken, accessKey);
@@ -222,8 +222,14 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
             if (updateTag.raw.affectedRows === 0) {
                 res.status(409).send("Tag update failed");
             }
-            const result = `{"message": "Tag updated successfully", "addedcatTag": ${catTag}}`;
-            res.status(200).send(result);
+            const result = {
+                id: checkTag.id,
+                tag: {
+                    content: catTag,
+                },
+            };
+
+            res.status(201).send(result);
         } else {
             const newTag:InsertResult = await connection
                 .insert()
@@ -248,7 +254,13 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
             if (updateTag.raw.affectedRows === 0) {
                 res.status(409).send("Tag update failed");
             }
-            const result = `{"message": "Tag updated successfully", "addedcatTag": ${catTag}}`;
+            const result = {
+                id: newTag.identifiers[0].tag,
+                tag: {
+                    content: catTag,
+                },
+            };
+
             res.status(201).send(result);
         }
     } catch (e) {

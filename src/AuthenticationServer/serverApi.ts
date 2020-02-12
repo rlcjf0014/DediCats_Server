@@ -5,16 +5,17 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import authRouter from "./route/Authentication";
-import BasicRouter from "./route/BasicRouter";
+import authRouter from "../route/Authentication";
+import BasicRouter from "../route/BasicRouter";
 
+require("dotenv").config();
 
 const api: express.Application = express();
 api.use(cors());
 
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
-api.use(cookieParser("secret"));
+api.use(cookieParser(process.env.TOKEN_KEY));
 
 api.use("/auth", authRouter);
 api.use("/", BasicRouter);
