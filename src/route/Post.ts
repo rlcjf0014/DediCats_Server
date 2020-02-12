@@ -54,7 +54,20 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (addPhoto.raw.affectedRows === 0) {
-            res.status(409).send("Saved post, but failed to save photo");
+            const deletePost:DeleteResult = await getConnection()
+                .createQueryBuilder()
+                .delete()
+                .from("post")
+                .where({ id: addPost.identifiers[0].id })
+                .execute();
+            if (deletePost.raw.affectedRows === 0) {
+                res.status(400).send({
+                    message: "Failed to delete post without posted picture, contact admin",
+                    failpostId: addPost.identifiers[0].id,
+                });
+                return;
+            }
+            res.status(409).send("Failed to save post");
             return;
         }
         res.status(201).send("Successfully added post");
