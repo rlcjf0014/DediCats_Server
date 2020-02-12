@@ -57,6 +57,7 @@ router.post("/profile/delete", async (req: express.Request, res:express.Response
 //! S3에 데이터 저장 후 그 주소를 받아와 데이터베이스에 저장 및 클라이언트에 보내줘야 함.
 router.post("/profile", async (req:express.Request, res:express.Response) => {
     const { photoPath }:{ photoPath:string} = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
         const decode:any = jwt.verify(accessToken, accessKey);
         const userId = decode.id;
