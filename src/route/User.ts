@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import express from "express";
 import util from "util";
 import {
@@ -14,8 +15,10 @@ require("dotenv").config();
 
 const router:express.Router = express.Router();
 
-router.post("/mail", async (req:express.Request, res:express.Response) => {
+router.post("/email", async (req:express.Request, res:express.Response) => {
     const { email } = req.body;
+    const signinCode = Math.random().toString(36).slice(2);
+
 
     const transporter = nodemailer.createTransport(smtpTransport({
         service: "gmail",
@@ -27,10 +30,12 @@ router.post("/mail", async (req:express.Request, res:express.Response) => {
     }));
 
     const mailOptions = {
-        for: process.env.DEVMAIL,
+        from: "DediCats",
         to: email,
-        subject: "Send!",
-        text: "email is easy!",
+        subject: "Email Verification for Dedicats",
+        html: `<h1 id="title">Your code is ${signinCode}</h1>
+        <h2>Please insert this code into email verfication</h2>
+        <script></script>`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -38,7 +43,8 @@ router.post("/mail", async (req:express.Request, res:express.Response) => {
             console.log(error);
         } else {
             console.log(`Email sent: ${info.response}`);
-            res.send("success!");
+            res.cookie("signinCode", signinCode, {maxAge: 1000 * 60 * 10, signed: true });
+            res.status(201).send("Successfully sent email");
         }
     });
 });
