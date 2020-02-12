@@ -41,6 +41,7 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log(error);
+            res.status(409).send("Failed to send email");
         } else {
             console.log(`Email sent: ${info.response}`);
             res.cookie("signinCode", signinCode, {maxAge: 1000 * 60 * 10, signed: true });
