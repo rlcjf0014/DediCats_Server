@@ -5,11 +5,43 @@ import {
 } from "typeorm";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import smtpTransport from "nodemailer-smtp-transport";
+
 import User from "../data/entity/User";
 
 require("dotenv").config();
 
 const router:express.Router = express.Router();
+
+router.post("/mail", async (req:express.Request, res:express.Response) => {
+    const { email } = req.body;
+
+    const transporter = nodemailer.createTransport(smtpTransport({
+        service: "gmail",
+        host: "smtp.gmail.com",
+        auth: {
+            user: process.env.DEVMAIL,
+            pass: process.env.DEVMAILPW,
+        },
+    }));
+
+    const mailOptions = {
+        for: process.env.DEVMAIL,
+        to: email,
+        subject: "Send!",
+        text: "email is easy!",
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(`Email sent: ${info.response}`);
+            res.send("success!");
+        }
+    });
+});
 
 router.post("/signup", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
