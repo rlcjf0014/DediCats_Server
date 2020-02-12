@@ -17,7 +17,7 @@ const router:express.Router = express.Router();
 
 router.post("/email", async (req:express.Request, res:express.Response) => {
     const { email } = req.body;
-    const signinCode = Math.random().toString(36).slice(2);
+    const signupCode = Math.random().toString(36).slice(2);
 
 
     const transporter = nodemailer.createTransport(smtpTransport({
@@ -44,7 +44,7 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Failed to send email");
         } else {
             console.log(`Email sent: ${info.response}`);
-            res.cookie("signinCode", signinCode, {maxAge: 1000 * 60 * 10, signed: true });
+            res.cookie("signupCode", signupCode, {maxAge: 1000 * 60 * 10, signed: true });
             res.status(201).send("Successfully sent email");
         }
     });
