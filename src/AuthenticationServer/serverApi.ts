@@ -5,8 +5,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import authRouter from "./route/Authentication";
-import BasicRouter from "./route/BasicRouter";
+import authRouter from "../route/Authentication";
+import BasicRouter from "../route/BasicRouter";
 
 require("dotenv").config();
 

@@ -11,7 +11,7 @@ import Cat from "../data/entity/Cat";
 import Tag from "../data/entity/Tag";
 import Photo from "../data/entity/Photo";
 import User from "../data/entity/User";
-import uploadFile from "../imgupload";
+import uploadFile from "../ImageFunction/imgupload";
 
 const router:express.Router = express.Router();
 const accessKey:any = process.env.JWT_SECRET_ACCESS;

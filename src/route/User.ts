@@ -30,7 +30,7 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
     }));
 
     const mailOptions = {
-        from: "DediCats",
+        from: "\"DediCats\" <dediCats16@gmail.com>",
         to: email,
         subject: "Email Verification for Dedicats",
         html: `<h1 id="title">Your code is ${signinCode}</h1>
