@@ -14,6 +14,7 @@ import photoRouter from "./route/Photo";
 import postRouter from "./route/Post";
 import reportRouter from "./route/Report";
 import userRouter from "./route/User";
+import signupRouter from "./route/Signup";
 
 require("dotenv").config();
 
@@ -39,6 +40,9 @@ api.use(cookieParser(process.env.TOKEN_KEY));
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 // api.use(authenticateToken);
+
+api.use("/signup", signupRouter);
+
 api.use("/*", (req:Request, res:Response, next:NextFunction) => {
     const { accessToken } = req.signedCookies;
     try {
