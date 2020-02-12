@@ -40,12 +40,9 @@ api.use(cookieParser(process.env.TOKEN_KEY));
 api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 // api.use(authenticateToken);
-<<<<<<< HEAD
 
 api.use("/signup", signupRouter);
 
-=======
->>>>>>> 3497b4265e9c7c6ceca0408205aa416fb77424f0
 api.use("/*", (req:Request, res:Response, next:NextFunction) => {
     const { accessToken } = req.signedCookies;
     try {
