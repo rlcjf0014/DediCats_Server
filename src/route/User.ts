@@ -43,8 +43,12 @@ router.patch("/changepw", async (req:express.Request, res:express.Response) => {
             return;
         }
 
+        const newkey:Buffer = await pdkdf2Promise(newPassword, user.salt, 105123, 64, "sha512");
+        const encryNewPassword:string = newkey.toString("base64");
+
+
         const result:UpdateResult = await queryBuilder
-            .update(User).set({ password: newPassword })
+            .update(User).set({ password: encryNewPassword })
             .where({ id: userId })
             .execute();
         if (result.raw.changedRows) {
