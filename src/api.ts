@@ -37,22 +37,22 @@ const api: express.Application = express();
 api.use(cors());
 
 api.use(cookieParser(process.env.TOKEN_KEY));
-api.use(bodyParser.urlencoded({ extended: false }));
-api.use(bodyParser.json());
+api.use(bodyParser.json({ limit: "50mb" }));
+api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 // api.use(authenticateToken);
 
 api.use("/signup", signupRouter);
 
-api.use("/*", (req:Request, res:Response, next:NextFunction) => {
-    const { accessToken } = req.signedCookies;
-    try {
-        const accessKey:any = process.env.JWT_SECRET_ACCESS;
-        jwt.verify(accessToken, accessKey);
-        next();
-    } catch {
-        res.status(400).send("accessToken is invalid");
-    }
-});
+// api.use("/*", (req:Request, res:Response, next:NextFunction) => {
+//     const { accessToken } = req.signedCookies;
+//     try {
+//         const accessKey:any = process.env.JWT_SECRET_ACCESS;
+//         jwt.verify(accessToken, accessKey);
+//         next();
+//     } catch {
+//         res.status(400).send("accessToken is invalid");
+//     }
+// });
 
 api.use("/user", userRouter);
 api.use("/cat", catRouter);
