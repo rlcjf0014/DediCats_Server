@@ -1,3 +1,4 @@
+import { Any } from "typeorm";
 
 require("dotenv").config();
 const AWS = require("aws-sdk");
@@ -20,7 +21,9 @@ export default function uploadFile(imageName: string, imageData:string) {
         // eslint-disable-next-line new-cap
         // eslint-disable-next-line no-buffer-constructor
         // eslint-disable-next-line new-cap
-        const base64Data:String = new Buffer.from(imageData.replace(/^data:image\/\w+;base64,/, ""), "base64");
+        // eslint-disable-next-line new-cap
+        // @ts-ignore
+        const base64Data:string = new Buffer.from(imageData.replace(/^data:image\/\w+;base64,/, ""), "base64");
         // const buf = new Buffer(imageData.replace(/^data:image\/\w+;base64,/, ""),"base64")
         const params:{Bucket:any, ACL:string, ContentType:string, Key: string, Body:any} = {
             Bucket: BUCKET_NAME,
