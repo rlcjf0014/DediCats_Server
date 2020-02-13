@@ -2,7 +2,7 @@
 /* eslint-disable import/no-unresolved */
 import express from "express";
 import {
-    getRepository, getConnection, InsertResult, QueryBuilder, UpdateResult,
+    getRepository, getConnection, InsertResult, QueryBuilder, UpdateResult, DeleteResult,
 } from "typeorm";
 import jwt from "jsonwebtoken";
 
