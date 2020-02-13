@@ -301,6 +301,20 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             return;
         }
         const imagepath:string|unknown = await uploadFile(`CAT #${addCat.identifiers[0].id}`, photoPath);
+        if (!imagepath) {
+            const deleteCat:DeleteResult = await getConnection()
+                .createQueryBuilder()
+                .delete()
+                .from("cat")
+                .where({ id: addCat.identifiers[0].id })
+                .execute();
+            if (deleteCat.raw.affectedRows === 0) {
+                res.status(409).send("Failed to delete cat without posted picture, contact admin");
+                return;
+            }
+            res.status(409).send("Added cat, but failed to add its photo");
+            return;
+        }
         const addPhoto:InsertResult = await connection
             .insert()
             .into("photo")
@@ -311,6 +325,16 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             ])
             .execute();
         if (addPhoto.raw.affectedRows === 0) {
+            const deleteCat:DeleteResult = await getConnection()
+                .createQueryBuilder()
+                .delete()
+                .from("cat")
+                .where({ id: addCat.identifiers[0].id })
+                .execute();
+            if (deleteCat.raw.affectedRows === 0) {
+                res.status(409).send("Failed to delete cat without posted picture, contact admin");
+                return;
+            }
             res.status(409).send("Added cat, but failed to add its photo");
             return;
         }
