@@ -131,7 +131,12 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
 
 router.post("/signout", async (req:express.Request, res:express.Response) => {
     const { refreshToken }:{refreshToken:string} = req.signedCookies;
-    const decode:any = jwt.verify(refreshToken, refresKey);
+    let decode:any;
+    try {
+        decode = jwt.verify(refreshToken, refresKey);
+    } catch {
+        res.status(401).send("invalid refreshToken");
+    }
 
     const queryManager = getConnection().createQueryBuilder();
     const userRefreshToken:User|undefined = await queryManager

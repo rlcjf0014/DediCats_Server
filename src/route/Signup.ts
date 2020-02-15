@@ -56,15 +56,15 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Failed to send email");
         } else {
             console.log(`Email sent: ${info.response}`);
-            res.cookie("signupCode", signupCode, { maxAge: 1000 * 60 * 10, signed: true });
-            res.status(201).send("Successfully sent email");
+            // res.cookie("signupCode", signupCode, { maxAge: 1000 * 60 * 10, signed: true });
+            res.status(201).send(signupCode);
         }
     });
 });
 
-router.post("/", async (req:express.Request, res:express.Response) => {
+router.post("", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
-
+    // console.log(email, password, nickname);
     try {
         // ! 유저 체크
         const checkEmail:number = await User.count({ where: { email } });
