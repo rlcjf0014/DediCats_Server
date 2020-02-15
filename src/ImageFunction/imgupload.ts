@@ -40,7 +40,7 @@ export default function uploadFile(imageName: string, imageData:string) {
                 reject(err);
             }
             console.log(`File uploaded successfully. ${data.Location}`);
-            if (!data.Location){
+            if (!data.Location) {
                 resolve(false);
             }
             resolve(data.Location);

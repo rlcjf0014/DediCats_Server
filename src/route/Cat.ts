@@ -394,19 +394,19 @@ router.get("/catlist", async (req:express.Request, res:express.Response) => {
 
 // This endpoint provides you with the information of the selected cat.
 // ? 캣 태그, 사진 같이 보내줘야 함.
-router.get("/:catId", async (req:express.Request, res:express.Response) => {
-    const { catId }:{catId?: string} = req.params;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
+router.get("/:catId/:userId", async (req:express.Request, res:express.Response) => {
+    const { catId, userId }:{catId?: string, userId?:string} = req.params;
+    // const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        // const decode:any = jwt.verify(accessToken, accessKey);
+        // const userId = decode.id;
         // console.log(req.signedCookies.accessToken);
         // console.log(req.signedCookies.refreshToken);
         const connection = await getConnection().createQueryBuilder();
         const getCat:Cat | undefined = await connection
             .select("cat")
             .from(Cat, "cat")
-            .where("cat.id = :id", { id: catId })
+            .where("cat.id = :id", { id: Number(catId) })
             .getOne();
         const checkFollow:Array<{count: string}> = await getConnection()
             .query("select count(*) as `count` from following_cat where userId = ? and catId = ?;", [userId, catId]);
