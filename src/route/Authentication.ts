@@ -112,7 +112,13 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", async (req:express.Request, res:express.Response) => {
     const { refreshToken } = req.signedCookies;
-    const decodeReq:any = jwt.verify(refreshToken, refresKey);
+    let decodeReq:any;
+    try {
+        decodeReq = jwt.verify(refreshToken, refresKey);
+    } catch {
+        res.status(401).send("refreshToken is invalid");
+        return;
+    }
 
     const queryManager = getConnection().createQueryBuilder();
     const user:User|undefined = await queryManager
