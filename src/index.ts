@@ -27,7 +27,7 @@ data
     .getConnection()
     .then(async () => {
         console.log("Please wait...");
-        await getConnection().query("ALTER TABLE cat CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin");
+        // await getConnection().query("ALTER TABLE cat CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin");
         const checkDB = await User.count();
         if (!checkDB) {
             try {
