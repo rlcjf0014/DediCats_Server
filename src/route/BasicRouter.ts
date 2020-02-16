@@ -8,13 +8,15 @@ import deleteFile from "../ImageFunction/imgdelete";
 const router:express.Router = express.Router();
 
 router.get("/", (req:express.Request, res:express.Response) => {
-    res.status(200).send("Hi! Welcome to Dedicats");
+    const { accessToken }:{accessToken:string} = req.signedCookies;
+    // res.status(200).send("Hi! Welcome to Dedicats");
+    res.status(200).send({ accessToken });
 });
 
 router.post("/imageupload", async (req:express.Request, res:express.Response) => {
     const { name, path }:{name:string, path:string} = req.body;
 
-    const result = await uploadFile(name, path );
+    const result = await uploadFile(name, path);
     res.status(201).send(`Your path is ${result}`);
 });
 // ? "/home/joshua/Desktop/Codestates/four_week_project/server/computer-science-geek_o_1010290.jpg"
