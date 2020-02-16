@@ -50,7 +50,7 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
         jwt.verify(accessToken, accessKey);
         next();
     } catch {
-        res.redirect(`${process.env.AUTH_SERVER}/token`);
+        res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
         // res.status(400).send("accessToken is invalid");
     }
 });
