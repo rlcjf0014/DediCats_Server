@@ -46,7 +46,7 @@ export default class Cat extends BaseEntity {
     @Column({ type: "varchar", nullable: false })
     species! :string;
 
-    @Column({ type: "varchar", nullable: true })
+    @Column({ type: "varchar", nullable: true, charset: "utf8mb4" })
     today! :string;
 
     @Column({

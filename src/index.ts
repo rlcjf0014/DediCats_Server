@@ -14,6 +14,7 @@ import User from "./data/entity/User";
 import CatTag from "./data/entity/CatTag";
 import Post from "./data/entity/Post";
 import Comment from "./data/entity/Comment";
+import { getConnection } from "typeorm";
 
 const PORT : Number = 8000;
 const server = http.createServer(app);
@@ -26,6 +27,7 @@ data
     .getConnection()
     .then(async () => {
         console.log("Please wait...");
+        await getConnection().query("ALTER TABLE cat CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin");
         const checkDB = await User.count();
         if (!checkDB) {
             try {
