@@ -12,16 +12,21 @@ const router:express.Router = express.Router();
 const accessKey:any = process.env.JWT_SECRET_ACCESS;
 
 // Comment of Post
-router.get("/:postId", async (req:express.Request, res:express.Response) => {
-    const { postId }:{postId?: string} = req.params;
+router.get("/:postId/:pagination", async (req:express.Request, res:express.Response) => {
+    const { postId, pagination }:{postId?: string, pagination?:string} = req.params;
     const postIdNumber:number = Number(postId);
+    const paginationNumber:number = Number(pagination);
 
+    const nthPage = paginationNumber * 10;
     try {
         const resultArr:Array<object> = await getRepository(Comment)
             .createQueryBuilder("comment")
             .where("comment.postId = :id AND comment.status = :status", { id: postIdNumber, status: "Y" })
             .leftJoinAndSelect("comment.user", "commentUser")
             .select(["comment", "commentUser.id", "commentUser.nickname", "commentUser.Id", "commentUser.nickname", "commentUser.photoPath"])
+            .orderBy("comment.id", "DESC")
+            .skip(nthPage)
+            .take(10)
             .getMany();
 
         res.status(200).send(resultArr);
