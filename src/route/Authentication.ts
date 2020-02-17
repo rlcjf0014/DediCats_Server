@@ -51,10 +51,11 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
             return;
         }
         // ! 토큰 발급
-        const payload:{id:number, nickname:string, email:string} = {
+        const payload:{id:number, nickname:string, email:string, createAt:any} = {
             id: user.id,
             nickname: user.nickname,
             email: user.email,
+            createAt: user.createAt,
         };
 
         // ? accessToken
@@ -104,7 +105,7 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
         console.log(e);
         res.clearCookie("accessToken");
         res.clearCookie("refreshToken");
-        res.status(400).send("refreshToken is invalid");
+        res.status(401).send("refreshToken is invalid");
     }
 });
 
