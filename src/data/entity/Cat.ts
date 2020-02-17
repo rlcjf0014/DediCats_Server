@@ -75,7 +75,7 @@ export default class Cat extends BaseEntity {
     @OneToMany((type) => CatTag, (catTag) => catTag.cat)
     catTags!: CatTag[];
 
-    @ManyToOne((type) => User, (user) => user.cats, { cascade: true, nullable: true })
+    @ManyToOne((type) => User, (user) => user.cats, { cascade: true, nullable: false })
     user!: User;
 
     @ManyToMany((type) => User, (user) => user.cats, { cascade: true })
