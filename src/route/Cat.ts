@@ -275,9 +275,12 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
         catNickname, location, address, catDescription, catSpecies, photoPath, cut,
     }:{ catNickname:string, location:{latitude:number, longitude:number}, address:string, catDescription:string,
         catSpecies:string, photoPath:string, cut:object, } = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
+
         const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
-        console.log(coordinate)
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const addCat:InsertResult = await connection
             .insert()
@@ -294,6 +297,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
                         Y: 0, YDate: null, N: 0, NDate: null,
                     }),
                     status: "Y",
+                    user: userId,
                 },
             ])
             .execute();
