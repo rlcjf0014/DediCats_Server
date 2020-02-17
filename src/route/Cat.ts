@@ -277,6 +277,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
         catSpecies:string, photoPath:string, cut:object, } = req.body;
     try {
         const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
+        console.log(coordinate)
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const addCat:InsertResult = await connection
             .insert()

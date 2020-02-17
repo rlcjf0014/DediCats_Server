@@ -61,7 +61,6 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         const accessToken = generateAccessToken(payload);
 
         // ? refresh Token
-        // const refresKey:any = process.env.JWT_SECRET_REFRESH;
         const refreshToken = jwt.sign({ id: user.id }, refresKey, { expiresIn: "30d" });
 
         const result:UpdateResult = await getConnection().createQueryBuilder()
@@ -80,7 +79,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
         res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30, signed: true });
 
-        res.status(201).send("User signed in");
+        res.status(201).send({ accessToken, refreshToken });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
@@ -112,13 +111,7 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", async (req:express.Request, res:express.Response) => {
     const { refreshToken } = req.signedCookies;
-    let decodeReq:any;
-    try {
-        decodeReq = jwt.verify(refreshToken, refresKey);
-    } catch {
-        res.status(401).send("refreshToken is invalid");
-        return;
-    }
+    const decodeReq:any = jwt.verify(refreshToken, refresKey);
 
     const queryManager = getConnection().createQueryBuilder();
     const user:User|undefined = await queryManager
