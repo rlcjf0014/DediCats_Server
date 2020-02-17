@@ -277,6 +277,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
         catSpecies:string, photoPath:string, cut:object, } = req.body;
     try {
         const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
+        console.log(coordinate)
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const addCat:InsertResult = await connection
             .insert()
@@ -394,10 +395,11 @@ router.get("/catlist", async (req:express.Request, res:express.Response) => {
 
 // This endpoint provides you with the information of the selected cat.
 // ? 캣 태그, 사진 같이 보내줘야 함.
-router.get("/:catId/:userId", async (req:express.Request, res:express.Response) => {
-    const { catId, userId }:{catId?: string, userId?:string} = req.params;
+router.get("/:catId", async (req:express.Request, res:express.Response) => {
+    const { catId }:{catId?: string } = req.params;
     // const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
+        const userId:number = 1;
         // const decode:any = jwt.verify(accessToken, accessKey);
         // const userId = decode.id;
         // console.log(req.signedCookies.accessToken);

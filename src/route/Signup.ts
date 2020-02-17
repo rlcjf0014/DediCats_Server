@@ -24,7 +24,7 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
         return;
     }
 
-    const signupCode = Math.random().toString(36).slice(2);
+    const signupCode = Math.random().toString(36).slice(6);
 
     const transporter = nodemailer.createTransport(smtpTransport({
         service: "gmail",
@@ -62,7 +62,7 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
     });
 });
 
-router.post("", async (req:express.Request, res:express.Response) => {
+router.post("/", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
     // console.log(email, password, nickname);
     try {
