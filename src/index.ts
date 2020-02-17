@@ -6,7 +6,9 @@ import http from "http";
 import wkx from "wkx";
 
 import app from "./api";
+import connectSocket from "./socket/Socket";
 import data from "./data";
+
 
 import Cat from "./data/entity/Cat";
 import Tag from "./data/entity/Tag";
@@ -18,6 +20,8 @@ import { getConnection } from "typeorm";
 
 const PORT : Number = 8000;
 const server = http.createServer(app);
+
+connectSocket(server);
 
 server.listen(PORT, () => {
     console.log(`app listen on ${PORT}`);

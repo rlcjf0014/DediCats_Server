@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import express, { Request, Response, NextFunction } from "express";
+
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
@@ -15,6 +16,7 @@ import postRouter from "./route/Post";
 import reportRouter from "./route/Report";
 import userRouter from "./route/User";
 import signupRouter from "./route/Signup";
+
 
 require("dotenv").config();
 
@@ -34,6 +36,8 @@ function authenticateToken(req:Request, res:Response, next:NextFunction) {
 }
  */
 const api: express.Application = express();
+
+
 api.use(cors());
 
 api.use(cookieParser(process.env.TOKEN_KEY));
@@ -63,6 +67,9 @@ api.use("/photo", photoRouter);
 api.use("/post", postRouter);
 api.use("/report", reportRouter);
 api.use("/", BasicRouter);
+
+//* Socket setup
+
 
 api.use((req:Request, res:Response) => {
     res.status(404).send("Invalid address.Please check the address again");
