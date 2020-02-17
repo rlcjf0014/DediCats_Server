@@ -43,17 +43,17 @@ api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 api.use("/signup", signupRouter);
 
-// api.use("/*", (req:Request, res:Response, next:NextFunction) => {
-//     const { accessToken } = req.signedCookies;
-//     try {
-//         const accessKey:any = process.env.JWT_SECRET_ACCESS;
-//         jwt.verify(accessToken, accessKey);
-//         next();
-//     } catch {
-//         res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
-//         // res.status(400).send("accessToken is invalid");
-//     }
-// });
+api.use("/*", (req:Request, res:Response, next:NextFunction) => {
+    const { accessToken } = req.signedCookies;
+    try {
+        const accessKey:any = process.env.JWT_SECRET_ACCESS;
+        jwt.verify(accessToken, accessKey);
+        next();
+    } catch {
+        res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
+        // res.status(400).send("accessToken is invalid");
+    }
+});
 
 api.use("/user", userRouter);
 api.use("/cat", catRouter);

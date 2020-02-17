@@ -18,10 +18,10 @@ data
     .getConnection()
     .then(async () => {
         console.log("Please wait...");
-        const checkDB = await User.count();
-        if (!checkDB) {
-            console.log("Error occurred during server setup.");
-        }
+        // const checkDB = await User.count();
+        // if (!checkDB) {
+        //     console.log("Error occurred during server setup.");
+        // }
         console.log("Server is now connected with databse!");
     })
     .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
