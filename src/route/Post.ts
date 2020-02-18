@@ -79,17 +79,23 @@ router.post("/new", async (req:express.Request, res:express.Response) => {
 });
 
 // at Post Refresh button
-router.get("/:catId", async (req:express.Request, res:express.Response) => {
-    const { catId }:{ catId?: string} = req.params;
+router.get("/:catId/:pagination", async (req:express.Request, res:express.Response) => {
+    const { catId, pagination }:{ catId?: string, pagination?:string} = req.params;
+    const catIdNumber:number = Number(catId);
+    const paginationNumber:number = Number(pagination);
+
+    const nthPage = paginationNumber * 10;
     try {
         const post:Array<object> = await getRepository(Post)
             .createQueryBuilder("post")
-            .where("post.cat = :cat AND post.status = :status", { cat: catId, status: "Y" })
+            .where("post.cat = :cat AND post.status = :status", { cat: catIdNumber, status: "Y" })
             .leftJoinAndSelect("post.user", "perry")
             .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
             .leftJoinAndSelect("post.photos", "joshua", "joshua.status = :status", { status: "Y" })
             .select(["post.id", "post.content", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
-            .orderBy("post.id", "ASC")
+            .orderBy("post.id", "DESC")
+            .skip(nthPage)
+            .take(10)
             .getMany();
         if (!post) {
             res.status(409).send("Failed to get post");
