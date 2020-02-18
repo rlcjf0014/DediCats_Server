@@ -158,8 +158,8 @@ const authRouter = (io) => {
 
         res.clearCookie("accessToken");
         res.clearCookie("refreshToken");
-        const { socket_id } = req.query;
-        io.to(socket_id).emit("drop", "");
+        // const { socket_id } = req.query;
+        // io.to(socket_id).emit("drop", "");
         res.status(201).send("Signout Success!");
     });
 

@@ -6,7 +6,6 @@ import {
 } from "typeorm";
 import jwt from "jsonwebtoken";
 
-import { IoT1ClickDevicesService } from "aws-sdk";
 import Post from "../data/entity/Post";
 import uploadFile from "../ImageFunction/imgupload";
 import deleteFile from "../ImageFunction/imgdelete";
@@ -90,7 +89,7 @@ const postRouter = (io) => {
                 .leftJoinAndSelect("post.user", "perry")
                 .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
                 .leftJoinAndSelect("post.photos", "joshua", "joshua.status = :status", { status: "Y" })
-                .select(["post.id", "post.content", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
+                .select(["post.id", "post.content", "post.createAt", "post.updateAt", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
                 .orderBy("post.id", "ASC")
                 .getMany();
             if (!post) {
@@ -122,11 +121,18 @@ const postRouter = (io) => {
         }
     });
 
+    // ? Disconnect User from Post
+
+    router.get("/disconnect", async (req:express.Request, res:express.Response) => {
+        const { socket_id } = req.query;
+        io.to(socket_id).emit("drop", "");
+        res.status(200).send("Successfully disconnected socket");
+    });
+
     // delete Post
     router.post("/delete", async (req:express.Request, res:express.Response) => {
         const { postId }:{postId:number} = req.body;
         try {
-            io.to(postId).emit("drop", "");
             const deletePost:UpdateResult = await getConnection().createQueryBuilder()
                 .update(Post).set({ status: "N" })
                 .where("post.id= :id", { id: postId })
@@ -137,6 +143,7 @@ const postRouter = (io) => {
                 res.status(409).send("Failed to delete post");
                 return;
             }
+            io.to(postId).emit("drop", "");
             res.status(201).send("Successfully deleted post");
         } catch (e) {
             res.status(400).send(e);
