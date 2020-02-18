@@ -80,7 +80,14 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
         res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30, signed: true });
 
-        res.status(201).send({ accessToken, refreshToken });
+        const { nickname, photoPath, createAt } = user;
+        res.status(201).send({
+            accessToken,
+            // refreshToken,
+            user: {
+                nickname, photoPath, createAt, email,
+            },
+        });
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
@@ -126,7 +133,16 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
 
     const accessToken = generateAccessToken({ id: user.id, nickname: user.nickname, email: user.email });
     res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
-    res.status(200).json({ accessToken });
+    const {
+        nickname, photoPath, createAt, email,
+    } = user;
+
+    res.status(200).json({
+        accessToken,
+        user: {
+            nickname, photoPath, createAt, email,
+        },
+    });
 });
 
 router.post("/signout", async (req:express.Request, res:express.Response) => {
