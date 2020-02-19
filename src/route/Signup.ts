@@ -2,7 +2,7 @@
 import express from "express";
 import util from "util";
 import {
-    getConnection, InsertResult,
+    getConnection, InsertResult, UpdateResult,
 } from "typeorm";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
@@ -60,6 +60,72 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
             res.status(201).send(signupCode);
         }
     });
+});
+
+router.post("/findpw", async (req:express.Request, res:express.Response) => {
+    const { email } :{email:string} = req.body;
+
+    const user:User|undefined = await getConnection()
+        .createQueryBuilder()
+        .select("user")
+        .from(User, "user")
+        .where("user.email = :email", { email })
+        .getOne();
+
+    if (!user) {
+        res.status(401).send("invalid email");
+        return;
+    }
+
+    const SecurityCode:string = Math.random().toString(36).slice(6);
+
+    const transporter = nodemailer.createTransport(smtpTransport({
+        service: "gmail",
+        host: "smtp.gmail.com",
+        auth: {
+            user: process.env.DEVMAIL,
+            pass: process.env.DEVMAILPW,
+        },
+    }));
+
+    const mailOptions = {
+        from: "\"DediCats\" <dediCats16@gmail.com>",
+        to: email,
+        subject: "Email Verification for Dedicats",
+        html: `
+        <div style="text-align : center">
+        <img style="display : inline" src="https://lh3.google.com/u/0/d/1TqLpc4xvwkUTeLrRASDc2Y0c4nme8t3g=w1870-h975-iv1"/>
+        </div>
+        <p>Annyung Haseyo! ${user.nickname}!</p>
+        <p>Thanks for using Dedicats! We really appreciate it. Please insert this temporary password to log in and reset your password. Make sure to change your temporary password in MyPage! </p>
+        <h1>Your code is  <br><span style="text-decoration:underline">${SecurityCode}<span></h1>
+        <h2>This code will only be valid for 1 hour.</h2>
+        <p>if you have any problems, please contact us: dediCats16@gmail.com</p>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log("Failed to send email");
+            res.status(409).send("Failed to send email");
+        } else {
+            console.log(`Email sent: ${info.response}`);
+            // res.status(201).send(signupCode);
+        }
+    });
+
+    const pdkdf2Promise:Function = util.promisify(crypto.pbkdf2);
+    const key:Buffer = await pdkdf2Promise(SecurityCode, user.salt, 105123, 64, "sha512");
+    const encryPassword:string = key.toString("base64");
+
+    const result:UpdateResult = await getConnection().createQueryBuilder()
+        .update(User).set({ password: encryPassword })
+        .where({ id: user.id })
+        .execute();
+    if (result.raw.changedRows) {
+        res.status(201).send("password successfully changed");
+        return;
+    }
+    res.status(409).send("Failed to change user password");
 });
 
 router.post("/", async (req:express.Request, res:express.Response) => {
