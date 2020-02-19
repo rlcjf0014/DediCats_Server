@@ -46,8 +46,8 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
         <p>Annyung Haseyo! ${nickname}!</p>
         <p>Thanks for joining Dedicats! We really appreciate it. Please insert this code into email verfication to verify your account</p>
         <h1>Your code is  <br><span style="text-decoration:underline">${signupCode}<span></h1>
-        <h2>This code will only be valid for 1hour.</h2>
-        <p>if you have any problems, please contack us : dediCats16@gmail.com</p>`,
+        <h2>This code will only be valid for 1 hour.</h2>
+        <p>if you have any problems, please contact us : dediCats16@gmail.com</p>`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

@@ -51,7 +51,6 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
         next();
     } catch {
         res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
-        // res.status(400).send("accessToken is invalid");
     }
 });
 

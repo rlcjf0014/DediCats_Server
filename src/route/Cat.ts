@@ -405,8 +405,6 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
     try {
         const decode:any = jwt.verify(accessToken, accessKey);
         const userId = decode.id;
-        console.log(req.signedCookies.accessToken);
-        console.log(req.signedCookies.refreshToken);
         const connection = await getConnection().createQueryBuilder();
         const getCat:Cat | undefined = await getRepository(Cat)
             .createQueryBuilder("cat")

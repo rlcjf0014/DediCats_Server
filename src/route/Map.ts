@@ -16,7 +16,6 @@ router.post("/", async (req:express.Request, res:express.Response):Promise<any> 
         const result:Array<object> = await getConnection()
             .query("select jointable.*, if(isnull(following_cat.userId) , false, true) as `isFollowing` from ( select innertable.*, photo.path as `catProfile` from ( select id as `catId`, nickname as `catNickname`, address as `catAddress`, X(`location`) as `latitude`, Y(`location`) as `longitude`, description as `description`  from cat ) as `innertable` left join `photo` on (innertable.catId  = photo.catId and photo.is_profile = 'Y') where innertable.latitude <= ? and innertable.latitude >= ? and innertable.longitude <= ? and innertable.longitude >= ? ) as `jointable` left join `following_cat` on (jointable.catId = following_cat.catId and following_cat.userId = ?) ;",
                 [location.NElatitude, location.SWlatitude, location.NElongitude, location.SWlongitude, userId]);
-        console.log(result);
         res.status(200).send(result);
     } catch (e) {
         console.log(e);
