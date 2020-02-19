@@ -63,11 +63,11 @@ const returnRouter = (io:any) => {
     // Add Comment
     router.post("/add", async (req:express.Request, res:express.Response) => {
         const { content, postId }:{content:string, postId:number} = req.body;
-        // const { accessToken }:{accessToken:string} = req.signedCookies;
+        const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
-            // const decode:any = jwt.verify(accessToken, accessKey);
-            // const userId = decode.id;
-            const userId = 1;
+            const decode:any = jwt.verify(accessToken, accessKey);
+            const userId = decode.id;
+            // const userId = 1;
 
             const manager = await getManager();
             const user:User|undefined = await manager.createQueryBuilder(User, "user").where("user.id = :id", { id: userId }).getOne();
