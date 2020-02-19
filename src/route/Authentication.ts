@@ -80,14 +80,8 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
         res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30, signed: true });
 
-        const { nickname, photoPath, createAt } = user;
-        res.status(201).send({
-            accessToken,
-            // refreshToken,
-            user: {
-                nickname, photoPath, createAt, email,
-            },
-        });
+        // const { nickname, photoPath, createAt } = user;
+        res.status(201).send("success");
     } catch (e) {
         console.log(e);
         res.status(400).send(e);
