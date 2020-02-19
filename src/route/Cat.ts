@@ -409,11 +409,13 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
         // console.log(req.signedCookies.accessToken);
         // console.log(req.signedCookies.refreshToken);
         const connection = await getConnection().createQueryBuilder();
-        const getCat:Cat | undefined = await connection
-            .select("cat")
-            .from(Cat, "cat")
+        const getCat:Cat | undefined = await getRepository(Cat)
+            .createQueryBuilder("cat")
             .where("cat.id = :id", { id: Number(catId) })
+            .leftJoinAndSelect("cat.user", "item")
+            .select(["cat", "item.id"])
             .getOne();
+
         const checkFollow:Array<{count: string}> = await getConnection()
             .query("select count(*) as `count` from following_cat where userId = ? and catId = ?;", [userId, catId]);
         const follow:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
