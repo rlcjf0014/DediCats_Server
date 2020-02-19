@@ -111,65 +111,6 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
     }
 });
 
-//     // ! requestToekn으로 accessToken새로 요청
-//     router.post("/token", async (req:express.Request, res:express.Response) => {
-//         const { refreshToken } = req.signedCookies;
-//         const decodeReq:any = jwt.verify(refreshToken, refresKey);
-
-//         const queryManager = getConnection().createQueryBuilder();
-//         const user:User|undefined = await queryManager
-//             .select("user")
-//             .from(User, "user")
-//             .where({ id: decodeReq.id })
-//             .getOne();
-
-//         // ? 요청받은 refreshToken과 다른경우
-//         if (!user?.refreshToken || user?.refreshToken !== refreshToken) return res.status(409).send("Invalid Request Token");
-
-//         const accessToken = generateAccessToken({ id: user.id, nickname: user.nickname, email: user.email });
-//         res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
-//         res.status(200).json({ accessToken });
-//     });
-
-//     router.post("/signout", async (req:express.Request, res:express.Response) => {
-//         const { refreshToken }:{refreshToken:string} = req.signedCookies;
-//         let decode:any;
-//         try {
-//             decode = jwt.verify(refreshToken, refresKey);
-//         } catch {
-//             res.status(401).send("invalid refreshToken");
-//         }
-
-//         const { nickname, photoPath, createAt } = user;
-//         res.status(201).send({
-//             accessToken,
-//             // refreshToken,
-//             user: {
-//                 nickname, photoPath, createAt, email,
-//             },
-//         });
-//     } catch (e) {
-//         console.log(e);
-//         res.status(400).send(e);
-//     }
-// });
-
-//         if (userRefreshToken?.refreshToken !== refreshToken) return res.status(401).send("Invalid Refresh Token");
-
-//         const updateRefreshToken:UpdateResult = await queryManager
-//             .update(User).set({ refreshToken: null })
-//             .where({ id: decode.id })
-//             .execute();
-
-
-//         if (updateRefreshToken.raw.changedRows === 0) return res.status(400).send("Failed to delete Refresh Token");
-
-//         res.clearCookie("accessToken");
-//         res.clearCookie("refreshToken");
-//         res.status(401).send("refreshToken is invalid");
-//     }
-// });
-
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", async (req:express.Request, res:express.Response) => {
     const { refreshToken } = req.signedCookies;
