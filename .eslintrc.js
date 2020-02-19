@@ -5,8 +5,6 @@ module.exports = {
   },
   "extends": [
       "airbnb-base",
-      // "tsline:latest",
-      // "tsline-config-prettier"
   ],
   "globals": {
       "Atomics": "readonly",
@@ -21,6 +19,10 @@ module.exports = {
       "@typescript-eslint"
   ],
   "rules": {
+    "import/no-unresolved": [
+        2, 
+        { "caseSensitive": false }
+     ],
       "indent": [
           "error",
           4
