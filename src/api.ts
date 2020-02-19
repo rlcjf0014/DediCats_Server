@@ -1,84 +1,94 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable import/extensions */
-import express, { Request, Response, NextFunction } from "express";
+// /* eslint-disable import/no-unresolved */
+// /* eslint-disable import/extensions */
+// import express, { Request, Response, NextFunction } from "express";
 
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
+// import bodyParser from "body-parser";
+// import cookieParser from "cookie-parser";
 
-import cors from "cors";
-import jwt from "jsonwebtoken";
-import BasicRouter from "./route/BasicRouter";
-import catRouter from "./route/Cat";
-import commentRouter from "./route/Comment";
-import mapRouter from "./route/Map";
-import photoRouter from "./route/Photo";
-import postRouter from "./route/Post";
-import reportRouter from "./route/Report";
-import userRouter from "./route/User";
-import signupRouter from "./route/Signup";
+// import cors from "cors";
+// import jwt from "jsonwebtoken";
+// import http from "http";
+// import BasicRouter from "./route/BasicRouter";
+// import catRouter from "./route/Cat";
+// import commentRouter from "./route/Comment";
+// import mapRouter from "./route/Map";
+// import photoRouter from "./route/Photo";
+// import postRouter from "./route/Post";
+// import reportRouter from "./route/Report";
+// import userRouter from "./route/User";
+// import signupRouter from "./route/Signup";
+// // import io from "./index";
 
-
-require("dotenv").config();
-
-// eslint-disable-next-line consistent-return
-/*
-function authenticateToken(req:Request, res:Response, next:NextFunction) {
-    const authHeader = req.headers.authorization;
-    const accesskey:any = process.env.JWT_SECRET_ACCESS;
-    const token:any = authHeader && authHeader.split(" ")[1];
-    if (token === null) return res.sendStatus(401);
-
-    jwt.verify(token, accesskey, (err:Error, user:any) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
-    });
-}
- */
-const api: express.Application = express();
+// require("dotenv").config();
 
 
-api.use(cors());
+// const api: express.Application = express();
+// const PORT : Number = 8000;
+// const server = http.createServer(api);
+// const io = require("socket.io")(server);
 
-api.use(cookieParser(process.env.TOKEN_KEY));
-api.use(bodyParser.json({ limit: "50mb" }));
-api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
-// api.use(authenticateToken);
-
-api.use("/signup", signupRouter);
-
-api.use("/*", (req:Request, res:Response, next:NextFunction) => {
-    const { accessToken } = req.signedCookies;
-    try {
-        const accessKey:any = process.env.JWT_SECRET_ACCESS;
-        jwt.verify(accessToken, accessKey);
-        next();
-    } catch {
-        res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
-        // res.status(400).send("accessToken is invalid");
-    }
-});
-
-api.use("/user", userRouter);
-api.use("/cat", catRouter);
-api.use("/comment", commentRouter);
-api.use("/map", mapRouter);
-api.use("/photo", photoRouter);
-api.use("/post", postRouter);
-api.use("/report", reportRouter);
-api.use("/", BasicRouter);
-
-//* Socket setup
+// const post = postRouter(io);
+// const comment = commentRouter(io);
 
 
-api.use((req:Request, res:Response) => {
-    res.status(404).send("Invalid address.Please check the address again");
-});
+// api.use(cors());
 
-api.use((err:Error, req:Request, res:Response) => {
-    // eslint-disable-next-line no-console
-    console.error(err.stack);
-    res.status(500).send("There's an error.");
-});
+// api.use(cookieParser(process.env.TOKEN_KEY));
+// api.use(bodyParser.json({ limit: "50mb" }));
+// api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
-export default api;
+
+// api.use("/signup", signupRouter);
+
+// // api.use("/*", (req:Request, res:Response, next:NextFunction) => {
+// //     const { accessToken } = req.signedCookies;
+// //     try {
+// //         const accessKey:any = process.env.JWT_SECRET_ACCESS;
+// //         jwt.verify(accessToken, accessKey);
+// //         next();
+// //     } catch {
+// //         res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
+// //         // res.status(400).send("accessToken is invalid");
+// //     }
+// // });
+
+// api.use("/user", userRouter);
+// api.use("/cat", catRouter);
+// api.use("/comment", comment);
+// api.use("/map", mapRouter);
+// api.use("/photo", photoRouter);
+// api.use("/post", post);
+// api.use("/report", reportRouter);
+// api.use("/", BasicRouter);
+
+// //* Socket setup
+
+
+// api.use((req:Request, res:Response) => {
+//     res.status(404).send("Invalid address.Please check the address again");
+// });
+
+// api.use((err:Error, req:Request, res:Response) => {
+//     // eslint-disable-next-line no-console
+//     console.error(err.stack);
+//     res.status(500).send("There's an error.");
+// });
+
+// io.on("connection", (socket:any) => {
+//     // socket에 연결된 이후, 해당 유저에게 방id와 이름을 저장
+//     const { postId } = socket.handshake.query;
+//     // eslint-disable-next-line no-param-reassign
+//     socket.postId = postId;
+//     console.log("User connected to postID,", postId);
+//     socket.join(postId);
+
+//     socket.on("disconnect", () => {
+//         console.log("disconnected postID: ", postId);
+//     });
+// });
+
+// server.listen(PORT, () => {
+//     console.log(`app listen on ${PORT}`);
+// });
+
+// export default api;

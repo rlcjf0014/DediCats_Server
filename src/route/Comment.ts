@@ -11,7 +11,7 @@ import User from "../data/entity/User";
 const router:express.Router = express.Router();
 const accessKey:any = process.env.JWT_SECRET_ACCESS;
 
-const returnRouter = ( io ) => {
+const returnRouter = (io:any) => {
 // Comment of Post
     router.get("/:postId/:pagination", async (req:express.Request, res:express.Response) => {
         const { postId, pagination }:{postId?: string, pagination?:string} = req.params;
@@ -63,10 +63,11 @@ const returnRouter = ( io ) => {
     // Add Comment
     router.post("/add", async (req:express.Request, res:express.Response) => {
         const { content, postId }:{content:string, postId:number} = req.body;
-        const { accessToken }:{accessToken:string} = req.signedCookies;
+        // const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
-            const decode:any = jwt.verify(accessToken, accessKey);
-            const userId = decode.id;
+            // const decode:any = jwt.verify(accessToken, accessKey);
+            // const userId = decode.id;
+            const userId = 1;
 
             const manager = await getManager();
             const user:User|undefined = await manager.createQueryBuilder(User, "user").where("user.id = :id", { id: userId }).getOne();
@@ -79,7 +80,14 @@ const returnRouter = ( io ) => {
                 .execute();
 
             if (result.raw.affectedRows) {
-                io.to(postId).emit("new comments", [result.identifiers[0], user?.photoPath]);
+                const newComment:Comment|undefined = await getConnection()
+                    .createQueryBuilder()
+                    .select("comment")
+                    .from(Comment, "comment")
+                    .where("comment.id = :id", { id: result.identifiers[0].id })
+                    .getOne();
+
+                io.to(post?.id).emit("new comment", [newComment, user?.photoPath]);
                 res.status(201).send("Adding comment was successful");
                 return;
             }

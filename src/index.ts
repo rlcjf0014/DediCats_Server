@@ -2,132 +2,106 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import "reflect-metadata";
+import express, { Request, Response, NextFunction } from "express";
+
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+
+import cors from "cors";
+import jwt from "jsonwebtoken";
 import http from "http";
-import wkx from "wkx";
-
-import app from "./api";
-import connectSocket from "./socket/Socket";
 import data from "./data";
+import BasicRouter from "./route/BasicRouter";
+import catRouter from "./route/Cat";
+import commentRouter from "./route/Comment";
+import mapRouter from "./route/Map";
+import photoRouter from "./route/Photo";
+import postRouter from "./route/Post";
+import reportRouter from "./route/Report";
+import userRouter from "./route/User";
+import signupRouter from "./route/Signup";
+// import io from "./index";
+
+require("dotenv").config();
 
 
-import Cat from "./data/entity/Cat";
-import Tag from "./data/entity/Tag";
-import User from "./data/entity/User";
-import CatTag from "./data/entity/CatTag";
-import Post from "./data/entity/Post";
-import Comment from "./data/entity/Comment";
-import { getConnection } from "typeorm";
-
+const api: express.Application = express();
 const PORT : Number = 8000;
-const server = http.createServer(app);
+const server = http.createServer(api);
+const io = require("socket.io")(server);
 
-connectSocket(server);
+const post = postRouter(io);
+const comment = commentRouter(io);
+
+
+api.use(cors());
+
+api.use(cookieParser(process.env.TOKEN_KEY));
+api.use(bodyParser.json({ limit: "50mb" }));
+api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
+
+
+api.use("/signup", signupRouter);
+
+// api.use("/*", (req:Request, res:Response, next:NextFunction) => {
+//     const { accessToken } = req.signedCookies;
+//     try {
+//         const accessKey:any = process.env.JWT_SECRET_ACCESS;
+//         jwt.verify(accessToken, accessKey);
+//         next();
+//     } catch {
+//         res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
+//         // res.status(400).send("accessToken is invalid");
+//     }
+// });
+
+api.use("/user", userRouter);
+api.use("/cat", catRouter);
+api.use("/comment", comment);
+api.use("/map", mapRouter);
+api.use("/photo", photoRouter);
+api.use("/post", post);
+api.use("/report", reportRouter);
+api.use("/", BasicRouter);
+
+//* Socket setup
+
+
+api.use((req:Request, res:Response) => {
+    res.status(404).send("Invalid address.Please check the address again");
+});
+
+api.use((err:Error, req:Request, res:Response) => {
+    // eslint-disable-next-line no-console
+    console.error(err.stack);
+    res.status(500).send("There's an error.");
+});
+
+io.on("connection", (socket:any) => {
+    // socket에 연결된 이후, 해당 유저에게 방id와 이름을 저장
+    const { postId } = socket.handshake.query;
+    // eslint-disable-next-line no-param-reassign
+    socket.postId = postId;
+    console.log("User connected to postID,", postId);
+    socket.join(postId);
+
+    socket.on("disconnect", () => {
+        console.log("disconnected postID: ", postId);
+    });
+});
 
 server.listen(PORT, () => {
     console.log(`app listen on ${PORT}`);
 });
 
+
 data
     .getConnection()
     .then(async () => {
         console.log("Please wait...");
-        // await getConnection().query("ALTER TABLE cat CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin");
-        // const checkDB = await User.count();
-        // if (!checkDB) {
-        //     try {
-        //         // * user
-        //         console.log('please work');                // const user:User = new User();
-        //         // user.nickname = "testUser";
-        //         // user.password = "1234";
-        //         // user.email = "admin@codestates.com";
-        //         // user.status = "Y";
-        //         // const testUser:User = await User.save(user);
-        //         // if (!testUser) {
-        //         //     console.log("Failed to save user.");
-        //         //     return;
-        //         // }
-
-        //         // // * cat
-        //         // const cat:Cat = new Cat();
-        //         // cat.description = "test용 고양이입니다.";
-        //         // cat.location = new wkx.Point(1, 2).toWkt();
-        //         // cat.nickname = "devCat";
-        //         // cat.user = testUser;
-        //         // cat.status = "Y";
-        //         // cat.cut = "";
-        //         // cat.rainbow = "";
-        //         // cat.species = "";
-        //         // cat.address = "";
-        //         // cat.rainbow = JSON.stringify({
-        //         //     Y: 0, YDate: null, N: 0, NDate: null,
-        //         // });
-        //         // cat.cut = JSON.stringify({
-        //         //     Y: 0, N: 0, unknown: 0,
-        //         // });
-        //         // const devCat:Cat = await Cat.save(cat);
-        //         // if (!devCat) {
-        //         //     console.log("Failed to save cat.");
-        //         //     return;
-        //         // }
-
-        //         // // * following_cat table
-        //         // cat.users = [user];
-        //         // const follwingCat:Cat = await Cat.save(cat);
-        //         // if (!follwingCat.users) {
-        //         //     // ! users[Object<Use>, ... ]의 형태로 출력됨
-        //         //     console.log("Fail to following Cat");
-        //         //     return;
-        //         // }
-
-        //         // // * tag
-        //         // const tag:Tag = new Tag();
-        //         // tag.content = "권위적인 데브";
-        //         // const devTag:Tag = await Tag.save(tag);
-        //         // if (!devTag) {
-        //         //     console.log("Failed to save tag.");
-        //         //     return;
-        //         // }
-
-        //         // // * cat_tag
-        //         // const catTag = new CatTag();
-        //         // catTag.status = "Y";
-        //         // catTag.user = user;
-        //         // catTag.tag = tag;
-        //         // console.log(devCat);
-        //         // catTag.cat = devCat;
-        //         // const result = await CatTag.save(catTag);
-
-        //         // if (!result) {
-        //         //     console.log("Failed to save CatTag");
-        //         //     return;
-        //         // }
-
-        //         // const post:Post = new Post();
-        //         // post.user = testUser;
-        //         // post.cat = devCat;
-        //         // post.content = "아 배고파요!";
-        //         // post.status = "Y";
-        //         // const postResult = await Post.save(post);
-        //         // if (!postResult) {
-        //         //     console.log("Failed to save post");
-        //         //     return;
-        //         // }
-
-        //         // const comment:Comment = new Comment();
-        //         // comment.post = postResult;
-        //         // comment.user = testUser;
-        //         // comment.content = "안녕하시렵니까?";
-        //         // comment.status = "Y";
-        //         // const commentResult = await Comment.save(comment);
-        //         // if (!commentResult) {
-        //         //     console.log("Failed to save comment");
-        //         //     return;
-        //         // }
-        //     } catch (e) {
-        //         console.log("Error occurred during server setup.");
-        //         console.log("Error : ", e);
-        //         return;
-        //     }
         console.log("The database has been set up.\nPlease use the server!");
     })
     .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
+
+
+// export default io;
