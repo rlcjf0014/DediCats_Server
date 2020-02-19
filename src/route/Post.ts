@@ -133,6 +133,7 @@ const postRouter = (io:any) => {
     // ? Disconnect User from Post
 
     router.get("/disconnect", async (req:express.Request, res:express.Response) => {
+        // eslint-disable-next-line camelcase
         const { socket_id } = req.query;
         io.to(socket_id).emit("drop", "");
         res.status(200).send("Successfully disconnected socket");
