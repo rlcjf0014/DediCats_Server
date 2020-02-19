@@ -84,10 +84,12 @@ const returnRouter = (io:any) => {
                     .createQueryBuilder()
                     .select("comment")
                     .from(Comment, "comment")
-                    .where("comment.id = :id", { id: result.identifiers[0].id })
+                    .where("comment.id = :id AND comment.status = :status", { id: result.identifiers[0].id, status: "Y" })
+                    .leftJoinAndSelect("comment.user", "commentUser")
+                    .select(["comment", "commentUser.id", "commentUser.nickname", "commentUser.Id", "commentUser.nickname", "commentUser.photoPath"])
                     .getOne();
 
-                io.to(post?.id).emit("new comment", [newComment, user?.photoPath]);
+                io.to(post?.id).emit("new comment", newComment);
                 res.status(201).send("Adding comment was successful");
                 return;
             }

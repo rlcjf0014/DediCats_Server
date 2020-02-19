@@ -3,14 +3,15 @@
 /* eslint-disable import/no-unresolved */
 import "reflect-metadata";
 import express, { Request, Response, NextFunction } from "express";
-
+import { createConnection, Connection } from "typeorm";
+import "module-alias/register";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import http from "http";
-import data from "./data";
+// import data from "./data";
 import BasicRouter from "./route/BasicRouter";
 import catRouter from "./route/Cat";
 import commentRouter from "./route/Comment";
@@ -20,6 +21,7 @@ import postRouter from "./route/Post";
 import reportRouter from "./route/Report";
 import userRouter from "./route/User";
 import signupRouter from "./route/Signup";
+
 // import io from "./index";
 
 require("dotenv").config();
@@ -32,6 +34,9 @@ const io = require("socket.io")(server);
 
 const post = postRouter(io);
 const comment = commentRouter(io);
+
+let connection: Connection;
+
 
 
 api.use(cors());
@@ -93,9 +98,20 @@ server.listen(PORT, () => {
     console.log(`app listen on ${PORT}`);
 });
 
+const getConnection = async (): Promise<Connection> => {
+    try {
+        if (!(connection instanceof Connection)) {
+            connection = await createConnection();
+        }
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        throw err;
+    }
+    return connection;
+};
 
-data
-    .getConnection()
+getConnection()
     .then(async () => {
         console.log("Please wait...");
         console.log("The database has been set up.\nPlease use the server!");

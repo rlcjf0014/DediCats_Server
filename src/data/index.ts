@@ -1,19 +1,34 @@
-// eslint-disable-next-line no-unused-vars
-import { createConnection, Connection, ConnectionOptions } from "typeorm";
 
-let connection: Connection;
+// import "module-alias/register";
+// import Alert from "@entity/Alert";
+// import Cat from "@entity/Cat";
+// import CatTag from "@entity/CatTag";
+// import Comment from "@entity/Comment";
+// import Photo from "@entity/Photo";
+// import Post from "@entity/Post";
+// import Report from "@entity/Report";
+// import Tag from "@entity/Tag";
+// import User from "@entity/User";
 
-const getConnection = async (): Promise<Connection> => {
-    try {
-        if (!(connection instanceof Connection)) {
-            connection = await createConnection();
-        }
-    } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        throw err;
-    }
-    return connection;
+import Alert from "./entity/Alert";
+import Cat from "./entity/Cat";
+import CatTag from "./entity/CatTag";
+import Comment from "./entity/Comment";
+import Photo from "./entity/Photo";
+import Post from "./entity/Post";
+import Report from "./entity/Report";
+import Tag from"./entity/Tag";
+import User from "./entity/User";
+
+export default {
+    Alert,
+    Cat,
+    CatTag,
+    Comment,
+    Photo,
+    Post,
+    Report,
+    Tag,
+    User,
 };
 
-export default { getConnection };
