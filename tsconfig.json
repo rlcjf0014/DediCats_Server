@@ -38,12 +38,12 @@
     // "noFallthroughCasesInSwitch": true,    /* Report errors for fallthrough cases in switch statement. */
     
     /* Module Resolution Options */
-    // "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
-    "baseUrl": ".",                       /* Base directory to resolve non-absolute module names. */
+    "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
+    "baseUrl": "./src",                       /* Base directory to resolve non-absolute module names. */
     "paths": {
-      "@data/*": ["src/data/*"],
-      "@entity/*": ["src/data/entity/*"],
-      "@route/*": ["src/route/*"]
+      "@data/*": ["data/*"],
+      "@entity/*": ["data/entity/*"],
+      "@route/*": ["route/*"]
     },                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
     "typeRoots": ["./types"],
@@ -63,7 +63,7 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "src/*", "src/ImageFunction/imgupload.ts", "src/AuthenticationServer/serverIndex.ts", "src/AuthenticationServer/serverApi.ts", "src/ImageFunction/imgdelete.ts"
+    "src/*", "src/library/ImageFunction/imgupload.ts", "src/AuthenticationServer/serverIndex.ts", "src/AuthenticationServer/serverApi.ts", "src/library/ImageFunction/imgdelete.ts"
   ],
   "exclude": [
     "node_modules",

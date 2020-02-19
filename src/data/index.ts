@@ -1,6 +1,9 @@
+/* eslint-disable import/no-unresolved */
 
-// import "module-alias/register";
-// import Alert from "@entity/Alert";
+import "module-alias/register";
+
+
+// import {Alert} from "@entity/Alert";
 // import Cat from "@entity/Cat";
 // import CatTag from "@entity/CatTag";
 // import Comment from "@entity/Comment";
@@ -20,7 +23,7 @@ import Report from "./entity/Report";
 import Tag from"./entity/Tag";
 import User from "./entity/User";
 
-export default {
+export {
     Alert,
     Cat,
     CatTag,
@@ -31,4 +34,3 @@ export default {
     Tag,
     User,
 };
-

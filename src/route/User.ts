@@ -6,8 +6,7 @@ import {
 } from "typeorm";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
-import smtpTransport from "nodemailer-smtp-transport";
+
 
 import User from "../data/entity/User";
 

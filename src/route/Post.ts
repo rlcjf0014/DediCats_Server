@@ -7,8 +7,8 @@ import {
 import jwt from "jsonwebtoken";
 
 import Post from "../data/entity/Post";
-import uploadFile from "../ImageFunction/imgupload";
-import deleteFile from "../ImageFunction/imgdelete";
+import uploadFile from "../library/ImageFunction/imgupload";
+import deleteFile from "../library/ImageFunction/imgdelete";
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
