@@ -401,13 +401,10 @@ router.get("/catlist", async (req:express.Request, res:express.Response) => {
 // ? 캣 태그, 사진 같이 보내줘야 함.
 router.get("/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string } = req.params;
-    // const { accessToken }:{accessToken:string} = req.signedCookies;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const userId:number = 1;
-        // const decode:any = jwt.verify(accessToken, accessKey);
-        // const userId = decode.id;
-        // console.log(req.signedCookies.accessToken);
-        // console.log(req.signedCookies.refreshToken);
+        const decode:any = jwt.verify(accessToken, accessKey);
+        const userId = decode.id;
         const connection = await getConnection().createQueryBuilder();
         const getCat:Cat | undefined = await getRepository(Cat)
             .createQueryBuilder("cat")
