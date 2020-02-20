@@ -6,11 +6,11 @@ import {
 import wkx from "wkx";
 import jwt from "jsonwebtoken";
 
-import CatTag from "../data/entity/CatTag";
-import Cat from "../data/entity/Cat";
-import Tag from "../data/entity/Tag";
-import Photo from "../data/entity/Photo";
-import User from "../data/entity/User";
+import CatTag from "../model/entity/CatTag";
+import Cat from "../model/entity/Cat";
+import Tag from "../model/entity/Tag";
+import Photo from "../model/entity/Photo";
+import User from "../model/entity/User";
 import uploadFile from "../library/ImageFunction/imgupload";
 
 const router:express.Router = express.Router();

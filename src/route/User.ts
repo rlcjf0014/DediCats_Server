@@ -8,7 +8,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
 
-import User from "../data/entity/User";
+import User from "../model/entity/User";
 
 require("dotenv").config();
 
