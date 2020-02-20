@@ -21,7 +21,7 @@ const addCat = (catNickname:string, coordinate:string, address:string, catDescri
 
 const getCat = (catId: string):Promise<Cat|undefined> => CatDAO.getCat(catId);
 
-const getCatsBylocation = (location:{ NElatitude : number, NElongitude : number, SWlatitude : number, SWlongitude : number }, userId:number):Array<object> => CatDAO.getCatsBylocation(location, userId);
+const getCatsBylocation = (location:{ NElatitude : number, NElongitude : number, SWlatitude : number, SWlongitude : number }, userId:number):Promise<Array<object>> => CatDAO.getCatsBylocation(location, userId);
 export {
     selectCat,
     updateCatCut,

@@ -5,11 +5,8 @@ import {
 
 import Cat from "../entity/Cat";
 
-const queryManager = getConnection().createQueryBuilder();
-const repositoryManager = getRepository(Cat).createQueryBuilder("cat");
-
 const selectCat = async (catId:number):Promise<Cat|undefined> => {
-    const selectedCat:Cat|undefined = await queryManager
+    const selectedCat:Cat|undefined = await getConnection().createQueryBuilder()
         .select("cat")
         .from(Cat, "cat")
         .where({ id: catId })
@@ -18,7 +15,7 @@ const selectCat = async (catId:number):Promise<Cat|undefined> => {
 };
 
 const updateRainbow = async (catId: number, strRainbow: string):Promise<UpdateResult> => {
-    const updateResult:UpdateResult = await queryManager
+    const updateResult:UpdateResult = await getConnection().createQueryBuilder()
         .update(Cat)
         .set({ rainbow: strRainbow })
         .where({ id: catId })
@@ -27,7 +24,7 @@ const updateRainbow = async (catId: number, strRainbow: string):Promise<UpdateRe
 };
 
 const getFollower = async (catId: string):Promise<Array<object>> => {
-    const getFollowers:Array<object> = await repositoryManager
+    const getFollowers:Array<object> = await getRepository(Cat).createQueryBuilder("cat")
         .where("cat.id = :id", { id: Number(catId) })
         .leftJoinAndSelect("cat.users", "user")
         .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
@@ -36,7 +33,7 @@ const getFollower = async (catId: string):Promise<Array<object>> => {
 };
 
 const addCatToday = async (catId: number, catToday: string, catTodayTime: string): Promise<UpdateResult> => {
-    const updateToday:UpdateResult = await queryManager
+    const updateToday:UpdateResult = await getConnection().createQueryBuilder()
         .update(Cat).set({ today: catToday, todayTime: catTodayTime })
         .where("cat.id= :id", { id: catId })
         .execute();
@@ -44,7 +41,7 @@ const addCatToday = async (catId: number, catToday: string, catTodayTime: string
 };
 
 const updateCut = async (catId: number, catCut: string): Promise<UpdateResult> => {
-    const updateCuts:UpdateResult = await queryManager
+    const updateCuts:UpdateResult = await getConnection().createQueryBuilder()
         .update(Cat).set({ cut: catCut })
         .where("cat.id= :id", { id: catId })
         .execute();
@@ -53,7 +50,7 @@ const updateCut = async (catId: number, catCut: string): Promise<UpdateResult> =
 
 const addCat = async (catNickname:string, coordinate:string, address:string, catDescription:string,
     catSpecies:string, userId: number, cut:object): Promise<InsertResult> => {
-    const addcat:InsertResult = await queryManager
+    const addcat:InsertResult = await getConnection().createQueryBuilder()
         .insert()
         .into("cat")
         .values([
@@ -76,6 +73,7 @@ const addCat = async (catNickname:string, coordinate:string, address:string, cat
 };
 
 const getCat = async (catId: string):Promise<Cat|undefined> => {
+    const repositoryManager = getRepository(Cat).createQueryBuilder("cat");
     const getcat:Cat | undefined = await repositoryManager
         .where("cat.id = :id", { id: Number(catId) })
         .leftJoinAndSelect("cat.user", "item")

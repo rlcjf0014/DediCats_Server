@@ -4,10 +4,9 @@
 import { UpdateResult, getConnection } from "typeorm";
 import User from "../entity/User";
 
-const queryManager = getConnection().createQueryBuilder();
 
 const getUserById = async (id:number):Promise<User|undefined> => {
-    const user:User|undefined = await queryManager
+    const user:User|undefined = await getConnection().createQueryBuilder()
         .select("user")
         .from(User, "user")
         .where("user.id = :id", { id })
@@ -17,7 +16,7 @@ const getUserById = async (id:number):Promise<User|undefined> => {
 };
 
 const updateUserPw = async (password:string, id:number):Promise<UpdateResult> => {
-    const updateResult:UpdateResult = await queryManager
+    const updateResult:UpdateResult = await getConnection().createQueryBuilder()
         .update(User)
         .set({ password })
         .where({ id })
@@ -27,7 +26,7 @@ const updateUserPw = async (password:string, id:number):Promise<UpdateResult> =>
 };
 
 const getUserByEmail = async (email:string):Promise<User|undefined> => {
-    const user:User|undefined = await queryManager
+    const user:User|undefined = await getConnection().createQueryBuilder()
         .select("user")
         .from(User, "user")
         .where("user.email = :email", { email })
