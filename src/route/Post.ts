@@ -6,7 +6,7 @@ import {
 } from "typeorm";
 import jwt from "jsonwebtoken";
 
-import Post from "../data/entity/Post";
+import Post from "../model/entity/Post";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
 // import storage from "../data/storage";

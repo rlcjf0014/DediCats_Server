@@ -4,7 +4,8 @@ import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany,
     JoinTable, OneToMany, ManyToOne,
 } from "typeorm";
-import Tag from "./Tag";
+
+
 import Photo from "./Photo";
 import Post from "./Post";
 import User from "./User";

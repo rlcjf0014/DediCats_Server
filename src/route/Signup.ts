@@ -8,7 +8,7 @@ import crypto from "crypto";
 import nodemailer from "nodemailer";
 import smtpTransport from "nodemailer-smtp-transport";
 
-import User from "../data/entity/User";
+import User from "../model/entity/User";
 
 require("dotenv").config();
 

@@ -4,9 +4,9 @@ import {
 } from "typeorm";
 import jwt from "jsonwebtoken";
 
-import Comment from "../data/entity/Comment";
-import Post from "../data/entity/Post";
-import User from "../data/entity/User";
+import Comment from "../model/entity/Comment";
+import Post from "../model/entity/Post";
+import User from "../model/entity/User";
 
 const router:express.Router = express.Router();
 const accessKey:any = process.env.JWT_SECRET_ACCESS;
