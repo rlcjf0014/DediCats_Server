@@ -5,10 +5,9 @@ import {
 import CatTag from "../entity/CatTag";
 import Tag from "../entity/Tag";
 
-const queryManager = getConnection().createQueryBuilder();
-const repositoryManager = getRepository(CatTag).createQueryBuilder("cat_tag");
 
 const deleteTag = async (tagId:number, catId:number, userId:number):Promise<UpdateResult> => {
+    const queryManager = getConnection().createQueryBuilder();
     const deletetag:UpdateResult = await queryManager
         .update(CatTag).set({ status: "D", deleteUser: userId })
         .where({ tag: tagId, cat: catId })
@@ -17,6 +16,7 @@ const deleteTag = async (tagId:number, catId:number, userId:number):Promise<Upda
 };
 
 const getTag = async (catId:string):Promise<Array<object>> => {
+    const repositoryManager = getRepository(CatTag).createQueryBuilder("cat_tag");
     const gettag:Array<object> = await repositoryManager
         .where({ cat: Number(catId), status: "Y" })
         .leftJoinAndSelect("cat_tag.tag", "tag")
@@ -26,6 +26,7 @@ const getTag = async (catId:string):Promise<Array<object>> => {
 };
 
 const checkTag = async (catTag:string):Promise<Tag|undefined> => {
+    const queryManager = getConnection().createQueryBuilder();
     const checktag:Tag|undefined = await queryManager
         .select("tag").from(Tag, "tag")
         .where("tag.content = :content", { content: catTag })
@@ -35,6 +36,7 @@ const checkTag = async (catTag:string):Promise<Tag|undefined> => {
 };
 
 const updateTag = async (userId: number, catId: number, tagId: number):Promise<InsertResult> => {
+    const queryManager = getConnection().createQueryBuilder();
     const updatetag:InsertResult = await queryManager
         .insert()
         .into("cat_tag")
@@ -46,6 +48,7 @@ const updateTag = async (userId: number, catId: number, tagId: number):Promise<I
 };
 
 const newTag = async (catTag: string):Promise<InsertResult> => {
+    const queryManager = getConnection().createQueryBuilder();
     const newtag:InsertResult = await queryManager
         .insert()
         .into("tag")
