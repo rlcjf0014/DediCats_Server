@@ -8,5 +8,9 @@ import * as UserDAO from "../model/DAO/User";
 
 const getUserById = (id:number):Promise<User|undefined> => UserDAO.getUserById(id);
 const updateUserPw = (password:string, id:number) :Promise<UpdateResult> => UserDAO.updateUserPw(password, id);
+const getUserByEmail = (email:string):Promise<User|undefined> => UserDAO.getUserByEmail(email);
+const updateToken = (id:number, refreshToken:string):Promise<UpdateResult> => UserDAO.updateToken(id, refreshToken);
 
-export { getUserById, updateUserPw };
+export {
+    getUserById, updateUserPw, getUserByEmail, updateToken,
+};
