@@ -94,7 +94,7 @@ const postRouter = (io:any) => {
                 .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
                 .leftJoinAndSelect("post.photos", "joshua", "joshua.status = :status", { status: "Y" })
                 .select(["post.id", "post.content", "post.createAt", "post.updateAt", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
-                .leftJoinAndSelect("post.comments", "daniel")
+                .leftJoinAndSelect("post.comments", "daniel", "daniel.status = :status", { status: "Y" })
                 .select(["post.id", "post.content", "post.createAt", "post.updateAt", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id", "daniel.id"])
                 .orderBy("post.id", "DESC")
                 .skip(nthPage)
