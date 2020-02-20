@@ -6,21 +6,22 @@ import * as CatDAO from "../model/DAO/Cat";
 import Cat from "../model/entity/Cat";
 
 
-const selectCat = async (catId: number): Promise<Cat|undefined> => CatDAO.selectCat(catId);
+const selectCat = (catId: number): Promise<Cat|undefined> => CatDAO.selectCat(catId);
 
-const updateCatRainbow = async (catId:number, strRainbow:string): Promise<UpdateResult> => CatDAO.updateRainbow(catId, strRainbow);
+const updateCatRainbow = (catId:number, strRainbow:string): Promise<UpdateResult> => CatDAO.updateRainbow(catId, strRainbow);
 
-const getCatFollower = async (catId:string): Promise<Array<object>> => CatDAO.getFollower(catId);
+const getCatFollower = (catId:string): Promise<Array<object>> => CatDAO.getFollower(catId);
 
-const addCatToday = async (catId: number, catToday: string, catTodayTime: string): Promise<UpdateResult> => CatDAO.addCatToday(catId, catToday, catTodayTime);
+const addCatToday = (catId: number, catToday: string, catTodayTime: string): Promise<UpdateResult> => CatDAO.addCatToday(catId, catToday, catTodayTime);
 
-const updateCatCut = async (catId: number, catCut: string): Promise<UpdateResult> => CatDAO.updateCut(catId, catCut);
+const updateCatCut = (catId: number, catCut: string): Promise<UpdateResult> => CatDAO.updateCut(catId, catCut);
 
-const addCat = async (catNickname:string, coordinate:string, address:string, catDescription:string,
+const addCat = (catNickname:string, coordinate:string, address:string, catDescription:string,
     catSpecies:string, userId: number, cut:object): Promise<InsertResult> => CatDAO.addCat(catNickname, coordinate, address, catDescription, catSpecies, userId, cut);
 
-const getCat = async (catId: string):Promise<Cat|undefined> => CatDAO.getCat(catId);
+const getCat = (catId: string):Promise<Cat|undefined> => CatDAO.getCat(catId);
 
+const getCatsBylocation = (location:{ NElatitude : number, NElongitude : number, SWlatitude : number, SWlongitude : number }, userId:number):Array<object> => CatDAO.getCatsBylocation(location, userId);
 export {
     selectCat,
     updateCatCut,
@@ -29,4 +30,5 @@ export {
     getCatFollower,
     addCat,
     addCatToday,
+    getCatsBylocation,
 };
