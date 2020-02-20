@@ -107,20 +107,12 @@ router.post("/signout", async (req:express.Request, res:express.Response) => {
 
     const userId = getUserIdbyRefreshToken(refreshToken);
 
-    const queryManager = getConnection().createQueryBuilder();
-    const userRefreshToken:User|undefined = await queryManager
-        .select("user.refreshToken")
-        .from(User, "user")
-        .where({ id: userId })
-        .getOne();
+    const user:User|undefined = await UserService.getUserById(userId);
+    if (!user || !user.refreshToken) return res.status(401).send("Invalid Refresh Token");
+    const userRefreshToken:string = user.refreshToken;
+    if (userRefreshToken !== refreshToken) return res.status(401).send("Invalid Refresh Token");
 
-    if (userRefreshToken?.refreshToken !== refreshToken) return res.status(401).send("Invalid Refresh Token");
-
-    const updateRefreshToken:UpdateResult = await queryManager
-        .update(User).set({ refreshToken: null })
-        .where({ id: userId })
-        .execute();
-
+    const updateRefreshToken:UpdateResult = await UserService.updateToken(userId, null);
     if (updateRefreshToken.raw.changedRows === 0) return res.status(400).send("Failed to delete Refresh Token");
 
     res.clearCookie("accessToken");

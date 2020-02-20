@@ -36,7 +36,7 @@ const getUserByEmail = async (email:string):Promise<User|undefined> => {
     return user;
 };
 
-const updateToken = async (id:number, refreshToken:string):Promise<UpdateResult> => {
+const updateToken = async (id:number, refreshToken:string|null):Promise<UpdateResult> => {
     const updateResult:UpdateResult = await getConnection().createQueryBuilder()
         .update(User).set({ refreshToken })
         .where({ id })
