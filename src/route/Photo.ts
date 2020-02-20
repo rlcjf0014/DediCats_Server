@@ -4,8 +4,8 @@ import {
 } from "typeorm";
 import jwt from "jsonwebtoken";
 
-import User from "../data/entity/User";
-import Photo from "../data/entity/Photo";
+import User from "../model/entity/User";
+import Photo from "../model/entity/Photo";
 // import storage from "../data/storage";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
