@@ -17,7 +17,7 @@ export default class CatTag extends BaseEntity {
     id!: number;
 
     @Column({ type: "varchar", nullable: false, width: 2 })
-    status!: string;
+    status: string | undefined;
 
     @Column({ type: "varchar", nullable: true })
     deleteUser!: number;
