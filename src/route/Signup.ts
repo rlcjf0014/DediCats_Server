@@ -1,16 +1,16 @@
 /* eslint-disable import/no-unresolved */
 import express from "express";
-import util from "util";
 import {
     getConnection, InsertResult, UpdateResult,
 } from "typeorm";
-import nodemailer from "nodemailer";
-import smtpTransport from "nodemailer-smtp-transport";
 
 import User from "../model/entity/User";
 import {
     getEncryPw, getRandomByte,
 } from "../library/crypto";
+
+import sendMail from "../library/email";
+
 
 require("dotenv").config();
 
@@ -26,42 +26,13 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
         return;
     }
 
-    const signupCode = Math.random().toString(36).slice(6);
-
-    const transporter = nodemailer.createTransport(smtpTransport({
-        service: "gmail",
-        host: "smtp.gmail.com",
-        auth: {
-            user: process.env.DEVMAIL,
-            pass: process.env.DEVMAILPW,
-        },
-    }));
-
-    const mailOptions = {
-        from: "\"DediCats\" <dediCats16@gmail.com>",
-        to: email,
-        subject: "Email Verification for Dedicats",
-        html: `
-        <div style="text-align : center">
-        <img style="display : inline" src="https://lh3.google.com/u/0/d/1TqLpc4xvwkUTeLrRASDc2Y0c4nme8t3g=w1870-h975-iv1"/>
-        </div>
-        <p>Annyung Haseyo! ${nickname}!</p>
-        <p>Thanks for joining Dedicats! We really appreciate it. Please insert this code into email verfication to verify your account</p>
-        <h1>Your code is  <br><span style="text-decoration:underline">${signupCode}<span></h1>
-        <h2>This code will only be valid for 1 hour.</h2>
-        <p>if you have any problems, please contact us : dediCats16@gmail.com</p>`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log("Failed to send email");
-            res.status(409).send("Failed to send email");
-        } else {
-            console.log(`Email sent: ${info.response}`);
-            // res.cookie("signupCode", signupCode, { maxAge: 1000 * 60 * 10, signed: true });
-            res.status(201).send(signupCode);
-        }
-    });
+    try {
+        const secretCode = await sendMail(nickname, email, "signIn");
+        res.status(201).send(secretCode);
+    } catch (e) {
+        console.error(e);
+        res.status(409).send("Failed to send email");
+    }
 });
 
 router.post("/findpw", async (req:express.Request, res:express.Response) => {
@@ -78,45 +49,16 @@ router.post("/findpw", async (req:express.Request, res:express.Response) => {
         res.status(401).send("invalid email");
         return;
     }
+    let secretCode:string|null = null;
+    try {
+        secretCode = await sendMail(user.nickname, email, "pwInitialization");
+    } catch (e) {
+        console.error(e);
+        res.status(409).send("Failed to send email");
+    }
+    if (!secretCode) return;
 
-    const SecurityCode:string = Math.random().toString(36).slice(6);
-
-    const transporter = nodemailer.createTransport(smtpTransport({
-        service: "gmail",
-        host: "smtp.gmail.com",
-        auth: {
-            user: process.env.DEVMAIL,
-            pass: process.env.DEVMAILPW,
-        },
-    }));
-
-    const mailOptions = {
-        from: "\"DediCats\" <dediCats16@gmail.com>",
-        to: email,
-        subject: "Email Verification for Dedicats",
-        html: `
-        <div style="text-align : center">
-        <img style="display : inline" src="https://lh3.google.com/u/0/d/1TqLpc4xvwkUTeLrRASDc2Y0c4nme8t3g=w1870-h975-iv1"/>
-        </div>
-        <p>Annyung Haseyo! ${user.nickname}!</p>
-        <p>Thanks for using Dedicats! We really appreciate it. Please insert this temporary password to log in and reset your password. Make sure to change your temporary password in MyPage! </p>
-        <h1>Your code is  <br><span style="text-decoration:underline">${SecurityCode}<span></h1>
-        <h2>This code will only be valid for 1 hour.</h2>
-        <p>if you have any problems, please contact us: dediCats16@gmail.com</p>`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log("Failed to send email");
-            res.status(409).send("Failed to send email");
-        } else {
-            console.log(`Email sent: ${info.response}`);
-            // res.status(201).send(signupCode);
-        }
-    });
-
-    const encryPassword:string = await getEncryPw(SecurityCode, user.salt);
-
+    const encryPassword:string = await getEncryPw(secretCode, user.salt);
     const result:UpdateResult = await getConnection().createQueryBuilder()
         .update(User).set({ password: encryPassword })
         .where({ id: user.id })
@@ -139,8 +81,6 @@ router.post("/", async (req:express.Request, res:express.Response) => {
             return;
         }
         // ! 암호화부분
-
-
         const salt:string = await getRandomByte();
         const encryPassword:string = await getEncryPw(password, salt);
 
