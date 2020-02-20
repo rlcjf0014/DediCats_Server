@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {
-    getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
+    getConnection, UpdateResult, InsertResult, getRepository,
 } from "typeorm";
 
 import Cat from "../entity/Cat";

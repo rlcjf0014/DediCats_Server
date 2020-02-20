@@ -14,6 +14,7 @@ import uploadFile from "../library/ImageFunction/imgupload";
 import { getUserIdbyAccessToken } from "../library/jwt";
 
 import * as CatService from "../Service/Cat";
+import * as CatTagService from "../Service/CatTag";
 
 const router:express.Router = express.Router();
 
@@ -24,10 +25,7 @@ router.post("/deleteTag", async (req:express.Request, res:express.Response) => {
     try {
         const userId = getUserIdbyAccessToken(accessToken);
 
-        const deleteTag:UpdateResult = await getConnection().createQueryBuilder()
-            .update(CatTag).set({ status: "D", deleteUser: userId })
-            .where({ tag: tagId, cat: catId })
-            .execute();
+        const deleteTag:UpdateResult = await CatTagService.deleteTag(tagId, catId, userId);
         if (deleteTag.raw.changedRows === 0) {
             res.status(409).send("Failed to delete tag");
             return;
@@ -68,13 +66,6 @@ router.post("/rainbow", async (req:express.Request, res:express.Response) => {
     const { catId, rainbow }:{catId:number, rainbow:{Y:number, YDate:string|null, N:number, NDate:string|null}} = req.body;
 
     try {
-        // const queryManager = getConnection().createQueryBuilder();
-
-        // const selectedRainbow:Cat|undefined = await queryManager
-        //     .select("cat.rainbow")
-        //     .from(Cat, "cat")
-        //     .where({ id: catId })
-        //     .getOne();
         const selectedRainbow:Cat|undefined = await CatService.selectCat(catId);
         if (!selectedRainbow) {
             res.status(206).send("Cat ID does not exist.");
@@ -96,12 +87,6 @@ router.post("/rainbow", async (req:express.Request, res:express.Response) => {
 
         const updateResult:UpdateResult = await CatService.updateCatRainbow(catId, strRainbow);
 
-        // const updateResult:UpdateResult = await queryManager
-        //     .update(Cat)
-        //     .set({ rainbow: strRainbow })
-        //     .where({ id: catId })
-        //     .execute();
-
         if (updateResult.raw.changedRows) {
             const changedRainbow:Cat|undefined = await CatService.selectCat(catId);
             res.status(200).send(changedRainbow?.rainbow);
@@ -117,11 +102,6 @@ router.post("/rainbow", async (req:express.Request, res:express.Response) => {
 router.get("/follower/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
     try {
-        // const getFollower:Array<object> = await getRepository(Cat).createQueryBuilder("cat")
-        //     .where("cat.id = :id", { id: Number(catId) })
-        //     .leftJoinAndSelect("cat.users", "user")
-        //     .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
-        //     .getMany();
         const getFollower:Array<object> = await CatService.getCatFollower(catId);
 
         if (!getFollower) {
@@ -140,10 +120,6 @@ router.post("/addcatToday", async (req:express.Request, res:express.Response) =>
         const now = `${new Date().toISOString().slice(0, 23)}Z`;
         const updateToday:UpdateResult = await CatService.addCatToday(catId, catToday, now);
 
-        // const updateToday:UpdateResult = await getConnection().createQueryBuilder()
-        //     .update(Cat).set({ today: catToday, todayTime: now })
-        //     .where("cat.id= :id", { id: catId })
-        //     .execute();
         if (updateToday.raw.changedRows === 0) {
             res.status(409).send("Cat's today update failed");
             return;
@@ -159,12 +135,7 @@ router.post("/addcatToday", async (req:express.Request, res:express.Response) =>
 router.post("/cut", async (req:express.Request, res:express.Response) => {
     const { catId, catCut }:{catId:number, catCut:{Y:number, N:number, unknown:number}} = req.body;
     try {
-        // const queryManager = getConnection().createQueryBuilder();
-        // const selectedCut:Cat|undefined = await queryManager
-        //     .select("cat.cut")
-        //     .from(Cat, "cat")
-        //     .where({ id: catId })
-        //     .getOne();
+
         const selectedCut:Cat|undefined = await CatService.selectCat(catId);
 
         if (!selectedCut) {
@@ -177,22 +148,13 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
         objSelectedCut.N += catCut.N;
         objSelectedCut.unknown += catCut.unknown;
 
-        // const updateCut:UpdateResult = await queryManager
-        //     .update(Cat).set({ cut: JSON.stringify(objSelectedCut) })
-        //     .where("cat.id= :id", { id: catId })
-        //     .execute();
         const updateCut:UpdateResult = await CatService.updateCatCut(catId, JSON.stringify(objSelectedCut));
 
         if (!updateCut) {
             res.status(409).send("Failed to update peanuts.");
         }
         if (updateCut.raw.changedRows) {
-            // const updatedCat:Cat|undefined = await getConnection()
-            //     .createQueryBuilder()
-            //     .select("cat.cut")
-            //     .from(Cat, "cat")
-            //     .where({ id: catId })
-            //     .getOne();
+
             const updatedCat:Cat|undefined = await CatService.selectCat(catId);
             res.status(201).send(updatedCat?.cut);
             return;
@@ -210,20 +172,9 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
     try {
         const userId = getUserIdbyAccessToken(accessToken);
 
-        const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
-        const checkTag:Tag|undefined = await connection
-            .select("tag").from(Tag, "tag")
-            .where("tag.content = :content", { content: catTag })
-            .select(["tag.id"])
-            .getOne();
+        const checkTag:Tag|undefined = await CatTagService.checkTag(catTag);
         if (checkTag) {
-            const updateTag:InsertResult = await connection
-                .insert()
-                .into("cat_tag")
-                .values([{
-                    user: userId, cat: catId, tag: checkTag.id, status: "Y",
-                }])
-                .execute();
+            const updateTag:InsertResult = await CatTagService.updateTag(userId, catId, checkTag.id);
             if (updateTag.raw.affectedRows === 0) {
                 res.status(409).send("Tag update failed");
             }
@@ -236,26 +187,12 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
 
             res.status(201).send(result);
         } else {
-            const newTag:InsertResult = await connection
-                .insert()
-                .into("tag")
-                .values([
-                    {
-                        content: catTag,
-                    },
-                ])
-                .execute();
+            const newTag:InsertResult = await CatTagService.newTag(catTag);
             if (newTag.raw.affectedRows === 0) {
                 res.status(409).send("Tag update failed");
                 return;
             }
-            const updateTag:InsertResult = await connection
-                .insert()
-                .into("cat_tag")
-                .values([{
-                    user: userId, cat: catId, tag: newTag.identifiers[0].id, status: "Y",
-                }])
-                .execute();
+            const updateTag:InsertResult = await CatTagService.updateTag(userId, catId, newTag.identifiers[0].id)
             if (updateTag.raw.affectedRows === 0) {
                 res.status(409).send("Tag update failed");
             }
@@ -285,26 +222,6 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
         const userId = getUserIdbyAccessToken(accessToken);
 
         const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
-        // const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
-        // const addCat:InsertResult = await connection
-        //     .insert()
-        //     .into("cat")
-        //     .values([
-        //         {
-        //             description: catDescription,
-        //             location: coordinate,
-        //             address,
-        //             nickname: catNickname,
-        //             species: catSpecies,
-        //             cut: JSON.stringify(cut),
-        //             rainbow: JSON.stringify({
-        //                 Y: 0, YDate: null, N: 0, NDate: null,
-        //             }),
-        //             status: "Y",
-        //             user: userId,
-        //         },
-        //     ])
-        //     .execute();
         const addCat: InsertResult = await CatService.addCat(catNickname, coordinate, address, catDescription, catSpecies, userId, cut);
 
         if (addCat.raw.affectedRows === 0) {
@@ -409,14 +326,6 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
         const userId = getUserIdbyAccessToken(accessToken);
-        // const connection = await getConnection().createQueryBuilder();
-        // const getCat:Cat | undefined = await getRepository(Cat)
-        //     .createQueryBuilder("cat")
-        //     .where("cat.id = :id", { id: Number(catId) })
-        //     .leftJoinAndSelect("cat.user", "item")
-        //     .select(["cat", "item.id"])
-        //     .getOne();
-
         const getCat:Cat|undefined = await CatService.getCat(catId);
 
         if (!getCat) {
@@ -426,13 +335,8 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
         const checkFollow:Array<{count: string}> = await getConnection()
             .query("select count(*) as `count` from following_cat where userId = ? and catId = ?;", [userId, catId]);
         const follow:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
-
-        const getTag:Array<object> = await getRepository(CatTag)
-            .createQueryBuilder("cat_tag")
-            .where({ cat: catId, status: "Y" })
-            .leftJoinAndSelect("cat_tag.tag", "tag")
-            .select(["cat_tag.id", "tag.content"])
-            .getMany();
+        
+        const getTag: Array<object> = await CatTagService.getTag(catId);
         if (!getTag) {
             res.status(409).send("Cat found, but tag not found");
             return;

@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {
-    getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
+    UpdateResult, InsertResult
 } from "typeorm";
 import * as CatDAO from "../model/DAO/Cat";
 import Cat from "../model/entity/Cat";
