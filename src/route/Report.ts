@@ -2,7 +2,7 @@ import express from "express";
 import {
     getConnection, InsertResult, QueryBuilder,
 } from "typeorm";
-import jwt from "jsonwebtoken";
+import { getUserIdbyAccessToken } from "../library/jwt";
 
 const router:express.Router = express.Router();
 
@@ -10,12 +10,10 @@ router.post("/", async (req:express.Request, res:express.Response) => {
     const {
         commentId, postId, catId, criminalId,
     }:{commentId:number, postId:(number|undefined), catId:(number|undefined), criminalId?:number} = req.body;
-    const accessKey:any = process.env.JWT_SECRET_ACCESS;
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
         const updateConnection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         if (postId) {
             const reportPost:InsertResult = await updateConnection

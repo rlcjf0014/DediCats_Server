@@ -5,22 +5,18 @@ import {
     getConnection, UpdateResult,
 } from "typeorm";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
-
+import { getUserIdbyAccessToken } from "../library/jwt";
 
 import User from "../model/entity/User";
-
-require("dotenv").config();
 
 const router:express.Router = express.Router();
 
 router.patch("/changepw", async (req:express.Request, res:express.Response) => {
     const { password, newPassword }:{password:string, newPassword:string } = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
-    const accessKey:any = process.env.JWT_SECRET_ACCESS;
+
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
 
         const queryBuilder = getConnection().createQueryBuilder();
 

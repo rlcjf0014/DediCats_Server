@@ -2,14 +2,13 @@ import express from "express";
 import {
     InsertResult, getConnection, getManager, UpdateResult, getRepository,
 } from "typeorm";
-import jwt from "jsonwebtoken";
 
 import Comment from "../model/entity/Comment";
 import Post from "../model/entity/Post";
 import User from "../model/entity/User";
+import { getUserIdbyAccessToken } from "../library/jwt";
 
 const router:express.Router = express.Router();
-const accessKey:any = process.env.JWT_SECRET_ACCESS;
 
 const returnRouter = (io:any) => {
 // Comment of Post
@@ -65,9 +64,7 @@ const returnRouter = (io:any) => {
         const { content, postId }:{content:string, postId:number} = req.body;
         const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
-            const decode:any = jwt.verify(accessToken, accessKey);
-            const userId = decode.id;
-            // const userId = 1;
+            const userId = getUserIdbyAccessToken(accessToken);
 
             const manager = await getManager();
             const user:User|undefined = await manager.createQueryBuilder(User, "user").where("user.id = :id", { id: userId }).getOne();
@@ -106,8 +103,7 @@ const returnRouter = (io:any) => {
         const { commentId, content } : { commentId:number, content:string} = req.body;
         const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
-            const decode:any = jwt.verify(accessToken, accessKey);
-            const userId = decode.id;
+            const userId = getUserIdbyAccessToken(accessToken);
             const result:UpdateResult = await getConnection().createQueryBuilder().update(Comment).set({ content })
                 .where({ id: commentId, userId })
                 .execute();

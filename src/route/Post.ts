@@ -4,7 +4,7 @@ import express from "express";
 import {
     getRepository, getConnection, InsertResult, QueryBuilder, UpdateResult, DeleteResult,
 } from "typeorm";
-import jwt from "jsonwebtoken";
+import { getUserIdbyAccessToken } from "../library/jwt";
 
 import Post from "../model/entity/Post";
 import uploadFile from "../library/ImageFunction/imgupload";
@@ -19,11 +19,10 @@ const postRouter = (io:any) => {
         const {
             catId, content, photoPath,
         }:{catId:number, content:string, photoPath: string | undefined} = req.body;
-        const accessKey:any = process.env.JWT_SECRET_ACCESS;
         const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
-            const decode:any = jwt.verify(accessToken, accessKey);
-            const userId = decode.id;
+            const userId = getUserIdbyAccessToken(accessToken);
+
 
             const createConnection:QueryBuilder<any> = await getConnection().createQueryBuilder();
             const addPost:InsertResult = await createConnection

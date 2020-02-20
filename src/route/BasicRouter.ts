@@ -3,14 +3,13 @@
 import express from "express";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
-// import storage from "../data/storage";z
+
 
 const router:express.Router = express.Router();
 
 router.get("/", (req:express.Request, res:express.Response) => {
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-    // res.status(200).send("Hi! Welcome to Dedicats");
-    res.status(200).send({ accessToken });
+    res.status(200).send("Hi! Welcome to Dedicats");
+    // res.status(200).send("success");
 });
 
 router.post("/imageupload", async (req:express.Request, res:express.Response) => {
