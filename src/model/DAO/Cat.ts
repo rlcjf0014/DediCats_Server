@@ -3,7 +3,6 @@ import {
     getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
 } from "typeorm";
 
-
 import Cat from "../entity/Cat";
 
 const queryManager = getConnection().createQueryBuilder();
