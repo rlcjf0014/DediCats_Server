@@ -5,7 +5,7 @@ import {
 } from "typeorm";
 import wkx from "wkx";
 import CatTag from "../model/entity/CatTag";
-import Cat from "../model/entity/Cat";
+import Cat from "../model/entity/Cat"
 import Tag from "../model/entity/Tag";
 import Photo from "../model/entity/Photo";
 import User from "../model/entity/User";
