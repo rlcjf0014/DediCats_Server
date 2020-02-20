@@ -7,8 +7,7 @@ import Tag from "../entity/Tag";
 
 
 const deleteTag = async (tagId:number, catId:number, userId:number):Promise<UpdateResult> => {
-    const queryManager = getConnection().createQueryBuilder();
-    const deletetag:UpdateResult = await queryManager
+    const deletetag:UpdateResult = await getConnection().createQueryBuilder()
         .update(CatTag).set({ status: "D", deleteUser: userId })
         .where({ tag: tagId, cat: catId })
         .execute();
@@ -16,8 +15,7 @@ const deleteTag = async (tagId:number, catId:number, userId:number):Promise<Upda
 };
 
 const getTag = async (catId:string):Promise<Array<object>> => {
-    const repositoryManager = getRepository(CatTag).createQueryBuilder("cat_tag");
-    const gettag:Array<object> = await repositoryManager
+    const gettag:Array<object> = await  getRepository(CatTag).createQueryBuilder("cat_tag")
         .where({ cat: Number(catId), status: "Y" })
         .leftJoinAndSelect("cat_tag.tag", "tag")
         .select(["cat_tag.id", "tag.content"])
@@ -26,8 +24,7 @@ const getTag = async (catId:string):Promise<Array<object>> => {
 };
 
 const checkTag = async (catTag:string):Promise<Tag|undefined> => {
-    const queryManager = getConnection().createQueryBuilder();
-    const checktag:Tag|undefined = await queryManager
+    const checktag:Tag|undefined = await getConnection().createQueryBuilder()
         .select("tag").from(Tag, "tag")
         .where("tag.content = :content", { content: catTag })
         .select(["tag.id"])
@@ -36,8 +33,7 @@ const checkTag = async (catTag:string):Promise<Tag|undefined> => {
 };
 
 const updateTag = async (userId: number, catId: number, tagId: number):Promise<InsertResult> => {
-    const queryManager = getConnection().createQueryBuilder();
-    const updatetag:InsertResult = await queryManager
+    const updatetag:InsertResult = await getConnection().createQueryBuilder()
         .insert()
         .into("cat_tag")
         .values([{
@@ -48,8 +44,7 @@ const updateTag = async (userId: number, catId: number, tagId: number):Promise<I
 };
 
 const newTag = async (catTag: string):Promise<InsertResult> => {
-    const queryManager = getConnection().createQueryBuilder();
-    const newtag:InsertResult = await queryManager
+    const newtag:InsertResult = await getConnection().createQueryBuilder()
         .insert()
         .into("tag")
         .values([
