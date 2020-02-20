@@ -84,12 +84,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     const { refreshToken } = req.signedCookies;
     const userId:number = getUserIdbyRefreshToken(refreshToken);
 
-    const queryManager = getConnection().createQueryBuilder();
-    const user:User|undefined = await queryManager
-        .select("user")
-        .from(User, "user")
-        .where({ id: userId })
-        .getOne();
+    const user:User|undefined = await UserService.getUserById(userId);
 
     // ? 요청받은 refreshToken과 다른경우
     if (!user?.refreshToken || user?.refreshToken !== refreshToken) return res.status(409).send("Invalid Request Token");
