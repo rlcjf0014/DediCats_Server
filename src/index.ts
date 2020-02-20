@@ -64,17 +64,6 @@ api.use("/", BasicRouter);
 
 //* Socket setup
 
-
-api.use((req:Request, res:Response) => {
-    res.status(404).send("Invalid address.Please check the address again");
-});
-
-api.use((err:Error, req:Request, res:Response) => {
-    // eslint-disable-next-line no-console
-    console.error(err.stack);
-    res.status(500).send("There's an error.");
-});
-
 io.on("connection", (socket:any) => {
     // socket에 연결된 이후, 해당 유저에게 방id와 이름을 저장
     const { postId } = socket.handshake.query;
@@ -113,4 +102,12 @@ getConnection()
     .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
 
 
+api.use((req:Request, res:Response) => {
+    res.status(404).send("Invalid address.Please check the address again");
+});
 
+api.use((err:Error, req:Request, res:Response) => {
+    // eslint-disable-next-line no-console
+    console.error(err.stack);
+    res.status(500).send("There's an error.");
+});
