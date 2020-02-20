@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import express from "express";
@@ -6,6 +7,7 @@ import {
 } from "typeorm";
 
 import User from "../model/entity/User";
+import * as UserService from "../Service/User";
 import {
     getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
 } from "../library/jwt";
@@ -26,13 +28,8 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
     }
 
     try {
-        const user:User|undefined = await getConnection()
-            .createQueryBuilder()
-            .select("user")
-            .from(User, "user")
-            .where("user.email = :email", { email })
-            .getOne();
-            // ! 유효하지 않은 이메일
+        const user:User|undefined = await UserService.getUserByEmail(email);
+        // ! 유효하지 않은 이메일
         if (!user) {
             res.status(401).send("Invalid Email");
             return;
@@ -44,14 +41,10 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
             res.status(401).send("Incorrect Password.");
             return;
         }
-        // ! 토큰 발급
+        // ! 토큰 발급 및 업데이트
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefeshToken(user.id);
-
-        const result:UpdateResult = await getConnection().createQueryBuilder()
-            .update(User).set({ refreshToken })
-            .where({ id: user.id })
-            .execute();
+        const result:UpdateResult = await UserService.updateToken(user.id, refreshToken);
 
         if (result.raw.affectedRows === 0) {
             res.status(409).send("Failed to insert Token");
@@ -91,12 +84,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     const { refreshToken } = req.signedCookies;
     const userId:number = getUserIdbyRefreshToken(refreshToken);
 
-    const queryManager = getConnection().createQueryBuilder();
-    const user:User|undefined = await queryManager
-        .select("user")
-        .from(User, "user")
-        .where({ id: userId })
-        .getOne();
+    const user:User|undefined = await UserService.getUserById(userId);
 
     // ? 요청받은 refreshToken과 다른경우
     if (!user?.refreshToken || user?.refreshToken !== refreshToken) return res.status(409).send("Invalid Request Token");
@@ -119,20 +107,12 @@ router.post("/signout", async (req:express.Request, res:express.Response) => {
 
     const userId = getUserIdbyRefreshToken(refreshToken);
 
-    const queryManager = getConnection().createQueryBuilder();
-    const userRefreshToken:User|undefined = await queryManager
-        .select("user.refreshToken")
-        .from(User, "user")
-        .where({ id: userId })
-        .getOne();
+    const user:User|undefined = await UserService.getUserById(userId);
+    if (!user || !user.refreshToken) return res.status(401).send("Invalid Refresh Token");
+    const userRefreshToken:string = user.refreshToken;
+    if (userRefreshToken !== refreshToken) return res.status(401).send("Invalid Refresh Token");
 
-    if (userRefreshToken?.refreshToken !== refreshToken) return res.status(401).send("Invalid Refresh Token");
-
-    const updateRefreshToken:UpdateResult = await queryManager
-        .update(User).set({ refreshToken: null })
-        .where({ id: userId })
-        .execute();
-
+    const updateRefreshToken:UpdateResult = await UserService.updateToken(userId, null);
     if (updateRefreshToken.raw.changedRows === 0) return res.status(400).send("Failed to delete Refresh Token");
 
     res.clearCookie("accessToken");
