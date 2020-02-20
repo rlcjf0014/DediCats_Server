@@ -4,25 +4,23 @@ import {
     getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
 } from "typeorm";
 import wkx from "wkx";
-import jwt from "jsonwebtoken";
-
 import CatTag from "../model/entity/CatTag";
 import Cat from "../model/entity/Cat";
 import Tag from "../model/entity/Tag";
 import Photo from "../model/entity/Photo";
 import User from "../model/entity/User";
+
 import uploadFile from "../library/ImageFunction/imgupload";
+import { getUserIdbyAccessToken } from "../library/jwt";
 
 const router:express.Router = express.Router();
-const accessKey:any = process.env.JWT_SECRET_ACCESS;
 
 // delete tag
 router.post("/deleteTag", async (req:express.Request, res:express.Response) => {
     const { tagId, catId }:{tagId:number, catId:number } = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
 
         const deleteTag:UpdateResult = await getConnection().createQueryBuilder()
             .update(CatTag).set({ status: "D", deleteUser: userId })
@@ -43,8 +41,7 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId:number} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
 
         const updateFollow:InsertResult = await getConnection()
             .createQueryBuilder()
@@ -202,8 +199,7 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
     const { catId, catTag }:{catId:number, catTag:string } = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
 
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const checkTag:Tag|undefined = await connection
@@ -277,8 +273,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
         catSpecies:string, photoPath:string, cut:object, } = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
 
         const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
@@ -354,8 +349,8 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId:number} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
+
         const updateFollow:DeleteResult = await getConnection()
             .createQueryBuilder()
             .delete()
@@ -375,8 +370,7 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
 router.get("/catlist", async (req:express.Request, res:express.Response) => {
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
 
         const getCat1:Array<object> = await getRepository(User).createQueryBuilder("user")
             .where("user.id = :id", { id: Number(userId) })
@@ -403,8 +397,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string } = req.params;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
         const connection = await getConnection().createQueryBuilder();
         const getCat:Cat | undefined = await getRepository(Cat)
             .createQueryBuilder("cat")

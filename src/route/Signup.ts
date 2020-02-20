@@ -130,7 +130,6 @@ router.post("/findpw", async (req:express.Request, res:express.Response) => {
 
 router.post("/", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
-    // console.log(email, password, nickname);
     try {
         // ! 유저 체크
         const checkEmail:number = await User.count({ where: { email } });

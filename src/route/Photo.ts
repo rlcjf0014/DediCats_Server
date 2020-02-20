@@ -2,7 +2,8 @@ import express from "express";
 import {
     getConnection, UpdateResult, getRepository, QueryBuilder, InsertResult,
 } from "typeorm";
-import jwt from "jsonwebtoken";
+
+import {getUserIdbyAccessToken} from "../library/jwt";
 
 import User from "../model/entity/User";
 import Photo from "../model/entity/Photo";
@@ -11,7 +12,6 @@ import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
 
 const router:express.Router = express.Router();
-const accessKey:any = process.env.JWT_SECRET_ACCESS;
 
 router.get("/album/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
@@ -36,8 +36,7 @@ router.post("/profile/delete", async (req: express.Request, res:express.Response
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
 
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const updatePic:UpdateResult = await connection
@@ -59,8 +58,7 @@ router.post("/profile", async (req:express.Request, res:express.Response) => {
     const { photoPath }:{ photoPath:string} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     try {
-        const decode:any = jwt.verify(accessToken, accessKey);
-        const userId = decode.id;
+        const userId = getUserIdbyAccessToken(accessToken);
 
         const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         const getProfile:User | undefined = await connection
