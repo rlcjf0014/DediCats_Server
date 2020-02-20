@@ -4,25 +4,20 @@
 import "reflect-metadata";
 import express, { Request, Response, NextFunction } from "express";
 import { createConnection, Connection } from "typeorm";
-import "module-alias/register";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import http from "http";
+import
+{
+    BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup,
+}
+    from "./route";
 // import data from "./data";
-import BasicRouter from "./route/BasicRouter";
-import catRouter from "./route/Cat";
-import commentRouter from "./route/Comment";
-import mapRouter from "./route/Map";
-import photoRouter from "./route/Photo";
-import postRouter from "./route/Post";
-import reportRouter from "./route/Report";
-import userRouter from "./route/User";
-import signupRouter from "./route/Signup";
+import "module-alias/register";
 
-// import io from "./index";
 
 require("dotenv").config();
 
@@ -32,11 +27,10 @@ const PORT : Number = 8000;
 const server = http.createServer(api);
 const io = require("socket.io")(server);
 
-const post = postRouter(io);
-const comment = commentRouter(io);
+const post = Post(io);
+const comment = Comment(io);
 
 let connection: Connection;
-
 
 
 api.use(cors());
@@ -46,7 +40,7 @@ api.use(bodyParser.json({ limit: "50mb" }));
 api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 
-api.use("/signup", signupRouter);
+api.use("/signup", Signup);
 
 api.use("/*", (req:Request, res:Response, next:NextFunction) => {
     const { accessToken } = req.signedCookies;
@@ -59,13 +53,13 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
     }
 });
 
-api.use("/user", userRouter);
-api.use("/cat", catRouter);
+api.use("/user", User);
+api.use("/cat", Cat);
 api.use("/comment", comment);
-api.use("/map", mapRouter);
-api.use("/photo", photoRouter);
+api.use("/map", Map);
+api.use("/photo", Photo);
 api.use("/post", post);
-api.use("/report", reportRouter);
+api.use("/report", Report);
 api.use("/", BasicRouter);
 
 //* Socket setup
@@ -119,4 +113,4 @@ getConnection()
     .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
 
 
-// export default io;
+

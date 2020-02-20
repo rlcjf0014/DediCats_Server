@@ -1,8 +1,8 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import express from "express";
-import uploadFile from "../ImageFunction/imgupload";
-import deleteFile from "../ImageFunction/imgdelete";
+import uploadFile from "../library/ImageFunction/imgupload";
+import deleteFile from "../library/ImageFunction/imgdelete";
 // import storage from "../data/storage";z
 
 const router:express.Router = express.Router();
