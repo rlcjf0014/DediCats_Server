@@ -1,16 +1,17 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable import/extensions */
 import express from "express";
-import util from "util";
 import {
     getConnection, UpdateResult,
 } from "typeorm";
-import crypto from "crypto";
-import jwt from "jsonwebtoken";
-
 
 import User from "../model/entity/User";
 import {
-    getUserIdbyAccessToken, getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
+    getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
 } from "../library/jwt";
+import {
+    getEncryPw,
+} from "../library/crypto";
 
 require("dotenv").config();
 
@@ -19,14 +20,11 @@ const router:express.Router = express.Router();
 
 router.post("/signin", async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
-    if (!email) {
-        res.status(409).send("Email is required");
+    if (!email || !password) {
+        res.status(409).send("Email and Password both required");
         return;
     }
-    if (!password) {
-        res.status(409).send("Password is required");
-        return;
-    }
+
     try {
         const user:User|undefined = await getConnection()
             .createQueryBuilder()
@@ -41,9 +39,7 @@ router.post("/signin", async (req:express.Request, res:express.Response) => {
         }
 
         // ? 암호화 후 비교
-        const pdkdf2Promise:Function = util.promisify(crypto.pbkdf2);
-        const key:Buffer = await pdkdf2Promise(password, user.salt, 105123, 64, "sha512");
-        const encryPassword:string = key.toString("base64");
+        const encryPassword:string = await getEncryPw(password, user.salt);
         if (encryPassword !== user.password) {
             res.status(401).send("Incorrect Password.");
             return;
@@ -79,8 +75,7 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
     const { refreshToken } = req.signedCookies;
 
     try {
-        const refresKey:any = process.env.JWT_SECRET_REFRESH;
-        jwt.verify(refreshToken, refresKey);
+        getUserIdbyRefreshToken(refreshToken);
         next();
     } catch (e) {
         // eslint-disable-next-line no-console
@@ -113,7 +108,6 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     } = user;
 
     res.status(200).json({
-        accessToken,
         user: {
             id, nickname, photoPath, createAt, email,
         },

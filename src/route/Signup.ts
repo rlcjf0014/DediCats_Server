@@ -4,11 +4,13 @@ import util from "util";
 import {
     getConnection, InsertResult, UpdateResult,
 } from "typeorm";
-import crypto from "crypto";
 import nodemailer from "nodemailer";
 import smtpTransport from "nodemailer-smtp-transport";
 
 import User from "../model/entity/User";
+import {
+    getEncryPw, getRandomByte,
+} from "../library/crypto";
 
 require("dotenv").config();
 
@@ -113,9 +115,7 @@ router.post("/findpw", async (req:express.Request, res:express.Response) => {
         }
     });
 
-    const pdkdf2Promise:Function = util.promisify(crypto.pbkdf2);
-    const key:Buffer = await pdkdf2Promise(SecurityCode, user.salt, 105123, 64, "sha512");
-    const encryPassword:string = key.toString("base64");
+    const encryPassword:string = await getEncryPw(SecurityCode, user.salt);
 
     const result:UpdateResult = await getConnection().createQueryBuilder()
         .update(User).set({ password: encryPassword })
@@ -139,12 +139,10 @@ router.post("/", async (req:express.Request, res:express.Response) => {
             return;
         }
         // ! 암호화부분
-        const randomBytesPromise:Function = util.promisify(crypto.randomBytes);
-        const pdkdf2Promise:Function = util.promisify(crypto.pbkdf2);
-        const buf:Buffer = await randomBytesPromise(64);
-        const salt:string = buf.toString("base64");
-        const key:Buffer = await pdkdf2Promise(password, salt, 105123, 64, "sha512");
-        const encryPassword:string = key.toString("base64");
+
+
+        const salt:string = await getRandomByte();
+        const encryPassword:string = await getEncryPw(password, salt);
 
         // ! insert
         const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)

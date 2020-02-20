@@ -3,11 +3,10 @@ import {
     getConnection, UpdateResult, getRepository, QueryBuilder, InsertResult,
 } from "typeorm";
 
-import {getUserIdbyAccessToken} from "../library/jwt";
+import { getUserIdbyAccessToken } from "../library/jwt";
 
 import User from "../model/entity/User";
 import Photo from "../model/entity/Photo";
-// import storage from "../data/storage";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
 
