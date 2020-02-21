@@ -4,7 +4,7 @@ import {
 
 import Photo from "../entity/Photo";
 import User from "../entity/User";
-
+import {PhotoStatus} from "../../types/index";
 
 const addCatPhoto = async (imagePath:string|boolean, catId:number):Promise<InsertResult> => {
     const addPhoto:InsertResult = await getConnection().createQueryBuilder()
@@ -12,7 +12,7 @@ const addCatPhoto = async (imagePath:string|boolean, catId:number):Promise<Inser
         .into("photo")
         .values([
             {
-                path: imagePath, cat: catId, status: "Y", isProfile: "Y",
+                path: imagePath, cat: catId, status: PhotoStatus.Active, isProfile: "Y",
             },
         ])
         .execute();
@@ -33,7 +33,7 @@ const getCatPhoto = async (catId: string):Promise<Photo|undefined> => {
 const getCatAlbum = async (catId: string):Promise<Array<object>> => {
     const getPhoto:Array<object> = await getRepository(Photo)
         .createQueryBuilder("photo")
-        .where("photo.cat = :cat AND photo.status = :status", { cat: Number(catId), status: "Y" })
+        .where("photo.cat = :cat AND photo.status = :status", { cat: Number(catId), status: PhotoStatus.Active })
         .select(["photo.id", "photo.path"])
         .orderBy("photo.id", "ASC")
         .getMany();
@@ -58,7 +58,7 @@ const updateProfile = async (userId: number, imagepath:string):Promise<UpdateRes
 
 const deletePostPhoto = async (postId:number):Promise<UpdateResult> => {
     const updatePostPhoto:UpdateResult = await getConnection().createQueryBuilder()
-        .update(Photo).set({ status: "D" })
+        .update(Photo).set({ status: PhotoStatus.Deleted })
         .where({ post: postId })
         .execute();
     return updatePostPhoto;
@@ -70,7 +70,7 @@ const addPostPhoto = async (imagepath:string, catId:number, postId:number):Promi
         .into("photo")
         .values([
             {
-                path: imagepath, status: "Y", cat: catId, post: postId,
+                path: imagepath, status: PhotoStatus.Active, cat: catId, post: postId,
             },
         ])
         .execute();

@@ -4,11 +4,11 @@ import {
 
 import CatTag from "../entity/CatTag";
 import Tag from "../entity/Tag";
-
+import { TagStatus } from "../../types/index";
 
 const deleteTag = async (tagId:number, catId:number, userId:number):Promise<UpdateResult> => {
     const deletetag:UpdateResult = await getConnection().createQueryBuilder()
-        .update(CatTag).set({ status: "D", deleteUser: userId })
+        .update(CatTag).set({ status: TagStatus.Deleted, deleteUser: userId })
         .where({ tag: tagId, cat: catId })
         .execute();
     return deletetag;
@@ -16,7 +16,7 @@ const deleteTag = async (tagId:number, catId:number, userId:number):Promise<Upda
 
 const getTag = async (catId:string):Promise<Array<object>> => {
     const gettag:Array<object> = await getRepository(CatTag).createQueryBuilder("cat_tag")
-        .where({ cat: Number(catId), status: "Y" })
+        .where({ cat: Number(catId), status: TagStatus.Active })
         .leftJoinAndSelect("cat_tag.tag", "tag")
         .select(["cat_tag.id", "tag.content"])
         .getMany();
@@ -37,7 +37,7 @@ const updateTag = async (userId: number, catId: number, tagId: number):Promise<I
         .insert()
         .into("cat_tag")
         .values([{
-            user: userId, cat: catId, tag: tagId, status: "Y",
+            user: userId, cat: catId, tag: tagId, status: TagStatus.Active,
         }])
         .execute();
     return updatetag;

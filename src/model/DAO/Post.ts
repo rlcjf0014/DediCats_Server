@@ -2,6 +2,8 @@ import {
     UpdateResult, getConnection, getRepository, InsertResult, DeleteResult,
 } from "typeorm";
 import Post from "../entity/Post";
+import { PostStatus } from "../../types/index";
+
 
 const insertPost = async (userId:number, catId:number, content:string):Promise<InsertResult> => {
     const addPost:InsertResult = await getConnection().createQueryBuilder()
@@ -9,7 +11,7 @@ const insertPost = async (userId:number, catId:number, content:string):Promise<I
         .into("post")
         .values([
             {
-                user: userId, cat: catId, content, status: "Y",
+                user: userId, cat: catId, content, status: PostStatus.Active,
             },
         ])
         .execute();
@@ -37,7 +39,7 @@ const updatePost = async (postId:number, content:string) : Promise<UpdateResult>
 
 const updateState = async (postId:number) : Promise<UpdateResult> => {
     const updateResult:UpdateResult = await getConnection().createQueryBuilder()
-        .update(Post).set({ status: "N" })
+        .update(Post).set({ status: PostStatus.Deleted })
         .where("post.id= :id", { id: postId })
         .execute();
 

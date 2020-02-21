@@ -5,6 +5,8 @@ import {
     CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany
 } from "typeorm";
 
+import { CommentStatus } from "../../types/index";
+
 import User from "./User";
 import Post from "./Post";
 import Report from "./Report";
@@ -18,7 +20,7 @@ export default class Comment extends BaseEntity {
     content!: string;
 
     @Column({ type: "varchar", nullable: false })
-    status!: string;
+    status!: CommentStatus;
 
     @CreateDateColumn({ name: "create_at" })
     createAt! : Date;

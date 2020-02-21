@@ -1,14 +1,14 @@
 /* eslint-disable no-await-in-loop */
 import express from "express";
 import {
-    getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
+    UpdateResult, InsertResult, DeleteResult,
 } from "typeorm";
 import wkx from "wkx";
-import CatTag from "../model/entity/CatTag";
+
 import Cat from "../model/entity/Cat";
 import Tag from "../model/entity/Tag";
 import Photo from "../model/entity/Photo";
-import User from "../model/entity/User";
+
 
 import uploadFile from "../library/ImageFunction/imgupload";
 import { getUserIdbyAccessToken } from "../library/jwt";
