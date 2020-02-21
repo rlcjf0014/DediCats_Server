@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 import {
     InsertResult, UpdateResult, getConnection, getRepository,
@@ -49,9 +50,9 @@ const deleteProfile = async (userId: number):Promise<UpdateResult> => {
     return updatePic;
 };
 
-const updateProfile = async (userId: number, imagepath:string):Promise<UpdateResult> => {
+const updateProfile = async (userId: number, imagepath:string, photoName:string):Promise<UpdateResult> => {
     const updatePic:UpdateResult = await getConnection().createQueryBuilder()
-        .update(User).set({ photoPath: imagepath })
+        .update(User).set({ photoPath: imagepath, photoName })
         .where({ id: userId })
         .execute();
     return updatePic;
