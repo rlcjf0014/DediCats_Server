@@ -3,58 +3,34 @@ import {
     getConnection, InsertResult, QueryBuilder,
 } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
+import * as ReportService from "../Service/Report";
 
 const router:express.Router = express.Router();
 
 router.post("/", async (req:express.Request, res:express.Response) => {
     const {
         commentId, postId, catId, criminalId,
-    }:{commentId:number, postId:(number|undefined), catId:(number|undefined), criminalId?:number} = req.body;
+    }:{commentId:(number|undefined), postId:(number|undefined), catId:(number|undefined), criminalId:number} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
     try {
         const userId = getUserIdbyAccessToken(accessToken);
-        const updateConnection:QueryBuilder<any> = await getConnection().createQueryBuilder();
         if (postId) {
-            const reportPost:InsertResult = await updateConnection
-                .insert()
-                .into("report")
-                .values([
-                    {
-                        post: postId, user: userId, criminalId,
-                    },
-                ])
-                .execute();
+            const reportPost:InsertResult = await ReportService.reportPost(postId, userId, criminalId);
             if (reportPost.raw.affectedRows === 0) {
                 res.status(409).send("Failed to report post");
             }
             res.status(201).send("Successfully reported post");
         }
         if (catId) {
-            const reportCat:InsertResult = await updateConnection
-                .insert()
-                .into("report")
-                .values([
-                    {
-                        cat: catId, user: userId, criminalId,
-                    },
-                ])
-                .execute();
+            const reportCat:InsertResult = await ReportService.reportCat(catId, userId, criminalId);
             if (reportCat.raw.affectedRows === 0) {
                 res.status(409).send("Failed to report cat");
             }
             res.status(201).send("Successfully reported cat");
         }
         if (commentId) {
-            const reportComment:InsertResult = await updateConnection
-                .insert()
-                .into("report")
-                .values([
-                    {
-                        comment: commentId, user: userId, criminalId,
-                    },
-                ])
-                .execute();
+            const reportComment:InsertResult = await ReportService.reportComment(commentId, userId, criminalId);
             if (reportComment.raw.affectedRows === 0) {
                 res.status(409).send("Failed to report comment");
             }
