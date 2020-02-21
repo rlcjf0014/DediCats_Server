@@ -96,6 +96,7 @@ router.post("/token", async (req:express.Request, res:express.Response) => {
     } = user;
 
     res.status(200).json({
+        accessToken,
         user: {
             id, nickname, photoPath, createAt, email,
         },

@@ -14,7 +14,7 @@ const getComments = async (postId:number, nthPage:number):Promise<Array<Comment>
         .where("comment.postId = :id AND comment.status = :status", { id: postId, status: CommentStatus.Active })
         .leftJoinAndSelect("comment.user", "commentUser")
         .select(["comment", "commentUser.id", "commentUser.nickname", "commentUser.Id", "commentUser.nickname", "commentUser.photoPath"])
-        .orderBy("nthPage.id", "DESC")
+        .orderBy("comment.id", "DESC")
         .skip(nthPage)
         .take(10)
         .getMany();
