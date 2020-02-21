@@ -10,7 +10,7 @@ import {
 } from "../library/crypto";
 
 import sendMail from "../library/email";
-
+import * as UserService from "../Service/User";
 
 require("dotenv").config();
 
@@ -20,7 +20,7 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
     const { nickname, email } = req.body;
 
     // ! 유저 체크
-    const checkEmail:number = await User.count({ where: { email } });
+    const checkEmail:User|undefined = await UserService.getUserByEmail(email);
     if (checkEmail) {
         res.status(401).send("User already exists.");
         return;
@@ -38,12 +38,7 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
 router.post("/findpw", async (req:express.Request, res:express.Response) => {
     const { email } :{email:string} = req.body;
 
-    const user:User|undefined = await getConnection()
-        .createQueryBuilder()
-        .select("user")
-        .from(User, "user")
-        .where("user.email = :email", { email })
-        .getOne();
+    const user:User|undefined = await UserService.getUserByEmail(email);
 
     if (!user) {
         res.status(401).send("invalid email");
@@ -59,10 +54,8 @@ router.post("/findpw", async (req:express.Request, res:express.Response) => {
     if (!secretCode) return;
 
     const encryPassword:string = await getEncryPw(secretCode, user.salt);
-    const result:UpdateResult = await getConnection().createQueryBuilder()
-        .update(User).set({ password: encryPassword })
-        .where({ id: user.id })
-        .execute();
+    const result:UpdateResult = await UserService.updateUserPw(encryPassword, user.id);
+
     if (result.raw.changedRows) {
         res.status(201).send("password successfully changed");
         return;
@@ -74,7 +67,7 @@ router.post("/", async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
     try {
         // ! 유저 체크
-        const checkEmail:number = await User.count({ where: { email } });
+        const checkEmail:User|undefined = await UserService.getUserByEmail(email);
 
         if (checkEmail) {
             res.status(409).send("User already exists.");
@@ -85,14 +78,10 @@ router.post("/", async (req:express.Request, res:express.Response) => {
         const encryPassword:string = await getEncryPw(password, salt);
 
         // ! insert
-        const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)
-            .values({
-                nickname, email, password: encryPassword, salt, status: "Y",
-            })
-            .execute();
+        const result:InsertResult = await UserService.insertUser(nickname, email, encryPassword, salt);
+
         if (result.raw.affectedRows) {
-            const returnmessage:object = { userId: result.identifiers[0].id, email, nickname };
-            res.status(201).send(JSON.stringify(returnmessage));
+            res.status(201).json({ userId: result.identifiers[0].id, email, nickname });
             return;
         }
         res.status(409).send("User creation failed");

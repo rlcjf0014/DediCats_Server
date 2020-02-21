@@ -9,6 +9,7 @@ import { getUserIdbyAccessToken } from "../library/jwt";
 import Post from "../model/entity/Post";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
+import * as PostService from "../Service/Post";
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
@@ -25,15 +26,7 @@ const postRouter = (io:any) => {
 
 
             const createConnection:QueryBuilder<any> = await getConnection().createQueryBuilder();
-            const addPost:InsertResult = await createConnection
-                .insert()
-                .into("post")
-                .values([
-                    {
-                        user: userId, cat: catId, content, status: "Y",
-                    },
-                ])
-                .execute();
+            const addPost:InsertResult = await PostService.insertPost(userId, catId, content);
             if (addPost.raw.affectedRows === 0) {
                 res.status(409).send("Failed to save post");
             }
@@ -42,28 +35,25 @@ const postRouter = (io:any) => {
                 res.status(201).send("Successfully added post");
                 return;
             }
-            const key:string = `POST #${addPost.identifiers[0].id}`;
+            const postId = addPost.identifiers[0].id;
+            const key:string = `POST #${postId}`;
             const imagepath:any = await uploadFile(key, photoPath);
             const addPhoto:InsertResult = await createConnection
                 .insert()
                 .into("photo")
                 .values([
                     {
-                        path: imagepath, status: "Y", cat: catId, post: addPost.identifiers[0].id,
+                        path: imagepath, status: "Y", cat: catId, post: postId,
                     },
                 ])
                 .execute();
             if (addPhoto.raw.affectedRows === 0) {
-                const deletePost:DeleteResult = await getConnection()
-                    .createQueryBuilder()
-                    .delete()
-                    .from("post")
-                    .where({ id: addPost.identifiers[0].id })
-                    .execute();
+                const deletePost:DeleteResult = await PostService.deletePost(postId);
+
                 if (deletePost.raw.affectedRows === 0) {
                     res.status(400).send({
                         message: "Failed to delete post without posted picture, contact admin",
-                        failpostId: addPost.identifiers[0].id,
+                        failpostId: postId,
                     });
                     return;
                 }
@@ -114,16 +104,12 @@ const postRouter = (io:any) => {
     router.post("/update", async (req:express.Request, res:express.Response) => {
         const { content, postId }:{content:string, postId:number} = req.body;
         try {
-            const updatePost:UpdateResult = await getConnection().createQueryBuilder()
-                .update(Post).set({ content })
-                .where("post.id= :id", { id: postId })
-                .execute();
+            const updatePost:UpdateResult = await PostService.updatePost(postId, content);
             if (updatePost.raw.changedRows === 0) {
                 res.status(409).send("Failed to update post");
                 return;
             }
-            const result = { postId, content };
-            res.status(201).send(result);
+            res.status(201).json({ postId, content });
         } catch (e) {
             res.status(400).send(e);
         }
@@ -142,10 +128,7 @@ const postRouter = (io:any) => {
     router.post("/delete", async (req:express.Request, res:express.Response) => {
         const { postId }:{postId:number} = req.body;
         try {
-            const deletePost:UpdateResult = await getConnection().createQueryBuilder()
-                .update(Post).set({ status: "N" })
-                .where("post.id= :id", { id: postId })
-                .execute();
+            const deletePost:UpdateResult = await PostService.updateState(postId);
             const result:any = await deleteFile(`POST #${postId}`);
 
             if (deletePost.raw.changedRows === 0) {
