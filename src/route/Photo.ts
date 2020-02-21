@@ -29,7 +29,15 @@ router.post("/profile/delete", helper(async (req: express.Request, res:express.R
         res.status(409).send("Failed to delete profile picture");
         return;
     }
-    await deleteFile(`USER #${userId}`);
+    const findkey:User|undefined = await UserService.getUserById(userId);
+    if (!findkey?.photoName || !findkey) {
+        res.status(409).send("Failed to update profile picture");
+        return;
+    }
+    const check:boolean|unknown = await deleteFile(findkey.photoName);
+    if (check === false) {
+        res.status(409).send("Failed to delete picture from image bucket");
+    }
     res.status(201).send("Successfully deleted profile picture");
 }));
 
