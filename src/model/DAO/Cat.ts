@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {
-    getConnection, UpdateResult, InsertResult, getRepository, DeleteResult
+    getConnection, UpdateResult, InsertResult, getRepository, DeleteResult,
 } from "typeorm";
 
 import Cat from "../entity/Cat";
@@ -99,6 +99,36 @@ const deleteCat = async (deleteId:number):Promise<DeleteResult> => {
     return deletedCat;
 };
 
+const insertFollow = async (catId:number, userId:number):Promise<InsertResult> => {
+    const updateFollow:InsertResult = await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into("following_cat")
+        .values([
+            { catId, userId },
+        ])
+        .execute();
+
+    return updateFollow;
+};
+
+const deleteFollow = async (catId:number, userId:number):Promise<DeleteResult> => {
+    const updateFollow:DeleteResult = await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from("following_cat")
+        .where({ catId, userId })
+        .execute();
+
+    return updateFollow;
+};
+
+const checkFollow = async (catId:number, userId:number):Promise<Array<{count: string}>> => {
+    const follower:Array<{count: string}> = await getConnection()
+        .query("select count(*) as `count` from following_cat where userId = ? and catId = ?;", [userId, catId]);
+    return follower;
+};
+
 export {
     selectCat,
     updateRainbow,
@@ -109,4 +139,7 @@ export {
     getCat,
     getCatsBylocation,
     deleteCat,
+    insertFollow,
+    deleteFollow,
+    checkFollow,
 };

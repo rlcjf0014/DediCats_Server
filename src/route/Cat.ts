@@ -5,7 +5,7 @@ import {
 } from "typeorm";
 import wkx from "wkx";
 import CatTag from "../model/entity/CatTag";
-import Cat from "../model/entity/Cat"
+import Cat from "../model/entity/Cat";
 import Tag from "../model/entity/Tag";
 import Photo from "../model/entity/Photo";
 import User from "../model/entity/User";
@@ -18,6 +18,7 @@ import * as CatService from "../Service/Cat";
 import * as CatTagService from "../Service/CatTag";
 import * as PhotoService from "../Service/Photo";
 import * as UserService from "../Service/User";
+import * as FollowService from "../Service/Follow";
 
 const router:express.Router = express.Router();
 
@@ -46,14 +47,7 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
     try {
         const userId = getUserIdbyAccessToken(accessToken);
 
-        const updateFollow:InsertResult = await getConnection()
-            .createQueryBuilder()
-            .insert()
-            .into("following_cat")
-            .values([
-                { catId, userId },
-            ])
-            .execute();
+        const updateFollow:InsertResult = await FollowService.insertFollow(catId, userId);
         if (updateFollow.raw.affectedRows === 0) {
             res.status(409).send("Failed to follow this cat");
         }
@@ -127,7 +121,6 @@ router.post("/addcatToday", async (req:express.Request, res:express.Response) =>
 router.post("/cut", async (req:express.Request, res:express.Response) => {
     const { catId, catCut }:{catId:number, catCut:{Y:number, N:number, unknown:number}} = req.body;
     try {
-
         const selectedCut:Cat|undefined = await CatService.selectCat(catId);
 
         if (!selectedCut) {
@@ -143,7 +136,6 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Failed to update peanuts.");
         }
         if (updateCut.raw.changedRows) {
-
             const updatedCat:Cat|undefined = await CatService.selectCat(catId);
             res.status(201).send(updatedCat?.cut);
             return;
@@ -177,16 +169,17 @@ router.post("/updateTag", async (req:express.Request, res:express.Response) => {
             res.status(201).send(result);
         } else {
             const newTag:InsertResult = await CatTagService.newTag(catTag);
+            const tagId:number = newTag.identifiers[0].id;
             if (newTag.raw.affectedRows === 0) {
                 res.status(409).send("Tag update failed");
                 return;
             }
-            const updateTag:InsertResult = await CatTagService.updateTag(userId, catId, newTag.identifiers[0].id)
+            const updateTag:InsertResult = await CatTagService.updateTag(userId, catId, tagId);
             if (updateTag.raw.affectedRows === 0) {
                 res.status(409).send("Tag update failed");
             }
             const result = {
-                id: newTag.identifiers[0].tag,
+                id: tagId,
                 tag: {
                     content: catTag,
                 },
@@ -219,7 +212,7 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
         }
         const imagepath:string | boolean = await uploadFile(`CAT #${addCat.identifiers[0].id}`, photoPath);
         if (imagepath === false) {
-            const deleteCat: DeleteResult = await CatService.deleteCat(addCat.identifiers[0].id); 
+            const deleteCat: DeleteResult = await CatService.deleteCat(addCat.identifiers[0].id);
             if (deleteCat.raw.affectedRows === 0) {
                 res.status(409).send("Failed to delete cat without posted picture, contact admin");
                 return;
@@ -250,12 +243,7 @@ router.post("/unfollow", async (req:express.Request, res:express.Response) => {
     try {
         const userId = getUserIdbyAccessToken(accessToken);
 
-        const updateFollow:DeleteResult = await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from("following_cat")
-            .where({ catId, userId })
-            .execute();
+        const updateFollow:DeleteResult = await CatService.deleteFollow(catId, userId);
         if (updateFollow.raw.affectedRows === 0) {
             res.status(409).send("Failed to unfollow cat");
         }
@@ -294,10 +282,9 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Cat not found");
             return;
         }
-        const checkFollow:Array<{count: string}> = await getConnection()
-            .query("select count(*) as `count` from following_cat where userId = ? and catId = ?;", [userId, catId]);
+        const checkFollow:Array<{count: string}> = await CatService.checkFollow(Number(catId), userId);
         const follow:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
-        
+
         const getTag: Array<object> = await CatTagService.getTag(catId);
         if (!getTag) {
             res.status(409).send("Cat found, but tag not found");

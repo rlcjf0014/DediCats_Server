@@ -25,6 +25,11 @@ const getCatsBylocation = (location:{ NElatitude : number, NElongitude : number,
 
 const deleteCat = (deleteId: number):Promise<DeleteResult> => CatDAO.deleteCat(deleteId);
 
+const insertFollow = (catId:number, userId:number):Promise<InsertResult> => CatDAO.insertFollow(catId, userId);
+
+const deleteFollow = (catId:number, userId:number):Promise<DeleteResult> => CatDAO.deleteFollow(catId, userId);
+
+const checkFollow = (catId:number, userId:number):Promise<Array<{count: string}>> => CatDAO.checkFollow(catId, userId);
 export {
     selectCat,
     updateCatCut,
@@ -35,4 +40,7 @@ export {
     addCatToday,
     getCatsBylocation,
     deleteCat,
+    insertFollow,
+    deleteFollow,
+    checkFollow,
 };
