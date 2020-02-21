@@ -56,6 +56,15 @@ const updateProfile = async (userId: number, imagepath:string):Promise<UpdateRes
     return updatePic;
 };
 
+const deletePostPhoto = async (postId:number):Promise<UpdteResult> => {
+    const updatePostPhoto:UpdateResult = await getConnection().createQueryBuilder()
+        .update(Photo).set({ status: "D" })
+        .where({ post: postId })
+        .execute();
+    return updatePostPhoto;
+};
+
 
 export {
-    addCatPhoto, getCatPhoto, getCatAlbum, deleteProfile, updateProfile };
+    addCatPhoto, getCatPhoto, getCatAlbum, deleteProfile, updateProfile, deletePostPhoto
+};

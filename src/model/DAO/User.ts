@@ -1,7 +1,10 @@
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
-import { UpdateResult, getConnection, getRepository } from "typeorm";
+import {
+    UpdateResult, getConnection, getRepository, InsertResult,
+} from "typeorm";
 import User from "../entity/User";
 
 
@@ -58,7 +61,16 @@ const getCatList = async (userId: number):Promise<Array<object>> => {
     return getCat1;
 };
 
+const insertUser = async (nickname:string, email:string, password:string, salt:string):Promise<InsertResult> => {
+    const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)
+        .values({
+            nickname, email, password, salt, status: "Y",
+        })
+        .execute();
+
+    return result;
+};
 
 export {
-    getUserById, updateUserPw, getUserByEmail, updateToken, getCatList,
+    getUserById, updateUserPw, getUserByEmail, updateToken, getCatList, insertUser,
 };
