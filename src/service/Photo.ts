@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import {
-    UpdateResult, InsertResult, DeleteResult,
+    UpdateResult, InsertResult, 
 } from "typeorm";
 
 import Photo from "../model/entity/Photo";

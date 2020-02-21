@@ -2,7 +2,7 @@
 /* eslint-disable import/no-unresolved */
 import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
-    OneToMany, ManyToOne,
+    ManyToOne,
 } from "typeorm";
 
 import {

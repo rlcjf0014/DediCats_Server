@@ -7,12 +7,6 @@ import {
 import wkx from "wkx";
 import { Cat, Tag, Photo } from "../model";
 import { CatService, CatTagService, PhotoService, UserService } from "../service";
-
-// import Cat from "../model/entity/Cat";
-// import Tag from "../model/entity/Tag";
-// import Photo from "../model/entity/Photo";
-
-
 import uploadFile from "../library/ImageFunction/imgupload";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { formatRainbow, formatCut } from "../library/formatCatOptions";

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
     UpdateResult, getConnection, getRepository, InsertResult, DeleteResult,
 } from "typeorm";

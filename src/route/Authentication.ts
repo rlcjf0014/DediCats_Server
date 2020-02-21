@@ -2,19 +2,11 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import express from "express";
-import {
-    getConnection, UpdateResult,
-} from "typeorm";
-
+import { UpdateResult } from "typeorm";
 import { User } from "../model";
 import { UserService } from "../service";
-
-import {
-    getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
-} from "../library/jwt";
-import {
-    getEncryPw,
-} from "../library/crypto";
+import { getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken } from "../library/jwt";
+import { getEncryPw } from "../library/crypto";
 
 require("dotenv").config();
 

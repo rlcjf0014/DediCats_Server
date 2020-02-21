@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 import {
-    InsertResult, UpdateResult, getConnection, getRepository, createQueryBuilder,
+    InsertResult, getConnection,
 } from "typeorm";
 
 const reportPost = async (postId:number, userId:number, criminalId:number):Promise<InsertResult> => {

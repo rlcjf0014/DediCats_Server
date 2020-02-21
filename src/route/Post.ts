@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
 import express from "express";
-import {
-    InsertResult, UpdateResult, DeleteResult,
-} from "typeorm";
+import { InsertResult, UpdateResult, DeleteResult } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import uploadFile from "../library/ImageFunction/imgupload";
 import { PostService, PhotoService } from "../service";

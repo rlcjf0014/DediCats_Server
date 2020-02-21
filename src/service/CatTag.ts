@@ -1,7 +1,5 @@
 /* eslint-disable max-len */
-import {
-    getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
-} from "typeorm";
+import { UpdateResult, InsertResult } from "typeorm";
 import * as CatTagDAO from "../model/DAO/CatTag";
 import Tag from "../model/entity/Tag";
 

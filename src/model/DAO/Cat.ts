@@ -1,7 +1,6 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable max-len */
+
 import {
-    getConnection, UpdateResult, InsertResult, getRepository, DeleteResult,
+    getConnection, InsertResult, getRepository, DeleteResult, UpdateResult,
 } from "typeorm";
 
 import { Cat } from "..";

@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
 import express from "express";
-import {
-    UpdateResult,
-} from "typeorm";
+import { UpdateResult } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { User } from "../model";
 import { PhotoService, UserService } from "../service";

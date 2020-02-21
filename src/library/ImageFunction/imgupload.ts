@@ -1,12 +1,9 @@
-import { Any } from "typeorm";
-
 require("dotenv").config();
 const AWS = require("aws-sdk");
 // const fs = require("fs");
 
 const { ID } = process.env;
 const { SECRET } = process.env;
-
 const { BUCKET_NAME } = process.env;
 
 const s3 = new AWS.S3({
@@ -47,19 +44,3 @@ export default function uploadFile(imageName: string, imageData:string):Promise<
         });
     }));
 }
-
-//! svg test
-
-// export default uploadFile;
-
-//! npx tsc index.ts && node index.js
-
-//! 버켓 만드는 법
-// s3.createBucket(params, (err:any, data:any) => {
-//     if (err) {
-//         console.log(err, err.stack);
-//     } else {
-//         console.log(data)
-//         console.log("Bucket Created Successfully", data.location);
-//     }
-// });

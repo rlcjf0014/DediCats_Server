@@ -1,6 +1,4 @@
-import {
-    InsertResult,
-} from "typeorm";
+import { InsertResult } from "typeorm";
 
 import * as ReportDAO from "../model/DAO/Report";
 

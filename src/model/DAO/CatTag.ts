@@ -1,5 +1,5 @@
 import {
-    getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
+    getConnection, UpdateResult, InsertResult, getRepository,
 } from "typeorm";
 
 import { CatTag, Tag } from "..";

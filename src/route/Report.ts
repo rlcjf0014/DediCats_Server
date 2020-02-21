@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
 import express from "express";
-import {
-    InsertResult,
-} from "typeorm";
+import { InsertResult } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { ReportService } from "../service";
 

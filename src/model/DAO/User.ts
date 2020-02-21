@@ -1,7 +1,5 @@
-/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
+
 import {
     UpdateResult, getConnection, getRepository, InsertResult,
 } from "typeorm";

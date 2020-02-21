@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import { UpdateResult, InsertResult, DeleteResult } from "typeorm";
 import * as PostDAO from "../model/DAO/Post";

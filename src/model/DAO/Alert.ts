@@ -1,5 +1,3 @@
-
-
 const future = () => {
     console.log("Will try in advanced");
 };
