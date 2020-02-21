@@ -143,16 +143,16 @@ const postRouter = (io:any) => {
         const { postId }:{postId:number} = req.body;
         try {
             const deletePost:UpdateResult = await getConnection().createQueryBuilder()
-                .update(Post).set({ status: "N" })
+                .update(Post).set({ status: "D" })
                 .where("post.id= :id", { id: postId })
                 .execute();
-            const result:any = await deleteFile(`POST #${postId}`);
 
             if (deletePost.raw.changedRows === 0) {
                 res.status(409).send("Failed to delete post");
                 return;
             }
             io.to(postId).emit("drop", "");
+            const result:any = await deleteFile(`POST #${postId}`);
             res.status(201).send("Successfully deleted post");
         } catch (e) {
             res.status(400).send(e);
