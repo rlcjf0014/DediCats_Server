@@ -5,6 +5,7 @@ import {
 } from "typeorm";
 import Cat from "./Cat";
 import Post from "./Post";
+import {PhotoStatus} from "../../types/index";
 
   @Entity({ name: "photo" })
 export default class Photo extends BaseEntity {
@@ -20,7 +21,7 @@ export default class Photo extends BaseEntity {
       isProfile!: string;
 
       @Column({ type: "varchar", length: 2, nullable: false })
-      status!: string;
+      status!: PhotoStatus;
 
       @CreateDateColumn({ name: "create_at", nullable: false })
       createAt! : Date;

@@ -5,7 +5,7 @@ import {
     PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne,
 } from "typeorm";
 
-
+import { TagStatus } from "../../types/index";
 import User from "./User";
 import Cat from "./Cat";
 import Tag from "./Tag";
@@ -17,7 +17,7 @@ export default class CatTag extends BaseEntity {
     id!: number;
 
     @Column({ type: "varchar", nullable: false, width: 2 })
-    status: string | undefined;
+    status!: TagStatus;
 
     @Column({ type: "varchar", nullable: true })
     deleteUser!: number;

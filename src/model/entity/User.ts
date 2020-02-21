@@ -12,6 +12,8 @@ import Report from "./Report";
 import Post from "./Post";
 import CatTag from "./CatTag";
 
+import {UserStatus} from "../../types/index";
+
 @Entity({ name: "user" })
 export default class User extends BaseEntity {
     @PrimaryGeneratedColumn()
@@ -30,7 +32,7 @@ export default class User extends BaseEntity {
     email! : string;
 
     @Column({ type: "varchar", nullable: false })
-    status! : string;
+    status! : UserStatus;
 
     @Column({
         type: "varchar", nullable: true, name: "photo_path", default: null,
@@ -52,8 +54,6 @@ export default class User extends BaseEntity {
     @OneToMany((type) => Comment, (comment) => comment.user)
     comments! : Comment[];
 
-    // @OneToMany((type) => Cat, (cat) => cat.user)
-    // cats! : Cat[];
 
     @OneToMany((type) => Report, (report) => report.user)
     reports! : Report[];

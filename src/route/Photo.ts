@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    getConnection, UpdateResult, getRepository, QueryBuilder, InsertResult,
+    UpdateResult, 
 } from "typeorm";
 
 import { getUserIdbyAccessToken } from "../library/jwt";

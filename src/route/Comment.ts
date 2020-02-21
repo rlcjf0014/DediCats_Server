@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    InsertResult, getConnection, getManager, UpdateResult, getRepository,
+    InsertResult, UpdateResult,
 } from "typeorm";
 
 import Comment from "../model/entity/Comment";
