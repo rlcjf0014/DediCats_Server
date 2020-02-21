@@ -1,7 +1,7 @@
 
 require("dotenv").config();
 const AWS = require("aws-sdk");
-const fs = require("fs");
+// const fs = require("fs");
 
 const { ID } = process.env;
 const { SECRET } = process.env;
@@ -27,9 +27,8 @@ export default function deleteFile(key:string) {
             if (err) {
                 reject(err);
             }
-            resolve(data);
+            resolve(true);
         });
-
     }));
 }
 
