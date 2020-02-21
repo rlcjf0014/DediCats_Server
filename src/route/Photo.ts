@@ -23,25 +23,24 @@ router.get("/album/:catId", async (req:express.Request, res:express.Response) =>
 });
 
 router.post("/profile/delete", async (req: express.Request, res:express.Response) => {
-    // const { userId }:{userId:number} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
-
     try {
         const userId = getUserIdbyAccessToken(accessToken);
-
         const updatePic:UpdateResult = await PhotoService.deleteProfile(userId);
         if (updatePic.raw.changedRows === 0) {
             res.status(409).send("Failed to delete profile picture");
             return;
         }
-        await deleteFile(`USER #${userId}`);
+        const result:boolean|unknown = await deleteFile(`USER #${userId}`);
+        if (!result) {
+            res.sendStatus(400);
+        }
         res.status(201).send("Successfully deleted profile picture");
     } catch (e) {
         res.status(400).send(e);
     }
 });
 
-//! S3에 데이터 저장 후 그 주소를 받아와 데이터베이스에 저장 및 클라이언트에 보내줘야 함.
 router.post("/profile", async (req:express.Request, res:express.Response) => {
     const { photoPath }:{ photoPath:string} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;

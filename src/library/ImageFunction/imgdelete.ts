@@ -15,7 +15,7 @@ const s3 = new AWS.S3({
 });
 
 // eslint-disable-next-line func-names
-export default function deleteFile(key:string) {
+export default function deleteFile(key:string):Promise<boolean|unknown> {
     return new Promise(((resolve, reject) => {
         // ? ContentType:
         //* MIME 타입이다. 파일에서 확장자가 없을 때는 반드시 MIME 타입을 설정해야 합니다. 확장자가 있는 파일은 확장자에 따라 자동으로 설정되므로 이 항목을 설정하지 않아도 된다.
