@@ -18,7 +18,6 @@ import * as CatService from "../Service/Cat";
 import * as CatTagService from "../Service/CatTag";
 import * as PhotoService from "../Service/Photo";
 import * as UserService from "../Service/User";
-import * as FollowService from "../Service/Follow";
 
 const router:express.Router = express.Router();
 
@@ -47,7 +46,7 @@ router.post("/follow", async (req:express.Request, res:express.Response) => {
     try {
         const userId = getUserIdbyAccessToken(accessToken);
 
-        const updateFollow:InsertResult = await FollowService.insertFollow(catId, userId);
+        const updateFollow:InsertResult = await CatService.insertFollow(catId, userId);
         if (updateFollow.raw.affectedRows === 0) {
             res.status(409).send("Failed to follow this cat");
         }
