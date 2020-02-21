@@ -10,13 +10,12 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import http from "http";
-{
+import {
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup,
-}
-from "./route";
+} from "./route";
 // import data from "./data";
 import "module-alias/register";
-import {typeORMError, jwtError, etcError} from "./library/errorHelper";
+import { typeORMError, jwtError, etcError } from "./library/errorHelper";
 
 
 require("dotenv").config();
