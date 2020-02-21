@@ -4,6 +4,7 @@ import {
 } from "typeorm";
 
 import Cat from "../entity/Cat";
+import {CatStatus} from "../../types/index";
 
 const selectCat = async (catId:number):Promise<Cat|undefined> => {
     const selectedCat:Cat|undefined = await getConnection().createQueryBuilder()
@@ -64,7 +65,7 @@ const addCat = async (catNickname:string, coordinate:string, address:string, cat
                 rainbow: JSON.stringify({
                     Y: 0, YDate: null, N: 0, NDate: null,
                 }),
-                status: "Y",
+                status: CatStatus.Active,
                 user: userId,
             },
         ])

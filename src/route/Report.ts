@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    getConnection, InsertResult, QueryBuilder,
+ InsertResult, 
 } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import * as ReportService from "../Service/Report";

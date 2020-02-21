@@ -6,7 +6,7 @@ import {
     UpdateResult, getConnection, getRepository, InsertResult,
 } from "typeorm";
 import User from "../entity/User";
-
+import { UserStatus } from "../../types/index";
 
 const getUserById = async (id:number):Promise<User|undefined> => {
     const user:User|undefined = await getConnection().createQueryBuilder()
@@ -64,7 +64,7 @@ const getCatList = async (userId: number):Promise<Array<object>> => {
 const insertUser = async (nickname:string, email:string, password:string, salt:string):Promise<InsertResult> => {
     const result:InsertResult = await getConnection().createQueryBuilder().insert().into(User)
         .values({
-            nickname, email, password, salt, status: "Y",
+            nickname, email, password, salt, status: UserStatus.Active,
         })
         .execute();
 

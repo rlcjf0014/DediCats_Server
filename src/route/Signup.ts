@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import express from "express";
 import {
-    getConnection, InsertResult, UpdateResult,
+    InsertResult, UpdateResult,
 } from "typeorm";
 
 import User from "../model/entity/User";

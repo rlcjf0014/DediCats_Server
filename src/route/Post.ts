@@ -2,7 +2,7 @@
 /* eslint-disable import/no-unresolved */
 import express from "express";
 import {
-    getRepository, getConnection, InsertResult, QueryBuilder, UpdateResult, DeleteResult,
+   InsertResult,UpdateResult, DeleteResult,
 } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
 
@@ -23,9 +23,7 @@ const postRouter = (io:any) => {
         const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
             const userId = getUserIdbyAccessToken(accessToken);
-
-
-            const createConnection:QueryBuilder<any> = await getConnection().createQueryBuilder();
+            
             const addPost:InsertResult = await PostService.insertPost(userId, catId, content);
             if (addPost.raw.affectedRows === 0) {
                 res.status(409).send("Failed to save post");

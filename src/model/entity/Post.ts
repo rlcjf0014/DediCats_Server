@@ -9,6 +9,7 @@ import Photo from "./Photo";
 import Comment from "./Comment";
 import Report from "./Report";
 import User from "./User";
+import {PostStatus} from "../../types/index";
 // 유저아이디 작성되어있지 않음
 @Entity({ name: "post" })
 export default class Post extends BaseEntity {
@@ -19,7 +20,7 @@ export default class Post extends BaseEntity {
       content!:string;
 
       @Column({ type: "varchar", length: 2, nullable: false })
-      status!: string;
+      status!: PostStatus;
 
       @CreateDateColumn({ name: "create_at" })
       createAt!: Date;
