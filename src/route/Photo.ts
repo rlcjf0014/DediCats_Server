@@ -46,31 +46,38 @@ router.post("/profile", helper(async (req:express.Request, res:express.Response)
         return;
     }
     if (getProfile?.photoPath === null) {
-        const key = `USER #${userId}`;
-        const imagepath:string|boolean = await uploadFile(key, photoPath);
+        const secretCode = Math.random().toString(36).slice(4);
+        const photoName = secretCode + userId;
+        const imagepath:string|boolean = await uploadFile(photoName, photoPath);
         if (typeof (imagepath) === "boolean") {
             res.status(409).send("Failed to update profile picture");
             return;
         }
-        const updatePic:UpdateResult = await PhotoService.updateProfile(userId, imagepath);
+        const updatePic:UpdateResult = await PhotoService.updateProfile(userId, imagepath, photoName);
         if (updatePic.raw.changedRows === 0) {
             res.status(409).send("Failed to update profile picture");
             return;
         }
         res.status(201).send({ photoPath: imagepath });
     } else {
-        const check:boolean|unknown = await deleteFile(`USER #${userId}`);
+        const findkey:User|undefined = await UserService.getUserById(userId);
+        if (!findkey?.photoName || !findkey) {
+            res.status(409).send("Failed to update profile picture");
+            return;
+        }
+        const check:boolean|unknown = await deleteFile(findkey.photoName);
         if (!check) {
             res.status(409).send("Failed to update profile picture");
             return;
         }
-        const key = `USER #${userId}`;
-        const imagepath:string|boolean = await uploadFile(key, photoPath);
+        const secretCode = Math.random().toString(36).slice(4);
+        const photoName = secretCode + userId;
+        const imagepath:string|boolean = await uploadFile(photoName, photoPath);
         if (typeof (imagepath) === "boolean") {
             res.status(409).send("Failed to update profile picture");
             return;
         }
-        const updatePic:UpdateResult = await PhotoService.updateProfile(userId, imagepath);
+        const updatePic:UpdateResult = await PhotoService.updateProfile(userId, imagepath, photoName);
         if (updatePic.raw.changedRows === 0) {
             res.status(409).send("Failed to update profile picture");
             return;
