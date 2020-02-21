@@ -3,7 +3,7 @@
 /* eslint-disable import/no-unresolved */
 import { UpdateResult, getConnection, getRepository } from "typeorm";
 import User from "../entity/User";
-
+``
 
 const getUserById = async (id:number):Promise<User|undefined> => {
     const user:User|undefined = await getConnection().createQueryBuilder()

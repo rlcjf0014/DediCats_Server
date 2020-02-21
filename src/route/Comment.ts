@@ -7,6 +7,7 @@ import Comment from "../model/entity/Comment";
 import Post from "../model/entity/Post";
 import User from "../model/entity/User";
 import { getUserIdbyAccessToken } from "../library/jwt";
+import * as CommentService from "../Service/Comment";
 
 const router:express.Router = express.Router();
 
@@ -19,16 +20,7 @@ const returnRouter = (io:any) => {
 
         const nthPage = paginationNumber * 10;
         try {
-            const resultArr:Array<object> = await getRepository(Comment)
-                .createQueryBuilder("comment")
-                .where("comment.postId = :id AND comment.status = :status", { id: postIdNumber, status: "Y" })
-                .leftJoinAndSelect("comment.user", "commentUser")
-                .select(["comment", "commentUser.id", "commentUser.nickname", "commentUser.Id", "commentUser.nickname", "commentUser.photoPath"])
-                .orderBy("comment.id", "DESC")
-                .skip(nthPage)
-                .take(10)
-                .getMany();
-
+            const resultArr:Array<Comment> = await CommentService.getComments(postIdNumber, nthPage);
             res.status(200).send(resultArr);
         } catch (e) {
         // eslint-disable-next-line no-console
@@ -38,16 +30,11 @@ const returnRouter = (io:any) => {
     });
 
 
-    // delete Comment
+    // delete CommentCommentService
     router.post("/delete", async (req:express.Request, res:express.Response) => {
         const { commentId }:{commentId:number} = req.body;
         try {
-            const result:UpdateResult = await getConnection().createQueryBuilder()
-                .update(Comment)
-                .set({ status: "D" })
-                .where({ id: commentId })
-                .execute();
-
+            const result:UpdateResult = await CommentService.deleteComment(commentId);
             if (result.raw.changedRows === 1) {
                 res.status(201).send({ deleteStatus: "Y", message: "Successfully deleted post" });
                 return;
@@ -65,28 +52,12 @@ const returnRouter = (io:any) => {
         const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
             const userId = getUserIdbyAccessToken(accessToken);
-
-            const manager = await getManager();
-            const user:User|undefined = await manager.createQueryBuilder(User, "user").where("user.id = :id", { id: userId }).getOne();
-            const post:Post|undefined = await manager.createQueryBuilder(Post, "post").where("post.id = :id", { id: postId }).getOne();
-
-            const result:InsertResult = await getConnection().createQueryBuilder().insert().into(Comment)
-                .values({
-                    post, user, content, status: "Y",
-                })
-                .execute();
+            const result:InsertResult = await CommentService.insertComment(postId, userId, content);
 
             if (result.raw.affectedRows) {
-                const newComment:Comment|undefined = await getConnection()
-                    .createQueryBuilder()
-                    .select("comment")
-                    .from(Comment, "comment")
-                    .where("comment.id = :id AND comment.status = :status", { id: result.identifiers[0].id, status: "Y" })
-                    .leftJoinAndSelect("comment.user", "commentUser")
-                    .select(["comment", "commentUser.id", "commentUser.nickname", "commentUser.Id", "commentUser.nickname", "commentUser.photoPath"])
-                    .getOne();
+                const newComment:object|undefined = await CommentService.getComment(result.identifiers[0].id);
 
-                io.to(post?.id).emit("new comment", newComment);
+                io.to(postId).emit("new comment", newComment);
                 res.status(201).send("Adding comment was successful");
                 return;
             }
@@ -104,19 +75,12 @@ const returnRouter = (io:any) => {
         const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
             const userId = getUserIdbyAccessToken(accessToken);
-            const result:UpdateResult = await getConnection().createQueryBuilder().update(Comment).set({ content })
-                .where({ id: commentId, userId })
-                .execute();
+            const result:UpdateResult = await CommentService.updateComment(commentId, userId, content);
             if (!result.raw.changedRows) {
                 res.status(409).send("Failed to update comment");
             }
 
-            const returnObj:Comment|undefined = await getRepository(Comment)
-                .createQueryBuilder("comment")
-                .where("comment.id = :id AND comment.status = :status", { id: commentId, status: "Y" })
-                .leftJoinAndSelect("comment.user", "commentUser")
-                .select(["comment", "commentUser.id", "commentUser.nickname", "commentUser.photo_path"])
-                .getOne();
+            const returnObj:object|undefined = await CommentService.getComment(commentId);
 
             if (returnObj) {
                 res.status(201).send(returnObj);
