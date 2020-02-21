@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-await-in-loop */
 import express from "express";
 import {
@@ -5,9 +6,11 @@ import {
 } from "typeorm";
 import wkx from "wkx";
 
-import Cat from "../model/entity/Cat";
-import Tag from "../model/entity/Tag";
-import Photo from "../model/entity/Photo";
+import { Cat, Tag, Photo } from "../model";
+
+// import Cat from "../model/entity/Cat";
+// import Tag from "../model/entity/Tag";
+// import Photo from "../model/entity/Photo";
 
 
 import uploadFile from "../library/ImageFunction/imgupload";
