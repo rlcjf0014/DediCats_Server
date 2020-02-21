@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {
     UpdateResult, InsertResult, DeleteResult,
 } from "typeorm";
