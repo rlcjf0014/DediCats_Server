@@ -1,1 +1,5 @@
-console.log("hi")
+import {
+    InsertResult, UpdateResult, getConnection, getRepository,
+} from "typeorm";
+
+

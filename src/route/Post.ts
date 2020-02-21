@@ -8,8 +8,8 @@ import { getUserIdbyAccessToken } from "../library/jwt";
 
 import Post from "../model/entity/Post";
 import uploadFile from "../library/ImageFunction/imgupload";
-import deleteFile from "../library/ImageFunction/imgdelete";
 import * as PostService from "../Service/Post";
+import * as PhotoService from "../Service/Photo";
 // import storage from "../data/storage";
 
 const router:express.Router = express.Router();
@@ -117,10 +117,13 @@ const postRouter = (io:any) => {
         const { postId }:{postId:number} = req.body;
         try {
             const deletePost:UpdateResult = await PostService.updateState(postId);
-            const result:any = await deleteFile(`POST #${postId}`);
-
             if (deletePost.raw.changedRows === 0) {
                 res.status(409).send("Failed to delete post");
+                return;
+            }
+            const deletePhoto:UpdateResult = await PhotoService.deletePostPhoto(postId);
+            if (deletePhoto.raw.changedRows === 0) {
+                res.status(409).send("Deleted post, but failed to delete post photo");
                 return;
             }
             io.to(postId).emit("drop", "");

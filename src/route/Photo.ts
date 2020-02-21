@@ -54,34 +54,37 @@ router.post("/profile", async (req:express.Request, res:express.Response) => {
     try {
         const userId = getUserIdbyAccessToken(accessToken);
 
-        const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
-        const getProfile:User | undefined = await connection
-            .select("user")
-            .from(User, "user")
-            .where("user.id = :id", { id: userId })
-            .getOne();
+        const getProfile:User | undefined = await UserService.getUserById(userId);
         if (!getProfile) {
             res.status(409).send("Failed to update profile picture");
             return;
         }
         if (getProfile?.photoPath === null) {
             const key = `USER #${userId}`;
-            const imagepath:any = await uploadFile(key, photoPath);
-            const updatePic:UpdateResult = await connection
-                .update(User).set({ photoPath: imagepath })
-                .where({ id: userId }).execute();
+            const imagepath:string|boolean = await uploadFile(key, photoPath);
+            if (typeof (imagepath) === "boolean") {
+                res.status(409).send("Failed to update profile picture");
+                return;
+            }
+            const updatePic:UpdateResult = await PhotoService.updateProfile(userId, imagepath);
             if (updatePic.raw.changedRows === 0) {
                 res.status(409).send("Failed to update profile picture");
                 return;
             }
             res.status(201).send({ photoPath: imagepath });
         } else {
-            const result:any = await deleteFile(`USER #${userId}`);
+            const check:boolean|unknown = await deleteFile(`USER #${userId}`);
+            if (!check) {
+                res.status(409).send("Failed to update profile picture");
+                return;
+            }
             const key = `USER #${userId}`;
-            const imagepath:any = await uploadFile(key, photoPath);
-            const updatePic:UpdateResult = await connection
-                .update(User).set({ photoPath: imagepath })
-                .where({ id: userId }).execute();
+            const imagepath:string|boolean = await uploadFile(key, photoPath);
+            if (typeof (imagepath) === "boolean") {
+                res.status(409).send("Failed to update profile picture");
+                return;
+            }
+            const updatePic:UpdateResult = await PhotoService.updateProfile(userId, imagepath);
             if (updatePic.raw.changedRows === 0) {
                 res.status(409).send("Failed to update profile picture");
                 return;
@@ -91,29 +94,6 @@ router.post("/profile", async (req:express.Request, res:express.Response) => {
     } catch (e) {
         res.status(400).send(e);
     }
-
-
-    // try{
-    //   const updateProfile:UpdateResult = await getConnection()
-    //   .createQueryBuilder()
-    //   .update(User)
-    //   .set({})
-    //   .where({ id: userId })
-    //   .execute();
-
-    //   if (updateProfile.raw.changedRows)
-
-
-    // }
-    // catch(e){
-    //     res.status(404).send("User profile picture not added");
-    // }
-
-    /*
-{
-    "user_photo": binary Data
-}
-    */
 });
 
 export default router;

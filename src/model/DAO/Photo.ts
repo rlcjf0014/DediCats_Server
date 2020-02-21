@@ -48,5 +48,25 @@ const deleteProfile = async (userId: number):Promise<UpdateResult> => {
     return updatePic;
 };
 
+const updateProfile = async (userId: number, imagepath:string):Promise<UpdateResult> => {
+    const updatePic:UpdateResult = await getConnection().createQueryBuilder()
+        .update(User).set({ photoPath: imagepath })
+        .where({ id: userId })
+        .execute();
+    return updatePic;
+};
 
-export { addCatPhoto, getCatPhoto, getCatAlbum, deleteProfile };
+const deletePostPhoto = async (postId:number):Promise<UpdateResult> => {
+    const updatePostPhoto:UpdateResult = await getConnection().createQueryBuilder()
+        .update(Photo).set({ status: "D" })
+        .where({ post: postId })
+        .execute();
+    return updatePostPhoto;
+};
+
+const addPostPhoto = async ()
+
+
+export {
+    addCatPhoto, getCatPhoto, getCatAlbum, deleteProfile, updateProfile, deletePostPhoto
+};
