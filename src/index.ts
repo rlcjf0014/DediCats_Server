@@ -1,6 +1,4 @@
-/* eslint-disable no-console */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
+/* eslint-disable no-unused-vars */
 import "reflect-metadata";
 import express, { Request, Response, NextFunction } from "express";
 import { createConnection, Connection } from "typeorm";
@@ -10,13 +8,11 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import http from "http";
+import { typeORMError, jwtError, etcError } from "./library/errorHelper";
 import {
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup,
-} from "./route";
-// import data from "./data";
-import "module-alias/register";
-import { typeORMError, jwtError, etcError } from "./library/errorHelper";
-
+}
+    from "./route";
 
 require("dotenv").config();
 

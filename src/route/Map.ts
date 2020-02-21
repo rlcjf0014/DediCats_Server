@@ -1,8 +1,6 @@
 import express from "express";
-//* "location": "POINT(1 2)",
-//* new wkx.Point(1, 2).toWkt();
 import { getUserIdbyAccessToken } from "../library/jwt";
-import { getCatsBylocation } from "../Service/Cat";
+import { getCatsBylocation } from "../service/Cat";
 
 import { helper } from "../library/errorHelper";
 

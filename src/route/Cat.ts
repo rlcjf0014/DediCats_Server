@@ -1,26 +1,18 @@
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
+/* eslint-disable max-len */
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-await-in-loop */
 import express from "express";
 import {
     UpdateResult, InsertResult, DeleteResult,
 } from "typeorm";
 import wkx from "wkx";
-
-import Cat from "../model/entity/Cat";
-import Tag from "../model/entity/Tag";
-import Photo from "../model/entity/Photo";
-
-
+import { Cat, Tag, Photo } from "../model";
+import {
+    CatService, CatTagService, PhotoService, UserService,
+} from "../service";
 import uploadFile from "../library/ImageFunction/imgupload";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { formatRainbow, formatCut } from "../library/formatCatOptions";
-
-import * as CatService from "../Service/Cat";
-import * as CatTagService from "../Service/CatTag";
-import * as PhotoService from "../Service/Photo";
-import * as UserService from "../Service/User";
-
 import { helper } from "../library/errorHelper";
 
 const router:express.Router = express.Router();

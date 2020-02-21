@@ -1,10 +1,11 @@
+/* eslint-disable max-len */
+/* eslint-disable no-unused-vars */
 import express from "express";
-import {
-    InsertResult,
-} from "typeorm";
+import { InsertResult } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
-import * as ReportService from "../Service/Report";
+import { ReportService } from "../service";
 import { helper } from "../library/errorHelper";
+
 
 const router:express.Router = express.Router();
 

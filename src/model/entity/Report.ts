@@ -2,13 +2,12 @@
 /* eslint-disable import/no-unresolved */
 import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
-    OneToMany, ManyToOne,
+    ManyToOne,
 } from "typeorm";
 
-import Post from "./Post";
-import Comment from "./Comment";
-import Cat from "./Cat";
-import User from "./User";
+import {
+    Post, Comment, Cat, User,
+} from "..";
 
 
 @Entity()

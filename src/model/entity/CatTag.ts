@@ -6,9 +6,7 @@ import {
 } from "typeorm";
 
 import { TagStatus } from "../../types/index";
-import User from "./User";
-import Cat from "./Cat";
-import Tag from "./Tag";
+import { User, Cat, Tag } from "..";
 
 
 @Entity({ name: "cat_tag" })

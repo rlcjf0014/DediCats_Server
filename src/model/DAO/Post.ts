@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 import {
     UpdateResult, getConnection, getRepository, InsertResult, DeleteResult,
 } from "typeorm";
-import Post from "../entity/Post";
+import { Post } from "..";
 import { PostStatus } from "../../types/index";
 
 

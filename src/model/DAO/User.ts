@@ -1,11 +1,9 @@
-/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
+
 import {
     UpdateResult, getConnection, getRepository, InsertResult,
 } from "typeorm";
-import User from "../entity/User";
+import { User } from "..";
 import { UserStatus } from "../../types/index";
 
 const getUserById = async (id:number):Promise<User|undefined> => {

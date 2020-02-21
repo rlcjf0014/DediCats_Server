@@ -4,7 +4,8 @@ import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn,
 } from "typeorm";
 
-import CatTag from "./CatTag";
+import { CatTag } from "..";
+
 
 @Entity({ name: "tag" })
 export default class Tag extends BaseEntity {

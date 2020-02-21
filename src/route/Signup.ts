@@ -1,16 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-unresolved */
 import express from "express";
-import {
-    InsertResult, UpdateResult,
-} from "typeorm";
-
-import User from "../model/entity/User";
-import {
-    getEncryPw, getRandomByte,
-} from "../library/crypto";
-
+import { InsertResult, UpdateResult } from "typeorm";
+import { User } from "../model";
+import { UserService } from "../service";
+import { getEncryPw, getRandomByte } from "../library/crypto";
 import sendMail from "../library/email";
-import * as UserService from "../Service/User";
 import { helper } from "../library/errorHelper";
 
 require("dotenv").config();

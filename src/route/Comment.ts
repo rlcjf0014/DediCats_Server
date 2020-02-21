@@ -1,16 +1,11 @@
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
+/* eslint-disable max-len */
+/* eslint-disable no-unused-vars */
 import express from "express";
-import {
-    InsertResult, UpdateResult,
-} from "typeorm";
-
-import Comment from "../model/entity/Comment";
-import Post from "../model/entity/Post";
-import User from "../model/entity/User";
-import { getUserIdbyAccessToken } from "../library/jwt";
-import * as CommentService from "../Service/Comment";
+import { InsertResult, UpdateResult } from "typeorm";
+import { Comment } from "../model";
+import { CommentService } from "../service";
 import { helper } from "../library/errorHelper";
+import { getUserIdbyAccessToken } from "../library/jwt";
 
 const router:express.Router = express.Router();
 

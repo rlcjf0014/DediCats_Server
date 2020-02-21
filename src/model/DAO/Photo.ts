@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 import {
     InsertResult, UpdateResult, getConnection, getRepository,
 } from "typeorm";
 
-import Photo from "../entity/Photo";
-import User from "../entity/User";
-import {PhotoStatus} from "../../types/index";
+import { Photo, User } from "..";
+
+import { PhotoStatus } from "../../types/index";
 
 const addCatPhoto = async (imagePath:string|boolean, catId:number):Promise<InsertResult> => {
     const addPhoto:InsertResult = await getConnection().createQueryBuilder()

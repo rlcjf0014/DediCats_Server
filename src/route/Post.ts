@@ -1,14 +1,9 @@
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
+/* eslint-disable no-unused-vars */
 import express from "express";
-import {
-    InsertResult, UpdateResult, DeleteResult,
-} from "typeorm";
+import { InsertResult, UpdateResult, DeleteResult } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
-
 import uploadFile from "../library/ImageFunction/imgupload";
-import * as PostService from "../Service/Post";
-import * as PhotoService from "../Service/Photo";
+import { PostService, PhotoService } from "../service";
 import { helper } from "../library/errorHelper";
 
 const router:express.Router = express.Router();
@@ -53,8 +48,6 @@ const postRouter = (io:any) => {
             return;
         }
         res.status(201).send("Successfully added post");
-
-
     //! 사진 데이터를 S3에 저장 후 그 주소를 데이터베이스 저장해야 함. 그 이후에 클라이언트가 요청할 시 주소를 보내줘야 함.
     }));
 

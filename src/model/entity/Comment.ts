@@ -1,15 +1,13 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, 
-    CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany
+    Entity, BaseEntity, PrimaryGeneratedColumn, Column,
+    CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany,
 } from "typeorm";
 
 import { CommentStatus } from "../../types/index";
+import { User, Post, Report } from "..";
 
-import User from "./User";
-import Post from "./Post";
-import Report from "./Report";
 
 @Entity({ name: "comment" })
 export default class Comment extends BaseEntity {

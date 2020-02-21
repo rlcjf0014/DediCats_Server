@@ -2,18 +2,11 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import express from "express";
-import {
-    getConnection, UpdateResult,
-} from "typeorm";
-
-import User from "../model/entity/User";
-import * as UserService from "../Service/User";
-import {
-    getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
-} from "../library/jwt";
-import {
-    getEncryPw,
-} from "../library/crypto";
+import { UpdateResult } from "typeorm";
+import { User } from "../model";
+import { UserService } from "../service";
+import { getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken } from "../library/jwt";
+import { getEncryPw } from "../library/crypto";
 import { helper } from "../library/errorHelper";
 
 require("dotenv").config();
@@ -91,7 +84,7 @@ router.post("/token", helper(async (req:express.Request, res:express.Response, n
         id, nickname, photoPath, createAt, email,
     } = user;
 
-    res.status(200).json({
+    return res.status(200).json({
         accessToken,
         user: {
             id, nickname, photoPath, createAt, email,
@@ -114,7 +107,7 @@ router.post("/signout", helper(async (req:express.Request, res:express.Response)
 
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
-    res.status(201).send("Signout Success!");
+    return res.status(201).send("Signout Success!");
 }));
 
 export default router;

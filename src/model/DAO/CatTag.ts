@@ -1,10 +1,11 @@
 import {
-    getConnection, UpdateResult, InsertResult, getRepository, QueryBuilder, DeleteResult,
+    getConnection, UpdateResult, InsertResult, getRepository,
 } from "typeorm";
 
-import CatTag from "../entity/CatTag";
-import Tag from "../entity/Tag";
+import { CatTag, Tag } from "..";
+
 import { TagStatus } from "../../types/index";
+
 
 const deleteTag = async (tagId:number, catId:number, userId:number):Promise<UpdateResult> => {
     const deletetag:UpdateResult = await getConnection().createQueryBuilder()

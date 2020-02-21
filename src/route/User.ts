@@ -5,10 +5,8 @@ import express from "express";
 import { UpdateResult } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { getEncryPw } from "../library/crypto";
-
-import User from "../model/entity/User";
-
-import * as UserService from "../Service/User";
+import { User } from "../model";
+import { UserService } from "../service";
 import { helper } from "../library/errorHelper";
 
 const router:express.Router = express.Router();

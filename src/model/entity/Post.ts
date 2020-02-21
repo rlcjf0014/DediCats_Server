@@ -4,12 +4,11 @@ import {
     Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne,
 } from "typeorm";
 
-import Cat from "./Cat";
-import Photo from "./Photo";
-import Comment from "./Comment";
-import Report from "./Report";
-import User from "./User";
-import {PostStatus} from "../../types/index";
+import {
+    Cat, Photo, Comment, Report, User,
+} from "..";
+
+import { PostStatus } from "../../types/index";
 // 유저아이디 작성되어있지 않음
 @Entity({ name: "post" })
 export default class Post extends BaseEntity {

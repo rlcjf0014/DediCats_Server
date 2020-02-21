@@ -1,4 +1,5 @@
-import Cat from "model/entity/Cat";
+/* eslint-disable no-unused-vars */
+import { Cat } from "../model";
 
 /* eslint-disable max-len */
 

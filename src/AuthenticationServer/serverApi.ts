@@ -1,12 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
-import authRouter from "../route/Authentication";
-import BasicRouter from "../route/BasicRouter";
+import { Authentication, BasicRouter } from "../route";
 
 require("dotenv").config();
 
@@ -17,7 +16,7 @@ api.use(bodyParser.urlencoded({ extended: false }));
 api.use(bodyParser.json());
 api.use(cookieParser(process.env.TOKEN_KEY));
 
-api.use("/auth", authRouter);
+api.use("/auth", Authentication);
 api.use("/", BasicRouter);
 
 api.use((req:Request, res:Response) => {
