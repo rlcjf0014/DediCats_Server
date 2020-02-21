@@ -5,7 +5,7 @@
 import {
     UpdateResult, getConnection, getRepository, InsertResult,
 } from "typeorm";
-import User from "../entity/User";
+import { User } from "..";
 import { UserStatus } from "../../types/index";
 
 const getUserById = async (id:number):Promise<User|undefined> => {

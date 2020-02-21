@@ -5,8 +5,8 @@ import {
     UpdateResult, InsertResult, DeleteResult,
 } from "typeorm";
 import wkx from "wkx";
-
 import { Cat, Tag, Photo } from "../model";
+import { CatService, CatTagService, PhotoService, UserService } from "../service";
 
 // import Cat from "../model/entity/Cat";
 // import Tag from "../model/entity/Tag";
@@ -17,10 +17,6 @@ import uploadFile from "../library/ImageFunction/imgupload";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { formatRainbow, formatCut } from "../library/formatCatOptions";
 
-import * as CatService from "../Service/Cat";
-import * as CatTagService from "../Service/CatTag";
-import * as PhotoService from "../Service/Photo";
-import * as UserService from "../Service/User";
 
 const router:express.Router = express.Router();
 

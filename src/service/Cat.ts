@@ -2,6 +2,7 @@
 import {
     UpdateResult, InsertResult, DeleteResult
 } from "typeorm";
+
 import * as CatDAO from "../model/DAO/Cat";
 import Cat from "../model/entity/Cat";
 

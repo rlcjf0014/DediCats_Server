@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import {
     getConnection, UpdateResult, InsertResult, getRepository, DeleteResult,
 } from "typeorm";
 
-import Cat from "../entity/Cat";
-import {CatStatus} from "../../types/index";
+import { Cat } from "..";
+import { CatStatus } from "../../types/index";
 
 const selectCat = async (catId:number):Promise<Cat|undefined> => {
     const selectedCat:Cat|undefined = await getConnection().createQueryBuilder()

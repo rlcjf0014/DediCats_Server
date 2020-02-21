@@ -1,13 +1,13 @@
+/* eslint-disable no-unused-vars */
 import express from "express";
 import {
     InsertResult, UpdateResult,
 } from "typeorm";
 
-import Comment from "../model/entity/Comment";
-import Post from "../model/entity/Post";
-import User from "../model/entity/User";
+import { Comment } from "../model";
+import { CommentService } from "../service";
 import { getUserIdbyAccessToken } from "../library/jwt";
-import * as CommentService from "../Service/Comment";
+
 
 const router:express.Router = express.Router();
 

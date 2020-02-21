@@ -1,17 +1,13 @@
+/* eslint-disable no-unused-vars */
 import express from "express";
 import {
-    UpdateResult, 
+    UpdateResult,
 } from "typeorm";
-
 import { getUserIdbyAccessToken } from "../library/jwt";
-
-import User from "../model/entity/User";
-import Photo from "../model/entity/Photo";
+import { User } from "../model";
+import { PhotoService, UserService } from "../service";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
-
-import * as PhotoService from "../Service/Photo";
-import * as UserService from "../Service/User";
 
 const router:express.Router = express.Router();
 

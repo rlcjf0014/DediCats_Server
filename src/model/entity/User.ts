@@ -5,14 +5,11 @@ import {
     PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany,
 } from "typeorm";
 
-import Alert from "./Alert";
-import Comment from "./Comment";
-import Cat from "./Cat";
-import Report from "./Report";
-import Post from "./Post";
-import CatTag from "./CatTag";
+import {
+    Alert, Comment, Cat, Report, Post, CatTag,
+} from "..";
 
-import {UserStatus} from "../../types/index";
+import { UserStatus } from "../../types/index";
 
 @Entity({ name: "user" })
 export default class User extends BaseEntity {

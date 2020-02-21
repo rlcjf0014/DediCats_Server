@@ -2,7 +2,7 @@ import express from "express";
 //* "location": "POINT(1 2)",
 //* new wkx.Point(1, 2).toWkt();
 import { getUserIdbyAccessToken } from "../library/jwt";
-import { getCatsBylocation } from "../Service/Cat";
+import { getCatsBylocation } from "../service/Cat";
 
 const router:express.Router = express.Router();
 

@@ -1,16 +1,11 @@
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
+/* eslint-disable no-unused-vars */
 import express from "express";
 import {
-   InsertResult,UpdateResult, DeleteResult,
+    InsertResult, UpdateResult, DeleteResult,
 } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
-
-import Post from "../model/entity/Post";
 import uploadFile from "../library/ImageFunction/imgupload";
-import * as PostService from "../Service/Post";
-import * as PhotoService from "../Service/Photo";
-// import storage from "../data/storage";
+import { PostService, PhotoService } from "../service";
 
 const router:express.Router = express.Router();
 
@@ -23,7 +18,7 @@ const postRouter = (io:any) => {
         const { accessToken }:{accessToken:string} = req.signedCookies;
         try {
             const userId = getUserIdbyAccessToken(accessToken);
-            
+
             const addPost:InsertResult = await PostService.insertPost(userId, catId, content);
             if (addPost.raw.affectedRows === 0) {
                 res.status(409).send("Failed to save post");

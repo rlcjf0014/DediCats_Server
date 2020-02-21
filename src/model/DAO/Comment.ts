@@ -5,7 +5,7 @@
 import {
     UpdateResult, getConnection, getRepository, InsertResult,
 } from "typeorm";
-import Comment from "../entity/Comment";
+import { Comment } from "..";
 import { CommentStatus } from "../../types/index";
 
 const getComments = async (postId:number, nthPage:number):Promise<Array<Comment>> => {

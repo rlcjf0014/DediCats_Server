@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 import jwt from "jsonwebtoken";
-import User from "model/entity/User";
+import { User } from "../model";
 
 require("dotenv").config();
 

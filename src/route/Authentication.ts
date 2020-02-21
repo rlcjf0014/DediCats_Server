@@ -6,8 +6,9 @@ import {
     getConnection, UpdateResult,
 } from "typeorm";
 
-import User from "../model/entity/User";
-import * as UserService from "../Service/User";
+import { User } from "../model";
+import { UserService } from "../service";
+
 import {
     getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
 } from "../library/jwt";

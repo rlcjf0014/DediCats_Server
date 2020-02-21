@@ -1,4 +1,12 @@
 module.exports = {
+  "settings": {
+      "import/resolver": {
+          "node": {
+              "extensions": [".js", ".jsx", ".ts", ".tsx"],
+              "moduleDirectory": ["node_modules", "src/"]
+          }
+      }
+  },
   "env": {
       "es6": true,
       "node": true
@@ -20,6 +28,16 @@ module.exports = {
       "@typescript-eslint"
   ],
   "rules": {
+    "import/extensions": [
+        "error",
+        "ignorePackages",
+        {
+          "js": "never",
+          "jsx": "never",
+          "ts": "never",
+          "tsx": "never"
+        }
+     ],
     "import/no-unresolved": [
         2, 
         { "caseSensitive": false }
