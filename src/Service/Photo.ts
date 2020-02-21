@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 import {
-    UpdateResult, InsertResult, DeleteResult
+    UpdateResult, InsertResult, DeleteResult,
 } from "typeorm";
 
 import Photo from "../model/entity/Photo";
@@ -14,4 +15,6 @@ const updateProfile = (userId:number, imagepath:string):Promise<UpdateResult> =>
 const deletePostPhoto = (postId:number):Promise<UpdateResult> => PhotoDAO.deletePostPhoto(postId);
 
 
-export { addCatPhoto, getCatPhoto, getCatAlbum, deleteProfile, updateProfile, deletePostPhoto };
+export {
+    addCatPhoto, getCatPhoto, getCatAlbum, deleteProfile, updateProfile, deletePostPhoto,
+};

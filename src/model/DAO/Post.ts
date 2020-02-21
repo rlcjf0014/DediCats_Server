@@ -44,6 +44,24 @@ const updateState = async (postId:number) : Promise<UpdateResult> => {
     return updateResult;
 };
 
+const getPosts = async (catId:number, nthPage:number):Promise<Array<object>> => {
+    const posts:Array<object> = await getRepository(Post)
+        .createQueryBuilder("post")
+        .where("post.cat = :cat AND post.status = :status", { cat: catId, status: "Y" })
+        .leftJoinAndSelect("post.user", "perry")
+        .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
+        .leftJoinAndSelect("post.photos", "joshua", "joshua.status = :status", { status: "Y" })
+        .select(["post.id", "post.content", "post.createAt", "post.updateAt", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
+        .leftJoinAndSelect("post.comments", "daniel", "daniel.status = :status", { status: "Y" })
+        .select(["post.id", "post.content", "post.createAt", "post.updateAt", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id", "daniel.id"])
+        .orderBy("post.id", "DESC")
+        .skip(nthPage)
+        .take(10)
+        .getMany();
+
+    return posts;
+};
+
 export {
-    insertPost, deletePost, updatePost, updateState,
+    insertPost, deletePost, updatePost, updateState, getPosts,
 };
