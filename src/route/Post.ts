@@ -37,19 +37,14 @@ const postRouter = (io:any) => {
             }
             const postId = addPost.identifiers[0].id;
             const key:string = `POST #${postId}`;
-            const imagepath:any = await uploadFile(key, photoPath);
-            const addPhoto:InsertResult = await createConnection
-                .insert()
-                .into("photo")
-                .values([
-                    {
-                        path: imagepath, status: "Y", cat: catId, post: postId,
-                    },
-                ])
-                .execute();
+            const imagepath:string|boolean = await uploadFile(key, photoPath);
+            if (typeof (imagepath) === "boolean") {
+                res.status(409).send("Saved post, but failed to upload image");
+                return;
+            }
+            const addPhoto:InsertResult = await PhotoService.addPostPhoto(imagepath, catId, postId);
             if (addPhoto.raw.affectedRows === 0) {
                 const deletePost:DeleteResult = await PostService.deletePost(postId);
-
                 if (deletePost.raw.affectedRows === 0) {
                     res.status(400).send({
                         message: "Failed to delete post without posted picture, contact admin",

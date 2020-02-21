@@ -64,9 +64,21 @@ const deletePostPhoto = async (postId:number):Promise<UpdateResult> => {
     return updatePostPhoto;
 };
 
-const addPostPhoto = async ()
+const addPostPhoto = async (imagepath:string, catId:number, postId:number):Promise<InsertResult> => {
+    const addPhoto:InsertResult = await getConnection().createQueryBuilder()
+        .insert()
+        .into("photo")
+        .values([
+            {
+                path: imagepath, status: "Y", cat: catId, post: postId,
+            },
+        ])
+        .execute();
+    return addPhoto;
+};
 
 
 export {
-    addCatPhoto, getCatPhoto, getCatAlbum, deleteProfile, updateProfile, deletePostPhoto
+    addCatPhoto, getCatPhoto, getCatAlbum, deleteProfile,
+    updateProfile, deletePostPhoto, addPostPhoto,
 };
