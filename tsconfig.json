@@ -64,7 +64,7 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "src/*"
+    "src/*", "src/ImageFunction/imgupload.ts", "src/AuthenticationServer/serverIndex.ts", "src/AuthenticationServer/serverApi.ts", "src/ImageFunction/imgdelete.ts"
   ],
   "exclude": [
     "node_modules",
