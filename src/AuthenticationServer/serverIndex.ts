@@ -35,4 +35,3 @@ getConnection()
         console.log("The database has been set up.\nPlease use the server!");
     })
     .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
-
