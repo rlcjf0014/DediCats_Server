@@ -52,24 +52,19 @@ const postRouter = (io:any) => {
     }));
 
     // at Post Refresh button
-    router.get("/:catId/:pagination", async (req:express.Request, res:express.Response) => {
+    router.get("/:catId/:pagination", helper(async (req:express.Request, res:express.Response) => {
         const { catId, pagination }:{ catId?: string, pagination?:string} = req.params;
         const catIdNumber:number = Number(catId);
         const paginationNumber:number = Number(pagination);
 
         const nthPage = paginationNumber * 10;
-        try {
-            const post:Array<object> = await PostService.getPosts(catIdNumber, nthPage);
-            if (!post) {
-                res.status(409).send("Failed to get post");
-                return;
-            }
-            res.status(200).send(post);
-        } catch (e) {
-            console.log("doesn't work");
-            console.dir(e);
+        const post:Array<object> = await PostService.getPosts(catIdNumber, nthPage);
+        if (!post) {
+            res.status(409).send("Failed to get post");
+            return;
         }
-    });
+        res.status(200).send(post);
+    }));
 
     // update Post
     router.post("/update", helper(async (req:express.Request, res:express.Response) => {
