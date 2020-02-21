@@ -2,10 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { QueryFailedError } from "typeorm";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
-const helper = function (fn:Function) {
-    return (req:Request, res:Response, next:NextFunction) => {
-        fn(req, res, next).catch(next);
-    };
+const helper = (fn:Function) => (req:Request, res:Response, next:NextFunction) => {
+    fn(req, res, next).catch(next);
 };
 
 const typeORMError = (error:Error, req:Request, res:Response, next:NextFunction) => {
