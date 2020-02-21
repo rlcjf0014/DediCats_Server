@@ -56,13 +56,15 @@ const updateProfile = async (userId: number, imagepath:string):Promise<UpdateRes
     return updatePic;
 };
 
-const deletePostPhoto = async (postId:number):Promise<UpdteResult> => {
+const deletePostPhoto = async (postId:number):Promise<UpdateResult> => {
     const updatePostPhoto:UpdateResult = await getConnection().createQueryBuilder()
         .update(Photo).set({ status: "D" })
         .where({ post: postId })
         .execute();
     return updatePostPhoto;
 };
+
+const addPostPhoto = async ()
 
 
 export {
