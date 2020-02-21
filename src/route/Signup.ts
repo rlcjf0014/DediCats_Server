@@ -11,14 +11,14 @@ import {
 
 import sendMail from "../library/email";
 import * as UserService from "../Service/User";
+import { helper } from "../library/errorHelper";
 
 require("dotenv").config();
 
 const router:express.Router = express.Router();
 
-router.post("/email", async (req:express.Request, res:express.Response) => {
+router.post("/email", helper(async (req:express.Request, res:express.Response) => {
     const { nickname, email } = req.body;
-
     // ! 유저 체크
     const checkEmail:User|undefined = await UserService.getUserByEmail(email);
     if (checkEmail) {
@@ -26,16 +26,11 @@ router.post("/email", async (req:express.Request, res:express.Response) => {
         return;
     }
 
-    try {
-        const secretCode = await sendMail(nickname, email, "signIn");
-        res.status(201).send(secretCode);
-    } catch (e) {
-        console.error(e);
-        res.status(409).send("Failed to send email");
-    }
-});
+    const secretCode = await sendMail(nickname, email, "signIn");
+    res.status(201).send(secretCode);
+}));
 
-router.post("/findpw", async (req:express.Request, res:express.Response) => {
+router.post("/findpw", helper(async (req:express.Request, res:express.Response) => {
     const { email } :{email:string} = req.body;
 
     const user:User|undefined = await UserService.getUserByEmail(email);
@@ -44,15 +39,7 @@ router.post("/findpw", async (req:express.Request, res:express.Response) => {
         res.status(401).send("invalid email");
         return;
     }
-    let secretCode:string|null = null;
-    try {
-        secretCode = await sendMail(user.nickname, email, "pwInitialization");
-    } catch (e) {
-        console.error(e);
-        res.status(409).send("Failed to send email");
-    }
-    if (!secretCode) return;
-
+    const secretCode:string = await sendMail(user.nickname, email, "pwInitialization");
     const encryPassword:string = await getEncryPw(secretCode, user.salt);
     const result:UpdateResult = await UserService.updateUserPw(encryPassword, user.id);
 
@@ -61,34 +48,29 @@ router.post("/findpw", async (req:express.Request, res:express.Response) => {
         return;
     }
     res.status(409).send("Failed to change user password");
-});
+}));
 
-router.post("/", async (req:express.Request, res:express.Response) => {
+router.post("/", helper(async (req:express.Request, res:express.Response) => {
     const { email, password, nickname }:{email:string, password:string, nickname:string} = req.body;
-    try {
-        // ! 유저 체크
-        const checkEmail:User|undefined = await UserService.getUserByEmail(email);
+    // ! 유저 체크
+    const checkEmail:User|undefined = await UserService.getUserByEmail(email);
 
-        if (checkEmail) {
-            res.status(409).send("User already exists.");
-            return;
-        }
-        // ! 암호화부분
-        const salt:string = await getRandomByte();
-        const encryPassword:string = await getEncryPw(password, salt);
-
-        // ! insert
-        const result:InsertResult = await UserService.insertUser(nickname, email, encryPassword, salt);
-
-        if (result.raw.affectedRows) {
-            res.status(201).json({ userId: result.identifiers[0].id, email, nickname });
-            return;
-        }
-        res.status(409).send("User creation failed");
-    } catch (e) {
-        // eslint-disable-next-line no-console
-        res.status(400).send(e);
+    if (checkEmail) {
+        res.status(409).send("User already exists.");
+        return;
     }
-});
+    // ! 암호화부분
+    const salt:string = await getRandomByte();
+    const encryPassword:string = await getEncryPw(password, salt);
+
+    // ! insert
+    const result:InsertResult = await UserService.insertUser(nickname, email, encryPassword, salt);
+
+    if (result.raw.affectedRows) {
+        res.status(201).json({ userId: result.identifiers[0].id, email, nickname });
+        return;
+    }
+    res.status(409).send("User creation failed");
+}));
 
 export default router;
