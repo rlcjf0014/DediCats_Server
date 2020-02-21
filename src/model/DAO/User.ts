@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
-import { UpdateResult, getConnection } from "typeorm";
+import { UpdateResult, getConnection, getRepository } from "typeorm";
 import User from "../entity/User";
 ``
 
@@ -44,6 +44,21 @@ const updateToken = async (id:number, refreshToken:string|null):Promise<UpdateRe
     return updateResult;
 };
 
+const getCatList = async (userId: number):Promise<Array<object>> => {
+    const getCat1:Array<object> = await getRepository(User).createQueryBuilder("user")
+        .where("user.id = :id", { id: userId })
+        .leftJoinAndSelect("user.cats", "cat")
+        .select(["user.id", "user.nickname", "user.photoPath", "user.createAt",
+            "cat.id", "cat.description", "cat.address", "cat.nickname", "cat.species"])
+        .leftJoinAndSelect("cat.photos", "photo", "photo.isProfile = :isProfile", { isProfile: "Y" })
+        .select(["user.id", "user.nickname", "user.photoPath", "user.createAt",
+            "cat.id", "cat.description", "cat.address", "cat.nickname", "cat.species",
+            "photo.path"])
+        .getMany();
+    return getCat1;
+};
+
+
 export {
-    getUserById, updateUserPw, getUserByEmail, updateToken,
+    getUserById, updateUserPw, getUserByEmail, updateToken, getCatList,
 };

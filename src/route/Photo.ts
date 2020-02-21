@@ -10,17 +10,15 @@ import Photo from "../model/entity/Photo";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
 
+import * as PhotoService from "../Service/Photo";
+import * as UserService from "../Service/User";
+
 const router:express.Router = express.Router();
 
 router.get("/album/:catId", async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
     try {
-        const getPhoto:Array<object> = await getRepository(Photo)
-            .createQueryBuilder("photo")
-            .where("photo.cat = :cat AND photo.status = :status", { cat: Number(catId), status: "Y" })
-            .select(["photo.id", "photo.path"])
-            .orderBy("photo.id", "ASC")
-            .getMany();
+        const getPhoto:Array<object> = await PhotoService.getCatAlbum(catId);
         if (!getPhoto) {
             res.status(409).send("Photo not found");
         }
@@ -37,15 +35,12 @@ router.post("/profile/delete", async (req: express.Request, res:express.Response
     try {
         const userId = getUserIdbyAccessToken(accessToken);
 
-        const connection:QueryBuilder<any> = await getConnection().createQueryBuilder();
-        const updatePic:UpdateResult = await connection
-            .update(User).set({ photoPath: null })
-            .where({ id: userId }).execute();
+        const updatePic:UpdateResult = await PhotoService.deleteProfile(userId);
         if (updatePic.raw.changedRows === 0) {
             res.status(409).send("Failed to delete profile picture");
             return;
         }
-        const result:any = await deleteFile(`USER #${userId}`);
+        await deleteFile(`USER #${userId}`);
         res.status(201).send("Successfully deleted profile picture");
     } catch (e) {
         res.status(400).send(e);
@@ -79,7 +74,7 @@ router.post("/profile", async (req:express.Request, res:express.Response) => {
                 res.status(409).send("Failed to update profile picture");
                 return;
             }
-            res.status(201).send("Successfully updated profile picture");
+            res.status(201).send({ photoPath: imagepath });
         } else {
             const result:any = await deleteFile(`USER #${userId}`);
             const key = `USER #${userId}`;
@@ -91,7 +86,7 @@ router.post("/profile", async (req:express.Request, res:express.Response) => {
                 res.status(409).send("Failed to update profile picture");
                 return;
             }
-            res.status(201).send("Successfully updated profile picture");
+            res.status(201).send({ photoPath: imagepath });
         }
     } catch (e) {
         res.status(400).send(e);

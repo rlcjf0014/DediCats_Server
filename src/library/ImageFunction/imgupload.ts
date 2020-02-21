@@ -2,7 +2,7 @@ import { Any } from "typeorm";
 
 require("dotenv").config();
 const AWS = require("aws-sdk");
-const fs = require("fs");
+// const fs = require("fs");
 
 const { ID } = process.env;
 const { SECRET } = process.env;
@@ -16,7 +16,7 @@ const s3 = new AWS.S3({
 });
 
 // eslint-disable-next-line func-names
-export default function uploadFile(imageName: string, imageData:string) {
+export default function uploadFile(imageName: string, imageData:string):Promise<string | boolean> {
     return new Promise(((resolve, reject) => {
         // eslint-disable-next-line new-cap
         // eslint-disable-next-line no-buffer-constructor
