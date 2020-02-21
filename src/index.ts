@@ -65,7 +65,6 @@ api.use("/", BasicRouter);
 //* Socket setup
 
 io.on("connection", (socket:any) => {
-    // socket에 연결된 이후, 해당 유저에게 방id와 이름을 저장
     const { postId } = socket.handshake.query;
     // eslint-disable-next-line no-param-reassign
     socket.postId = postId;

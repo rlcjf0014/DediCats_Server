@@ -12,9 +12,12 @@ import User from "../model/entity/User";
 
 import uploadFile from "../library/ImageFunction/imgupload";
 import { getUserIdbyAccessToken } from "../library/jwt";
+import { formatRainbow, formatCut } from "../library/formatCatOptions";
 
 import * as CatService from "../Service/Cat";
 import * as CatTagService from "../Service/CatTag";
+import * as PhotoService from "../Service/Photo";
+import * as UserService from "../Service/User";
 
 const router:express.Router = express.Router();
 
@@ -72,18 +75,7 @@ router.post("/rainbow", async (req:express.Request, res:express.Response) => {
             return;
         }
 
-        const objSelectedRainbow:{Y:number, YDate:string|null, N:number, NDate:string|null} = JSON.parse(selectedRainbow.rainbow);
-
-        // Y업데이트 일때!
-        if (rainbow.YDate) {
-            objSelectedRainbow.Y += rainbow.Y;
-            objSelectedRainbow.YDate = rainbow.YDate;
-        } else {
-            objSelectedRainbow.N += rainbow.N;
-            objSelectedRainbow.NDate = rainbow.NDate;
-        }
-
-        const strRainbow = JSON.stringify(objSelectedRainbow);
+        const strRainbow:string = formatRainbow(selectedRainbow, rainbow);
 
         const updateResult:UpdateResult = await CatService.updateCatRainbow(catId, strRainbow);
 
@@ -143,12 +135,9 @@ router.post("/cut", async (req:express.Request, res:express.Response) => {
             return;
         }
 
-        const objSelectedCut:{Y:number, N:number, unknown:number} = JSON.parse(selectedCut.cut);
-        objSelectedCut.Y += catCut.Y;
-        objSelectedCut.N += catCut.N;
-        objSelectedCut.unknown += catCut.unknown;
+        const objSelectedCut:string = formatCut(selectedCut, catCut);
 
-        const updateCut:UpdateResult = await CatService.updateCatCut(catId, JSON.stringify(objSelectedCut));
+        const updateCut:UpdateResult = await CatService.updateCatCut(catId, objSelectedCut);
 
         if (!updateCut) {
             res.status(409).send("Failed to update peanuts.");
@@ -228,14 +217,9 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Failed to add cat");
             return;
         }
-        const imagepath:string|unknown = await uploadFile(`CAT #${addCat.identifiers[0].id}`, photoPath);
-        if (!imagepath) {
-            const deleteCat:DeleteResult = await getConnection()
-                .createQueryBuilder()
-                .delete()
-                .from("cat")
-                .where({ id: addCat.identifiers[0].id })
-                .execute();
+        const imagepath:string | boolean = await uploadFile(`CAT #${addCat.identifiers[0].id}`, photoPath);
+        if (imagepath === false) {
+            const deleteCat: DeleteResult = await CatService.deleteCat(addCat.identifiers[0].id); 
             if (deleteCat.raw.affectedRows === 0) {
                 res.status(409).send("Failed to delete cat without posted picture, contact admin");
                 return;
@@ -243,22 +227,9 @@ router.post("/addcat", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Added cat, but failed to add its photo");
             return;
         }
-        const addPhoto:InsertResult = await await getConnection().createQueryBuilder()
-            .insert()
-            .into("photo")
-            .values([
-                {
-                    path: imagepath, cat: addCat.identifiers[0].id, status: "Y", isProfile: "Y",
-                },
-            ])
-            .execute();
+        const addPhoto:InsertResult = await PhotoService.addCatPhoto(imagepath, addCat.identifiers[0].id);
         if (addPhoto.raw.affectedRows === 0) {
-            const deleteCat:DeleteResult = await getConnection()
-                .createQueryBuilder()
-                .delete()
-                .from("cat")
-                .where({ id: addCat.identifiers[0].id })
-                .execute();
+            const deleteCat: DeleteResult = await CatService.deleteCat(addCat.identifiers[0].id);
             if (deleteCat.raw.affectedRows === 0) {
                 res.status(409).send("Failed to delete cat without posted picture, contact admin");
                 return;
@@ -300,20 +271,11 @@ router.get("/catlist", async (req:express.Request, res:express.Response) => {
     try {
         const userId = getUserIdbyAccessToken(accessToken);
 
-        const getCat1:Array<object> = await getRepository(User).createQueryBuilder("user")
-            .where("user.id = :id", { id: Number(userId) })
-            .leftJoinAndSelect("user.cats", "cat")
-            .select(["user.id", "user.nickname", "user.photoPath", "user.createAt",
-                "cat.id", "cat.description", "cat.address", "cat.nickname", "cat.species"])
-            .leftJoinAndSelect("cat.photos", "photo", "photo.isProfile = :isProfile", { isProfile: "Y" })
-            .select(["user.id", "user.nickname", "user.photoPath", "user.createAt",
-                "cat.id", "cat.description", "cat.address", "cat.nickname", "cat.species",
-                "photo.path"])
-            .getMany();
-        if (!getCat1) {
+        const getCats:Array<object> = await UserService.getCatList(userId);
+        if (!getCats) {
             res.status(409).send("User's list not found");
         }
-        res.status(200).send(getCat1);
+        res.status(200).send(getCats);
     } catch (e) {
         res.status(400).send(e);
     }
@@ -341,12 +303,7 @@ router.get("/:catId", async (req:express.Request, res:express.Response) => {
             res.status(409).send("Cat found, but tag not found");
             return;
         }
-        const getPhoto:Photo|undefined = await getConnection().createQueryBuilder()
-            .select("photo")
-            .from(Photo, "photo")
-            .where("photo.cat = :cat", { cat: catId, isProfile: "Y" })
-            .select(["photo.path"])
-            .getOne();
+        const getPhoto:Photo|undefined = await PhotoService.getCatPhoto(catId);
         if (!getPhoto) {
             res.status(409).send("Cat and tag found, but photo not found");
             return;

@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {
-    getConnection, UpdateResult, InsertResult, getRepository,
+    getConnection, UpdateResult, InsertResult, getRepository, DeleteResult
 } from "typeorm";
 
 import Cat from "../entity/Cat";
@@ -73,8 +73,7 @@ const addCat = async (catNickname:string, coordinate:string, address:string, cat
 };
 
 const getCat = async (catId: string):Promise<Cat|undefined> => {
-    const repositoryManager = getRepository(Cat).createQueryBuilder("cat");
-    const getcat:Cat | undefined = await repositoryManager
+    const getcat:Cat | undefined = await getRepository(Cat).createQueryBuilder("cat")
         .where("cat.id = :id", { id: Number(catId) })
         .leftJoinAndSelect("cat.user", "item")
         .select(["cat", "item.id"])
@@ -90,6 +89,16 @@ const getCatsBylocation = async (location : { NElatitude : number, NElongitude :
     return result;
 };
 
+const deleteCat = async (deleteId:number):Promise<DeleteResult> => {
+    const deletedCat:DeleteResult = await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from("cat")
+        .where({ id: deleteId })
+        .execute();
+    return deletedCat;
+};
+
 export {
     selectCat,
     updateRainbow,
@@ -99,20 +108,5 @@ export {
     addCat,
     getCat,
     getCatsBylocation,
+    deleteCat,
 };
-
-
-// export default class CatDAO {
-//     queryManager = getConnection().createQueryBuilder();
-
-
-//     selectCat = async (catId:number) => {
-//         const selectedCat:Cat|undefined = await this.queryManager
-//             .select("cat")
-//             .from(Cat, "cat")
-//             .where({ id: catId })
-//             .getOne();
-
-//         return selectedCat;
-//     }
-// }

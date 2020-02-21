@@ -10,7 +10,9 @@ const getUserById = (id:number):Promise<User|undefined> => UserDAO.getUserById(i
 const updateUserPw = (password:string, id:number) :Promise<UpdateResult> => UserDAO.updateUserPw(password, id);
 const getUserByEmail = (email:string):Promise<User|undefined> => UserDAO.getUserByEmail(email);
 const updateToken = (id:number, refreshToken:string|null):Promise<UpdateResult> => UserDAO.updateToken(id, refreshToken);
+const getCatList = (userId:number):Promise<Array<object>> => UserDAO.getCatList(userId);
+
 
 export {
-    getUserById, updateUserPw, getUserByEmail, updateToken,
+    getUserById, updateUserPw, getUserByEmail, updateToken, getCatList,
 };

@@ -15,7 +15,7 @@ const deleteTag = async (tagId:number, catId:number, userId:number):Promise<Upda
 };
 
 const getTag = async (catId:string):Promise<Array<object>> => {
-    const gettag:Array<object> = await  getRepository(CatTag).createQueryBuilder("cat_tag")
+    const gettag:Array<object> = await getRepository(CatTag).createQueryBuilder("cat_tag")
         .where({ cat: Number(catId), status: "Y" })
         .leftJoinAndSelect("cat_tag.tag", "tag")
         .select(["cat_tag.id", "tag.content"])

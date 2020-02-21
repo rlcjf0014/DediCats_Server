@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {
-    UpdateResult, InsertResult
+    UpdateResult, InsertResult, DeleteResult
 } from "typeorm";
 import * as CatDAO from "../model/DAO/Cat";
 import Cat from "../model/entity/Cat";
@@ -22,6 +22,9 @@ const addCat = (catNickname:string, coordinate:string, address:string, catDescri
 const getCat = (catId: string):Promise<Cat|undefined> => CatDAO.getCat(catId);
 
 const getCatsBylocation = (location:{ NElatitude : number, NElongitude : number, SWlatitude : number, SWlongitude : number }, userId:number):Promise<Array<object>> => CatDAO.getCatsBylocation(location, userId);
+
+const deleteCat = (deleteId: number):Promise<DeleteResult> => CatDAO.deleteCat(deleteId);
+
 export {
     selectCat,
     updateCatCut,
@@ -31,4 +34,5 @@ export {
     addCat,
     addCatToday,
     getCatsBylocation,
+    deleteCat,
 };
