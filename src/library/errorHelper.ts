@@ -3,7 +3,12 @@ import { QueryFailedError } from "typeorm";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
 const helper = (fn:Function) => (req:Request, res:Response, next:NextFunction) => {
-    fn(req, res, next).catch(next);
+    try {
+        fn(req, res, next);
+    } catch (e) {
+        console.log("e : ", e);
+        next(e);
+    }
 };
 
 const typeORMError = (error:Error, req:Request, res:Response, next:NextFunction) => {
