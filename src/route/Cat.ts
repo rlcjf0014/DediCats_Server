@@ -217,6 +217,7 @@ router.post("/unfollow", helper(async (req:express.Request, res:express.Response
 
 // This endpoint allows you to get the list of cats you follow.
 router.get("/catlist", helper(async (req:express.Request, res:express.Response) => {
+    console.log("catlist is here baby")
     const { accessToken }:{accessToken:string} = req.signedCookies;
     const userId = getUserIdbyAccessToken(accessToken);
 
