@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken";
 import http from "http";
 import { typeORMError, jwtError, etcError } from "./library/errorHelper";
 import {
-    BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup,
+    BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
 }
     from "./route";
 
@@ -36,9 +36,12 @@ api.use(bodyParser.json({ limit: "50mb" }));
 api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
 
+api.use("/", BasicRouter);
 api.use("/signup", Signup);
-
+api.use("/auth", Authentication);
 api.use("/*", (req:Request, res:Response, next:NextFunction) => {
+    console.log("access is coming in");
+    console.log(req.signedCookies);
     const { accessToken } = req.signedCookies;
     try {
         const accessKey:any = process.env.JWT_SECRET_ACCESS;
@@ -47,8 +50,13 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
         next();
     } catch {
         console.log("이버스는 인증으로 갑니다");
-        res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
+        // res.redirect("../auth/token");
+        res.sendStatus(403);
+        // res.writeHead(302, {
+        //     Location: `${process.env.AUTH_SERVER}/auth/token`
+        // res.redirect("./route/Authentication/token");
     }
+    // res.end();
 });
 
 api.use("/user", User);
@@ -58,7 +66,6 @@ api.use("/map", Map);
 api.use("/photo", Photo);
 api.use("/post", post);
 api.use("/report", Report);
-api.use("/", BasicRouter);
 
 //* Socket setup
 

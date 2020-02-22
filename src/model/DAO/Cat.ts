@@ -51,6 +51,7 @@ const updateCut = async (catId: number, catCut: string): Promise<UpdateResult> =
 
 const addCat = async (catNickname:string, coordinate:string, address:string, catDescription:string,
     catSpecies:string, userId: number, cut:object): Promise<InsertResult> => {
+    console.log("애드캣 dao실행");
     const addcat:InsertResult = await getConnection().createQueryBuilder()
         .insert()
         .into("cat")
