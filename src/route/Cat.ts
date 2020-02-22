@@ -171,10 +171,10 @@ router.post("/addcat", helper(async (req:express.Request, res:express.Response) 
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
     const userId = getUserIdbyAccessToken(accessToken);
-
+    console.log(userId)
     const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
     const addCat: InsertResult = await CatService.addCat(catNickname, coordinate, address, catDescription, catSpecies, userId, cut);
-
+    
     if (addCat.raw.affectedRows === 0) {
         res.status(409).send("Failed to add cat");
         return;

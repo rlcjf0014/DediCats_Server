@@ -39,6 +39,8 @@ api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 api.use("/signup", Signup);
 
 api.use("/*", (req:Request, res:Response, next:NextFunction) => {
+    console.log("access is coming in");
+    console.log(req.signedCookies);
     const { accessToken } = req.signedCookies;
     try {
         const accessKey:any = process.env.JWT_SECRET_ACCESS;

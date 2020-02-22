@@ -12,6 +12,7 @@ import { helper } from "../library/errorHelper";
 const router:express.Router = express.Router();
 
 router.patch("/changepw", helper(async (req:express.Request, res:express.Response) => {
+    console.log("hey");
     const { password, newPassword }:{password:string, newPassword:string } = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
