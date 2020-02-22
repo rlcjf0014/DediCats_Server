@@ -60,13 +60,13 @@ const postRouter = (io:any) => {
         const nthPage = paginationNumber * 10;
         const post:Array<object> = await PostService.getPosts(catIdNumber, nthPage);
         const count:number = await PostService.getPostsCount(catIdNumber);
-        // post.count = count / 10 + 1;
+        const maxcount = count / 10 + 1;
 
         if (!post) {
             res.status(409).send("Failed to get post");
             return;
         }
-        res.status(200).send(post);
+        res.status(200).send({ post, maxcount });
     }));
 
     // update Post
