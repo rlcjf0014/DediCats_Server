@@ -3,6 +3,7 @@
 /* eslint-disable import/extensions */
 import express from "express";
 import { UpdateResult } from "typeorm";
+import jwt from "jsonwebtoken";
 import { User } from "../model";
 import { UserService } from "../service";
 import { getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken } from "../library/jwt";
@@ -57,7 +58,8 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
     const { refreshToken } = req.signedCookies;
 
     try {
-        getUserIdbyRefreshToken(refreshToken);
+        const refreshKey:any = process.env.JWT_SECRET_REFRESH;
+        jwt.verify(refreshToken, refreshKey);
         next();
     } catch (e) {
         // eslint-disable-next-line no-console

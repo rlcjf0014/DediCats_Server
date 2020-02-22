@@ -2,10 +2,10 @@ require("dotenv").config();
 
 module.exports = {
     type: "mariadb",
-    host: "localhost",
-    port: 3306,
-    username:  "root",
-    password:  "rlcjf0014",
+    host: process.env.DB_USER || "localhost",
+    port: process.env.DB_PORT || 3306,
+    username: process.env.DB_USER || "root",
+    password: process.env.DB_PASS || "rlcjf0014",
     database: "cats",
     synchronize: true,
     logging: false,
