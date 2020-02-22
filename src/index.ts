@@ -12,6 +12,7 @@ import {
 } from "./library/errorHelper";
 import { getUserIdbyAccessToken } from "./library/jwt";
 import {
+
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
 }
     from "./route";
@@ -45,6 +46,7 @@ api.use("/*", helper((req:Request, res:Response, next:NextFunction) => {
     next();
 }));
 
+
 api.use("/user", User);
 api.use("/cat", Cat);
 api.use("/comment", comment);
@@ -52,7 +54,6 @@ api.use("/map", Map);
 api.use("/photo", Photo);
 api.use("/post", post);
 api.use("/report", Report);
-api.use("/", BasicRouter);
 
 //* Socket setup
 
