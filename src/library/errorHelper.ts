@@ -6,20 +6,18 @@ const helper = (fn:Function) => (req:Request, res:Response, next:NextFunction) =
     try {
         fn(req, res, next);
     } catch (e) {
-        console.log("e : ", e);
         next(e);
     }
 };
 
 const typeORMError = (error:Error, req:Request, res:Response, next:NextFunction) => {
-    console.log(error);
-    if (error instanceof QueryFailedError) res.status(400).json({ type: "QueryFailedError", message: error.message });
+    if (error instanceof QueryFailedError) return res.status(400).json({ type: "QueryFailedError", message: error.message });
     next(error);
 };
 
 const jwtError = (error:Error, req:Request, res:Response, next:NextFunction) => {
-    if (error instanceof TokenExpiredError) res.status(401).json({ type: "TokenExpiredError", message: error.message });
-    else if (error instanceof JsonWebTokenError) res.status(400).json({ type: "JsonWebTokenError", message: error.message });
+    if (error instanceof TokenExpiredError) return res.status(401).json({ type: "TokenExpiredError", message: error.message });
+    if (error instanceof JsonWebTokenError) return res.status(400).json({ type: "JsonWebTokenError", message: error.message });
     next(error);
 };
 
