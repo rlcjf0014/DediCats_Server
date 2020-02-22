@@ -27,9 +27,9 @@ const generateAccessToken = (user:User):string => jwt.sign({
     email: user.email,
     createAt:
     user.createAt,
-}, accessKey, { expiresIn: "1d" });
+}, accessKey, { expiresIn: "20s" });
 
-const generateRefeshToken = (id:number):string => jwt.sign({ id }, refresKey, { expiresIn: "100d" });
+const generateRefeshToken = (id:number):string => jwt.sign({ id }, refresKey, { expiresIn: "60s" });
 
 export {
     getUserIdbyAccessToken, getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
