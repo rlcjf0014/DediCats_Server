@@ -61,7 +61,7 @@ router.post("/rainbow", helper(async (req:express.Request, res:express.Response)
 
     if (updateResult.raw.changedRows) {
         const changedRainbow:Cat|undefined = await CatService.selectCat(catId);
-        res.status(200).send(changedRainbow?.rainbow);
+        res.status(200).send({ rainbow: changedRainbow?.rainbow });
         return;
     }
     res.status(409).send("Could not update rainbow");
@@ -112,7 +112,7 @@ router.post("/cut", helper(async (req:express.Request, res:express.Response) => 
     }
     if (updateCut.raw.changedRows) {
         const updatedCat:Cat|undefined = await CatService.selectCat(catId);
-        res.status(201).send(updatedCat?.cut);
+        res.status(201).send({ cut: updatedCat?.cut });
         return;
     }
     res.status(409).send("Could not update catcut");
