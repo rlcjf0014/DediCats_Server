@@ -50,7 +50,11 @@ router.post("/signout", helper(async (req:express.Request, res:express.Response)
 
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
+    console.log("들어는 오니..?");
     const { refreshToken } = req.signedCookies;
+
+    if (!refreshToken) return res.status(401).send("logout");
+
     const userId:number = getUserIdbyRefreshToken(refreshToken);
 
     const user:User|undefined = await UserService.getUserById(userId);
@@ -63,7 +67,7 @@ router.post("/token", helper(async (req:express.Request, res:express.Response, n
     const {
         id, nickname, photoPath, createAt, email,
     } = user;
-
+    console.log("뭐 성공은 햇니?");
     return res.status(200).json({
         accessToken,
         user: {

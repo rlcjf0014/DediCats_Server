@@ -37,6 +37,7 @@ api.use(cookieParser(process.env.TOKEN_KEY));
 api.use(bodyParser.json({ limit: "50mb" }));
 api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
+api.use("/", BasicRouter);
 api.use("/signup", Signup);
 api.use("/auth", Authentication);
 
