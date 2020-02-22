@@ -11,5 +11,5 @@ const getPosts = (catId:number, nthPage:number):Promise<Array<object>> => PostDA
 const getPostsCount = (catId:number):Promise<number> => PostDAO.getPostsCount(catId);
 
 export {
-    insertPost, deletePost, updatePost, updateState, getPosts,
+    insertPost, deletePost, updatePost, updateState, getPosts, getPostsCount,
 };
