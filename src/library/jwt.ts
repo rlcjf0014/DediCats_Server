@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import jwt from "jsonwebtoken";
+import { NextFunction } from "express";
 import { User } from "../model";
 
 require("dotenv").config();
@@ -7,18 +8,22 @@ require("dotenv").config();
 const accessKey:any = process.env.JWT_SECRET_ACCESS;
 const refresKey:any = process.env.JWT_SECRET_REFRESH;
 
-const getUserIdbyAccessToken = (accessToken:string):number => {
+const getUserIdbyAccessToken = (accessToken:string) => {
     const decode:any = jwt.verify(accessToken, accessKey);
     const userId = decode.id;
 
     return userId;
 };
 
-const getUserIdbyRefreshToken = (refreshToken:string):number => {
-    const decode:any = jwt.verify(refreshToken, refresKey);
-    const userId = decode.id;
+const getUserIdbyRefreshToken = (refreshToken:string, next:NextFunction) => {
+    try {
+        const decode:any = jwt.verify(refreshToken, refresKey);
+        const userId = decode.id;
 
-    return userId;
+        return userId;
+    } catch (e) {
+        next(e);
+    }
 };
 
 const generateAccessToken = (user:User):string => jwt.sign({
@@ -27,9 +32,9 @@ const generateAccessToken = (user:User):string => jwt.sign({
     email: user.email,
     createAt:
     user.createAt,
-}, accessKey, { expiresIn: "1d" });
+}, accessKey, { expiresIn: "60m" });
 
-const generateRefeshToken = (id:number):string => jwt.sign({ id }, refresKey, { expiresIn: "100d" });
+const generateRefeshToken = (id:number):string => jwt.sign({ id }, refresKey, { expiresIn: "60m" });
 
 export {
     getUserIdbyAccessToken, getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
