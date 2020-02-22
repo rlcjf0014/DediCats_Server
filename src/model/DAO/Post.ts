@@ -65,6 +65,12 @@ const getPosts = async (catId:number, nthPage:number):Promise<Array<object>> => 
     return posts;
 };
 
+const getPostsCount = async (catId:number):Promise<number> => {
+    const count:number = await getConnection()
+        .query("select count(*) as `count` from cat where status='Y' and catId = ?;", [catId]);
+    return count;
+};
+
 export {
-    insertPost, deletePost, updatePost, updateState, getPosts,
+    insertPost, deletePost, updatePost, updateState, getPosts, getPostsCount,
 };

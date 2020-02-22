@@ -4,13 +4,13 @@ import express, { Request, Response, NextFunction } from "express";
 import { createConnection, Connection } from "typeorm";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
 
 import cors from "cors";
 import http from "http";
 import {
     typeORMError, jwtError, etcError, helper,
 } from "./library/errorHelper";
-import { getUserIdbyAccessToken } from "./library/jwt";
 import {
 
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
@@ -41,11 +41,16 @@ api.use("/", BasicRouter);
 api.use("/signup", Signup);
 api.use("/auth", Authentication);
 
-api.use("/*", helper((req:Request, res:Response, next:NextFunction) => {
+api.use("/*", (req:Request, res:Response, next:NextFunction) => {
     const { accessToken } = req.signedCookies;
-    getUserIdbyAccessToken(accessToken);
-    next();
-}));
+    const accessKey:any = process.env.JWT_SECRET_ACCESS;
+    try {
+        jwt.verify(accessToken, accessKey);
+        next();
+    } catch (e) {
+        next(e);
+    }
+});
 
 
 api.use("/user", User);
