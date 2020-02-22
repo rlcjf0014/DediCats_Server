@@ -19,9 +19,8 @@ const jwtError = (error:Error, req:Request, res:Response, next:NextFunction) => 
 };
 
 const etcError = (error:Error, req:Request, res:Response, next:NextFunction) => {
-    res.status(500).json({ type: "etcError", message: error.message });
-    // eslint-disable-next-line no-console
     console.log(error);
+    res.status(500).json({ type: "etcError", message: error.message });
 };
 
 export {
