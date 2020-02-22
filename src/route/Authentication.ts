@@ -72,9 +72,9 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
 
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
+    console.log("토큰받으러 왔어요~");
     const { refreshToken } = req.signedCookies;
     const userId:number = getUserIdbyRefreshToken(refreshToken);
-    console.log("토큰받으러 왔어요~");
 
     const user:User|undefined = await UserService.getUserById(userId);
 

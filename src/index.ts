@@ -18,6 +18,7 @@ require("dotenv").config();
 
 
 const api: express.Application = express();
+
 const PORT : Number = 8000;
 const server = http.createServer(api);
 const io = require("socket.io")(server);
@@ -39,9 +40,9 @@ api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 api.use("/", BasicRouter);
 api.use("/signup", Signup);
 api.use("/auth", Authentication);
+
 api.use("/*", (req:Request, res:Response, next:NextFunction) => {
-    console.log("access is coming in");
-    console.log(req.signedCookies);
+
     const { accessToken } = req.signedCookies;
     try {
         const accessKey:any = process.env.JWT_SECRET_ACCESS;
@@ -50,11 +51,7 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
         next();
     } catch {
         console.log("이버스는 인증으로 갑니다");
-        // res.redirect("../auth/token");
-        res.sendStatus(403);
-        // res.writeHead(302, {
-        //     Location: `${process.env.AUTH_SERVER}/auth/token`
-        // res.redirect("./route/Authentication/token");
+        res.redirect("/auth/token");
     }
     // res.end();
 });
