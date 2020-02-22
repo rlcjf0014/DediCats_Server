@@ -21,7 +21,7 @@ api.use("/auth", Authentication);
 api.use("/", BasicRouter);
 
 api.use((req:Request, res:Response) => {
-    res.status(404).send("Invalid address.Please check the address again");
+    res.status(404).send("Invalid auth address.Please check the address again");
 });
 
 api.use((err:Error, req:Request, res:Response, next:NextFunction) => {
