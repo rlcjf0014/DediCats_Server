@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { Authentication, BasicRouter } from "../route";
+import { typeORMError, jwtError, etcError } from "../library/errorHelper";
 
 require("dotenv").config();
 
@@ -29,5 +30,8 @@ api.use((err:Error, req:Request, res:Response, next:NextFunction) => {
     res.status(500).send("Something broke!");
 });
 
+api.use(typeORMError);
+api.use(jwtError);
+api.use(etcError);
 
 export default api;
