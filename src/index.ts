@@ -6,13 +6,16 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 import cors from "cors";
-import jwt from "jsonwebtoken";
 import http from "http";
-import { typeORMError, jwtError, etcError } from "./library/errorHelper";
 import {
-    BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup,
+    typeORMError, jwtError, etcError, helper,
+} from "./library/errorHelper";
+import { getUserIdbyAccessToken } from "./library/jwt";
+import {
+    BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
 }
     from "./route";
+
 
 require("dotenv").config();
 
@@ -22,10 +25,8 @@ const PORT : Number = 8000;
 const server = http.createServer(api);
 const io = require("socket.io")(server);
 
-
 const post = Post(io);
 const comment = Comment(io);
-
 
 let connection: Connection;
 
@@ -35,21 +36,14 @@ api.use(cookieParser(process.env.TOKEN_KEY));
 api.use(bodyParser.json({ limit: "50mb" }));
 api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
-
 api.use("/signup", Signup);
+api.use("/auth", Authentication);
 
-api.use("/*", (req:Request, res:Response, next:NextFunction) => {
+api.use("/*", helper((req:Request, res:Response, next:NextFunction) => {
     const { accessToken } = req.signedCookies;
-    try {
-        const accessKey:any = process.env.JWT_SECRET_ACCESS;
-        jwt.verify(accessToken, accessKey);
-        console.log("이버스는 일반 서버로 갑니다");
-        next();
-    } catch {
-        console.log("이버스는 인증으로 갑니다");
-        res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
-    }
-});
+    getUserIdbyAccessToken(accessToken);
+    next();
+}));
 
 api.use("/user", User);
 api.use("/cat", Cat);
