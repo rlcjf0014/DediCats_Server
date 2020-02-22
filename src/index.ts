@@ -49,8 +49,11 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
         next();
     } catch {
         console.log("이버스는 인증으로 갑니다");
-        res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
+        // res.writeHead(302, {
+        //     Location: `${process.env.AUTH_SERVER}/auth/token`
+        res.redirect("http:/13.125.216.48:8080/auth/token");
     }
+    // res.end();
 });
 
 api.use("/user", User);
