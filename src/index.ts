@@ -43,8 +43,10 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
     try {
         const accessKey:any = process.env.JWT_SECRET_ACCESS;
         jwt.verify(accessToken, accessKey);
+        console.log("이버스는 일반 서버로 갑니다");
         next();
     } catch {
+        console.log("이버스는 인증으로 갑니다");
         res.redirect(`${process.env.AUTH_SERVER}/auth/token`);
     }
 });
@@ -98,7 +100,7 @@ getConnection()
 
 
 api.use((req:Request, res:Response) => {
-    res.status(404).send("Invalid address.Please check the address again");
+    res.status(404).send("Invalid normal server address.Please check the address again");
 });
 
 api.use(typeORMError);

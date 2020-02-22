@@ -56,7 +56,7 @@ router.post("/signin", helper(async (req:express.Request, res:express.Response) 
 // ! 로그인 이외부분 refresh Token만료 먼저 확인 -> 만료시 DB : refreshToken을 지움
 router.post("/*", async (req:express.Request, res:express.Response, next:express.NextFunction) => {
     const { refreshToken } = req.signedCookies;
-
+    console.log("들어왔어요~ 들렸다갑니다~");
     try {
         const refreshKey:any = process.env.JWT_SECRET_REFRESH;
         jwt.verify(refreshToken, refreshKey);
@@ -74,6 +74,7 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
 router.post("/token", helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
     const { refreshToken } = req.signedCookies;
     const userId:number = getUserIdbyRefreshToken(refreshToken);
+    console.log("토큰받으러 왔어요~");
 
     const user:User|undefined = await UserService.getUserById(userId);
 
