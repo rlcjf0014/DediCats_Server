@@ -3,7 +3,7 @@ import {
     UpdateResult, getConnection, getRepository, InsertResult, DeleteResult,
 } from "typeorm";
 import { Post } from "..";
-import { PostStatus } from "../../types/index";
+import { PostStatus, CommentStatus, PhotoStatus } from "../../types/index";
 
 
 const insertPost = async (userId:number, catId:number, content:string):Promise<InsertResult> => {
@@ -50,12 +50,12 @@ const updateState = async (postId:number) : Promise<UpdateResult> => {
 const getPosts = async (catId:number, nthPage:number):Promise<Array<object>> => {
     const posts:Array<object> = await getRepository(Post)
         .createQueryBuilder("post")
-        .where("post.cat = :cat AND post.status = :status", { cat: catId, status: "Y" })
+        .where("post.cat = :cat AND post.status = :status", { cat: catId, status: PostStatus.Active })
         .leftJoinAndSelect("post.user", "perry")
         .select(["post", "perry.id", "perry.nickname", "perry.photoPath"])
-        .leftJoinAndSelect("post.photos", "joshua", "joshua.status = :status", { status: "Y" })
+        .leftJoinAndSelect("post.photos", "joshua", "joshua.status = :status", { status: PhotoStatus.Active })
         .select(["post.id", "post.content", "post.createAt", "post.updateAt", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id"])
-        .leftJoinAndSelect("post.comments", "daniel", "daniel.status = :status", { status: "Y" })
+        .leftJoinAndSelect("post.comments", "daniel", "daniel.status = :status", { status: CommentStatus.Active })
         .select(["post.id", "post.content", "post.createAt", "post.updateAt", "perry.id", "perry.nickname", "perry.photoPath", "joshua.path", "joshua.id", "daniel.id"])
         .orderBy("post.id", "DESC")
         .skip(nthPage)
