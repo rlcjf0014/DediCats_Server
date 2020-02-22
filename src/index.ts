@@ -13,6 +13,7 @@ import {
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
 }
     from "./route";
+import { reissueAccessToken } from "./library/jwt";
 
 require("dotenv").config();
 
@@ -49,11 +50,9 @@ api.use("/*", (req:Request, res:Response, next:NextFunction) => {
         console.log("이버스는 일반 서버로 갑니다");
         next();
     } catch {
-        console.log("이버스는 인증으로 갑니다");
-        res.redirect("/auth/token");
-        // res.writeHead(302, {
-        //     Location: `${process.env.AUTH_SERVER}/auth/token`
-        // res.redirect("./route/Authentication/token");
+        console.log("토큰 재발급받아볼게요");
+        reissueAccessToken(req, res, next);
+        next();
     }
     // res.end();
 });

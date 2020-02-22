@@ -6,7 +6,9 @@ import { UpdateResult } from "typeorm";
 import jwt from "jsonwebtoken";
 import { User } from "../model";
 import { UserService } from "../service";
-import { getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken } from "../library/jwt";
+import {
+    getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken, reissueAccessToken,
+} from "../library/jwt";
 import { getEncryPw } from "../library/crypto";
 import { helper } from "../library/errorHelper";
 
@@ -72,27 +74,24 @@ router.post("/*", async (req:express.Request, res:express.Response, next:express
 
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
-    const { refreshToken } = req.signedCookies;
-    const userId:number = getUserIdbyRefreshToken(refreshToken);
-    console.log("토큰받으러 왔어요~");
+    // const { refreshToken } = req.signedCookies;
+    // const userId:number = getUserIdbyRefreshToken(refreshToken);
+    // console.log("토큰받으러 왔어요~");
 
-    const user:User|undefined = await UserService.getUserById(userId);
+    // const user:User|undefined = await UserService.getUserById(userId);
 
-    // ? 요청받은 refreshToken과 다른경우
-    if (!user?.refreshToken || user?.refreshToken !== refreshToken) return res.status(409).send("Invalid Request Token");
+    // // ? 요청받은 refreshToken과 다른경우
+    // if (!user?.refreshToken || user?.refreshToken !== refreshToken) return res.status(409).send("Invalid Request Token");
 
-    const accessToken = generateAccessToken(user);
-    res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
-    const {
-        id, nickname, photoPath, createAt, email,
-    } = user;
+    // const accessToken = generateAccessToken(user);
+    // res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
+    // const {
+    //     id, nickname, photoPath, createAt, email,
+    // } = user;
 
-    return res.status(200).json({
-        accessToken,
-        user: {
-            id, nickname, photoPath, createAt, email,
-        },
-    });
+    const result:any = reissueAccessToken(req, res, next);
+
+    return res.status(200).json(result);
 }));
 
 router.post("/signout", helper(async (req:express.Request, res:express.Response) => {
