@@ -51,7 +51,6 @@ router.post("/signout", helper(async (req:express.Request, res:express.Response)
 // ! requestToekn으로 accessToken새로 요청
 router.post("/token", helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
     const { refreshToken } = req.signedCookies;
-    console.log("토큰받으러왔어요~");
     if (!refreshToken) return res.status(401).send("logout");
 
     const userId:number = getUserIdbyRefreshToken(refreshToken, next);
@@ -59,14 +58,13 @@ router.post("/token", helper(async (req:express.Request, res:express.Response, n
     const user:User|undefined = await UserService.getUserById(userId);
 
     // ? 요청받은 refreshToken과 다른경우
-    if (!user?.refreshToken || user?.refreshToken !== refreshToken) { return res.status(401).send("Invalid Request Token"); }
+    if (!user?.refreshToken || user?.refreshToken !== refreshToken) return res.status(401).send("Invalid Request Token");
 
     const accessToken = generateAccessToken(user);
     res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
     const {
         id, nickname, photoPath, createAt, email,
     } = user;
-    console.log("잘 받아갑니다~");
     return res.status(200).json({
         accessToken,
         user: {
