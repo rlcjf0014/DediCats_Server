@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import express from "express";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 
 const router:express.Router = express.Router();
 

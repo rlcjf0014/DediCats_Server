@@ -13,7 +13,7 @@ import {
 import uploadFile from "../library/ImageFunction/imgupload";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { formatRainbow, formatCut } from "../library/formatCatOptions";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 
 const router:express.Router = express.Router();
 
@@ -171,7 +171,6 @@ router.post("/addcat", helper(async (req:express.Request, res:express.Response) 
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
     const userId = getUserIdbyAccessToken(accessToken);
-    console.log(userId)
     const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
     const addCat: InsertResult = await CatService.addCat(catNickname, coordinate, address, catDescription, catSpecies, userId, cut);
     
@@ -217,7 +216,6 @@ router.post("/unfollow", helper(async (req:express.Request, res:express.Response
 
 // This endpoint allows you to get the list of cats you follow.
 router.get("/catlist", helper(async (req:express.Request, res:express.Response) => {
-    console.log("catlist is here baby")
     const { accessToken }:{accessToken:string} = req.signedCookies;
     const userId = getUserIdbyAccessToken(accessToken);
 

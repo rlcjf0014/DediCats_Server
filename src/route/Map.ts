@@ -2,7 +2,7 @@ import express from "express";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { getCatsBylocation } from "../service/Cat";
 
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 
 const router:express.Router = express.Router();
 

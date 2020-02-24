@@ -4,7 +4,7 @@ import express from "express";
 import { InsertResult, UpdateResult } from "typeorm";
 import { Comment } from "../model";
 import { CommentService } from "../service";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 import { getUserIdbyAccessToken } from "../library/jwt";
 
 const router:express.Router = express.Router();

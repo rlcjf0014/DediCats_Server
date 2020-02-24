@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 import "reflect-metadata";
 import express, { Request, Response, NextFunction } from "express";
@@ -9,8 +10,8 @@ import jwt from "jsonwebtoken";
 import cors from "cors";
 import http from "http";
 import {
-    typeORMError, jwtError, etcError, helper,
-} from "./library/errorHelper";
+    typeORMError, jwtError, etcError, helper, customErrorHandler,
+} from "./library/Error/errorHelper";
 import {
 
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
@@ -107,4 +108,5 @@ api.use((req:Request, res:Response) => {
 
 api.use(typeORMError);
 api.use(jwtError);
+api.use(customErrorHandler);
 api.use(etcError);
