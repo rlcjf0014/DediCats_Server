@@ -12,7 +12,7 @@ import {
 import { UserStatus } from "../../types/index";
 
 @Entity({ name: "user" })
-export default class User extends BaseEntity {
+export default class User {
     @PrimaryGeneratedColumn()
     id!: number;
 
