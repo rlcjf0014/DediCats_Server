@@ -7,7 +7,7 @@ import { getUserIdbyAccessToken } from "../library/jwt";
 import { getEncryPw } from "../library/crypto";
 import { User } from "../model";
 import { UserService } from "../service";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 
 const router:express.Router = express.Router();
 

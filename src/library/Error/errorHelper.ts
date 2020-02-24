@@ -1,13 +1,11 @@
+/* eslint-disable max-len */
 import { NextFunction, Request, Response } from "express";
 import { QueryFailedError } from "typeorm";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import CustomError from "./customError";
 
 const helper = (fn:Function) => (req:Request, res:Response, next:NextFunction) => {
-    try {
-        fn(req, res, next);
-    } catch (e) {
-        next(e);
-    }
+    fn(req, res, next).catch(next);
 };
 
 const typeORMError = (error:Error, req:Request, res:Response, next:NextFunction) => {
@@ -21,11 +19,20 @@ const jwtError = (error:Error, req:Request, res:Response, next:NextFunction) => 
     next(error);
 };
 
+const customErrorHandler = (error:any, req:Request, res:Response, next:NextFunction) => {
+    if (error instanceof CustomError) {
+        console.log("customErrorHandler", error);
+        const { status, type, message } = error;
+        return res.status(status).send({ type, message });
+    }
+    next(error);
+};
+
 const etcError = (error:Error, req:Request, res:Response, next:NextFunction) => {
-    console.log(error);
+    console.log("etcError : ", error);
     res.status(500).json({ type: "etcError", message: error.message });
 };
 
 export {
-    helper, typeORMError, jwtError, etcError,
+    helper, typeORMError, jwtError, etcError, customErrorHandler,
 };

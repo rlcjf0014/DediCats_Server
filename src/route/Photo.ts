@@ -6,7 +6,7 @@ import { User } from "../model";
 import { PhotoService, UserService } from "../service";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 
 const router:express.Router = express.Router();
 

@@ -8,7 +8,7 @@ import { User } from "../model";
 import { UserService } from "../service";
 import { getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken } from "../library/jwt";
 import { getEncryPw } from "../library/crypto";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 
 require("dotenv").config();
 

@@ -4,7 +4,7 @@ import express from "express";
 import { InsertResult } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { ReportService } from "../service";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 
 
 const router:express.Router = express.Router();
