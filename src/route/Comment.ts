@@ -6,6 +6,7 @@ import { Comment } from "../model";
 import { CommentService } from "../service";
 import { helper } from "../library/Error/errorHelper";
 import { getUserIdbyAccessToken } from "../library/jwt";
+import CustomError from "../library/Error/customError";
 
 const router:express.Router = express.Router();
 
@@ -30,7 +31,8 @@ const returnRouter = (io:any) => {
             res.status(201).send({ deleteStatus: "Y", message: "Successfully deleted post" });
             return;
         }
-        res.status(409).send("Failed to delete comment");
+
+        throw new CustomError("DAO_Exception", 409, "Failed to delete comment");
     }));
 
     // Add Comment
@@ -49,7 +51,7 @@ const returnRouter = (io:any) => {
             return;
         }
 
-        res.status(409).send("Failed to add comment");
+        throw new CustomError("DAO_Exception", 409, "Failed to add comment");
     }));
 
     router.post("/update", helper(async (req:express.Request, res:express.Response) => {
@@ -59,7 +61,7 @@ const returnRouter = (io:any) => {
         const userId = getUserIdbyAccessToken(accessToken);
         const result:UpdateResult = await CommentService.updateComment(commentId, userId, content);
         if (!result.raw.changedRows) {
-            res.status(409).send("Failed to update comment");
+            throw new CustomError("DAO_Exception", 409, "Failed to update comment");
         }
 
         const returnObj:object|undefined = await CommentService.getComment(commentId);
@@ -70,7 +72,7 @@ const returnRouter = (io:any) => {
             return;
         }
 
-        res.status(409).send("Update succeeded, but failed to retrieve comment information.");
+        throw new CustomError("DAO_Exception", 409, "Update succeeded, but failed to retrieve comment information.");
     }));
     return router;
 };
