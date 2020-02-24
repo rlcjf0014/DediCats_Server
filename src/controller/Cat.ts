@@ -206,7 +206,6 @@ router.get("/catlist", helper(async (req:express.Request, res:express.Response) 
 
     const getCats:Array<object> = await UserService.getCatList(userId);
     if (!getCats) throw new CustomError("DAO_Exception", 409, "User's list not found");
-    res.status(409).send("User's list not found");
 
     res.status(200).send(getCats);
 }));

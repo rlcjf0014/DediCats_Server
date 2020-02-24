@@ -89,11 +89,7 @@ const postRouter = (io:any) => {
         const { postId }:{postId:number} = req.body;
         const deletePost:UpdateResult = await PostService.updateState(postId);
         if (deletePost.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to delete post");
-        
-
-        
-        const deletePhoto:UpdateResult = await PhotoService.deletePostPhoto(postId);
-        if (deletePhoto.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Deleted post, but failed to delete post photo");
+        await PhotoService.deletePostPhoto(postId);
 
         io.to(postId).emit("drop", "");
         res.status(201).send("Successfully deleted post");
