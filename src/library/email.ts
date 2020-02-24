@@ -7,8 +7,8 @@ const makeHtml = (nickname:string, secretCode:string, option:string):string => {
         <div style="text-align : center">
         <img style="display : inline" src="https://dedicatsimage.s3.ap-northeast-2.amazonaws.com/email+image.png"/>
         </div>
-        <p style="font-size: 1.4rem">Annyung Haseyo! ${nickname}!</p>
-        <p style="font-size: 1.1rem">Thanks for joining Dedicats! We really appreciate it. Please insert this code into email verfication to verify your account</p>
+        <p style="font-size: large">Annyung Haseyo! ${nickname}!</p>
+        <p style="font-size: medium">Thanks for joining Dedicats! We really appreciate it. Please insert this code into email verfication to verify your account</p>
         <h1>Your code is  <br><span style="text-decoration:underline">${secretCode}<span></h1>
         <h2>This code will only be valid for 1 hour.</h2>
         <p style="font-size: 0.9rem">if you have any problems, please contact us : dediCats16@gmail.com</p>`
@@ -18,8 +18,8 @@ const makeHtml = (nickname:string, secretCode:string, option:string):string => {
         <div style="text-align : center">
         <img style="display : inline" src="https://dedicatsimage.s3.ap-northeast-2.amazonaws.com/email+image.png"/>
         </div>
-        <p style="font-size: 1.4rem">Annyung Haseyo! ${nickname}!</p>
-        <p style="font-size: 1.1rem">Thanks for using Dedicats! We really appreciate it. Please insert this temporary password to log in and reset your password. Make sure to change your temporary password in MyPage! </p>
+        <p style="font-size: large">Annyung Haseyo! ${nickname}!</p>
+        <p style="font-size: medium">Thanks for using Dedicats! We really appreciate it. Please insert this temporary password to log in and reset your password. Make sure to change your temporary password in MyPage! </p>
         <h1>Your code is  <br><span style="text-decoration:underline">${secretCode}<span></h1>
         <h2>This code will only be valid for 1 hour.</h2>
         <p style="font-size: 0.9rem">if you have any problems, please contact us: dediCats16@gmail.com</p>`;
