@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import {
-    Entity, BaseEntity,
+    Entity,
     PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany,
 } from "typeorm";
 
@@ -12,7 +12,7 @@ import {
 import { UserStatus } from "../../types/index";
 
 @Entity({ name: "user" })
-export default class User extends BaseEntity {
+export default class User {
     @PrimaryGeneratedColumn()
     id!: number;
 
@@ -22,7 +22,7 @@ export default class User extends BaseEntity {
     @Column({ type: "varchar", nullable: false })
     password! : string;
 
-    @Column({ type: "varchar", nullable: true })
+    @Column({ type: "varchar", nullable: false })
     salt !: string;
 
     @Column({ type: "varchar", nullable: false, unique: true })

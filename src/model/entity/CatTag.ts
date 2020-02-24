@@ -10,7 +10,7 @@ import { User, Cat, Tag } from "..";
 
 
 @Entity({ name: "cat_tag" })
-export default class CatTag extends BaseEntity {
+export default class CatTag {
     @PrimaryGeneratedColumn()
     id!: number;
 

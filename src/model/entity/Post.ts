@@ -11,7 +11,7 @@ import {
 import { PostStatus } from "../../types/index";
 // 유저아이디 작성되어있지 않음
 @Entity({ name: "post" })
-export default class Post extends BaseEntity {
+export default class Post {
       @PrimaryGeneratedColumn()
       id!: number;
 

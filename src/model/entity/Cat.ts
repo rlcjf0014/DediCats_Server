@@ -16,7 +16,7 @@ import { CatStatus } from "../../types/index";
 
 // 등록 유저 column 아직 등록되어있지 않음
 @Entity({ name: "cat" })
-export default class Cat extends BaseEntity {
+export default class Cat {
     @PrimaryGeneratedColumn()
     id! :number;
 

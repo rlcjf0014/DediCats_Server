@@ -32,9 +32,9 @@ const generateAccessToken = (user:User):string => jwt.sign({
     email: user.email,
     createAt:
     user.createAt,
-}, accessKey, { expiresIn: "60m" });
+}, accessKey, { expiresIn: "1d" });
 
-const generateRefeshToken = (id:number):string => jwt.sign({ id }, refresKey, { expiresIn: "60m" });
+const generateRefeshToken = (id:number):string => jwt.sign({ id }, refresKey, { expiresIn: "90d" });
 
 export {
     getUserIdbyAccessToken, getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken,
