@@ -16,7 +16,7 @@ import {
 
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
 }
-    from "./route";
+    from "./controller";
 
 
 require("dotenv").config();

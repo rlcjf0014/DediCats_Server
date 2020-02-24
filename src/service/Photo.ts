@@ -16,6 +16,7 @@ const updateProfile = (userId:number, imagepath:string, photoName:string):Promis
 const deletePostPhoto = (postId:number):Promise<UpdateResult> => PhotoDAO.deletePostPhoto(postId);
 const addPostPhoto = (imagepath:string, catId:number, postId:number):Promise<InsertResult> => PhotoDAO.addPostPhoto(imagepath, catId, postId);
 
+
 export {
     addCatPhoto, getCatPhoto, getCatAlbum,
     deleteProfile, updateProfile, deletePostPhoto, addPostPhoto,

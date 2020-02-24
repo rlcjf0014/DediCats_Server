@@ -5,7 +5,7 @@ import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { Authentication, BasicRouter } from "../route";
+import { Authentication, BasicRouter } from "../controller";
 import { typeORMError, jwtError, etcError } from "../library/Error/errorHelper";
 
 require("dotenv").config();
