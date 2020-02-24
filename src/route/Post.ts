@@ -4,7 +4,8 @@ import { InsertResult, UpdateResult, DeleteResult } from "typeorm";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import uploadFile from "../library/ImageFunction/imgupload";
 import { PostService, PhotoService } from "../service";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
+import CustomError from "../library/Error/customError";
 
 const router:express.Router = express.Router();
 
@@ -19,9 +20,8 @@ const postRouter = (io:any) => {
         const userId = getUserIdbyAccessToken(accessToken);
 
         const addPost:InsertResult = await PostService.insertPost(userId, catId, content);
-        if (addPost.raw.affectedRows === 0) {
-            res.status(409).send("Failed to save post");
-        }
+        if (addPost.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to save post");
+
         // result.identifiers[0].id
         if (photoPath === undefined) {
             res.status(201).send("Successfully added post");
@@ -30,10 +30,8 @@ const postRouter = (io:any) => {
         const postId = addPost.identifiers[0].id;
         const key:string = `POST #${postId}`;
         const imagepath:string|boolean = await uploadFile(key, photoPath);
-        if (typeof (imagepath) === "boolean") {
-            res.status(409).send("Saved post, but failed to upload image");
-            return;
-        }
+        if (typeof (imagepath) === "boolean") throw new CustomError("S3_Exception", 409, "Saved post, but failed to upload image");
+
         const addPhoto:InsertResult = await PhotoService.addPostPhoto(imagepath, catId, postId);
         if (addPhoto.raw.affectedRows === 0) {
             const deletePost:DeleteResult = await PostService.deletePost(postId);
@@ -44,27 +42,26 @@ const postRouter = (io:any) => {
                 });
                 return;
             }
-            res.status(409).send("Failed to save post");
-            return;
+
+            throw new CustomError("S3_Exception", 409, "Failed to save post");
         }
         res.status(201).send("Successfully added post");
     //! 사진 데이터를 S3에 저장 후 그 주소를 데이터베이스 저장해야 함. 그 이후에 클라이언트가 요청할 시 주소를 보내줘야 함.
     }));
 
     // at Post Refresh button
-    router.get("/:catId/:pagination", helper(async (req:express.Request, res:express.Response) => {
+    router.get("/:catId/:pagination", helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
         const { catId, pagination }:{ catId?: string, pagination?:string} = req.params;
         const catIdNumber:number = Number(catId);
         const paginationNumber:number = Number(pagination);
 
         const nthPage = paginationNumber * 10;
         const post:Array<object> = await PostService.getPosts(catIdNumber, nthPage);
-        const count:number = await PostService.getPostsCount(catIdNumber);
+
+        if (!post) throw new CustomError("DAO_Exception", 409, "Failed to get posts");
+
+        const count:number = await PostService.getPostsCount(next, catIdNumber);
         const maxcount = Math.floor(count / 10) + 1;
-        if (!post) {
-            res.status(409).send("Failed to get post");
-            return;
-        }
         res.status(200).send({ post, maxcount });
     }));
 
@@ -72,10 +69,9 @@ const postRouter = (io:any) => {
     router.post("/update", helper(async (req:express.Request, res:express.Response) => {
         const { content, postId }:{content:string, postId:number} = req.body;
         const updatePost:UpdateResult = await PostService.updatePost(postId, content);
-        if (updatePost.raw.changedRows === 0) {
-            res.status(409).send("Failed to update post");
-            return;
-        }
+
+        if (updatePost.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to update post");
+
         res.status(201).json({ postId, content });
     }));
 
@@ -92,15 +88,11 @@ const postRouter = (io:any) => {
     router.post("/delete", helper(async (req:express.Request, res:express.Response) => {
         const { postId }:{postId:number} = req.body;
         const deletePost:UpdateResult = await PostService.updateState(postId);
-        if (deletePost.raw.changedRows === 0) {
-            res.status(409).send("Failed to delete post");
-            return;
-        }
+        if (deletePost.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to delete post");
+
         const deletePhoto:UpdateResult = await PhotoService.deletePostPhoto(postId);
-        if (deletePhoto.raw.changedRows === 0) {
-            res.status(409).send("Deleted post, but failed to delete post photo");
-            return;
-        }
+        if (deletePhoto.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Deleted post, but failed to delete post photo");
+
         io.to(postId).emit("drop", "");
         res.status(201).send("Successfully deleted post");
     }));

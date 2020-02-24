@@ -13,7 +13,8 @@ import {
 import uploadFile from "../library/ImageFunction/imgupload";
 import { getUserIdbyAccessToken } from "../library/jwt";
 import { formatRainbow, formatCut } from "../library/formatCatOptions";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
+import CustomError from "../library/Error/customError";
 
 const router:express.Router = express.Router();
 
@@ -24,10 +25,8 @@ router.post("/deleteTag", helper(async (req:express.Request, res:express.Respons
     const userId = getUserIdbyAccessToken(accessToken);
 
     const deleteTag:UpdateResult = await CatTagService.deleteTag(tagId, catId, userId);
-    if (deleteTag.raw.changedRows === 0) {
-        res.status(409).send("Failed to delete tag");
-        return;
-    }
+    if (deleteTag.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to delete tag");
+
     res.status(201).send("Successfully deleted tag");
 }));
 
@@ -38,9 +37,8 @@ router.post("/follow", helper(async (req:express.Request, res:express.Response) 
     const userId = getUserIdbyAccessToken(accessToken);
 
     const updateFollow:InsertResult = await CatService.insertFollow(catId, userId);
-    if (updateFollow.raw.affectedRows === 0) {
-        res.status(409).send("Failed to follow this cat");
-    }
+    if (updateFollow.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to follow this cat");
+
     res.status(201).send("User now follows this cat");
 }));
 
@@ -64,7 +62,8 @@ router.post("/rainbow", helper(async (req:express.Request, res:express.Response)
         res.status(200).send({ rainbow: changedRainbow?.rainbow });
         return;
     }
-    res.status(409).send("Could not update rainbow");
+
+    throw new CustomError("DAO_Exception", 409, "Could not update rainbow");
 }));
 
 // Followers Tab
@@ -72,9 +71,6 @@ router.get("/follower/:catId", helper(async (req:express.Request, res:express.Re
     const { catId }:{catId?: string} = req.params;
     const getFollower:Array<object> = await CatService.getCatFollower(catId);
 
-    if (!getFollower) {
-        res.status(409).send("Followers not found");
-    }
     res.status(200).send(getFollower);
 }));
 
@@ -84,10 +80,8 @@ router.post("/addcatToday", helper(async (req:express.Request, res:express.Respo
     const now = `${new Date().toISOString().slice(0, 23)}Z`;
     const updateToday:UpdateResult = await CatService.addCatToday(catId, catToday, now);
 
-    if (updateToday.raw.changedRows === 0) {
-        res.status(409).send("Cat's today update failed");
-        return;
-    }
+    if (updateToday.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Cat's today update failed");
+
     const result = { cat_today: catToday, cat_today_time: now };
     res.status(201).send(result);
 }));
@@ -107,15 +101,13 @@ router.post("/cut", helper(async (req:express.Request, res:express.Response) => 
 
     const updateCut:UpdateResult = await CatService.updateCatCut(catId, objSelectedCut);
 
-    if (!updateCut) {
-        res.status(409).send("Failed to update peanuts.");
-    }
     if (updateCut.raw.changedRows) {
         const updatedCat:Cat|undefined = await CatService.selectCat(catId);
         res.status(201).send({ cut: updatedCat?.cut });
         return;
     }
-    res.status(409).send("Could not update catcut");
+
+    throw new CustomError("DAO_Exception", 409, "Failed to update peanuts.");
 }));
 
 // update Tag
@@ -128,9 +120,9 @@ router.post("/updateTag", helper(async (req:express.Request, res:express.Respons
     const checkTag:Tag|undefined = await CatTagService.checkTag(catTag);
     if (checkTag) {
         const updateTag:InsertResult = await CatTagService.updateTag(userId, catId, checkTag.id);
-        if (updateTag.raw.affectedRows === 0) {
-            res.status(409).send("Tag update failed");
-        }
+
+        if (updateTag.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Tag update failed");
+
         const result = {
             id: checkTag.id,
             tag: {
@@ -142,14 +134,12 @@ router.post("/updateTag", helper(async (req:express.Request, res:express.Respons
     } else {
         const newTag:InsertResult = await CatTagService.newTag(catTag);
         const tagId:number = newTag.identifiers[0].id;
-        if (newTag.raw.affectedRows === 0) {
-            res.status(409).send("Tag update failed");
-            return;
-        }
         const updateTag:InsertResult = await CatTagService.updateTag(userId, catId, tagId);
-        if (updateTag.raw.affectedRows === 0) {
-            res.status(409).send("Tag update failed");
+
+        if (updateTag.raw.affectedRows === 0 || newTag.raw.affectedRows === 0) {
+            throw new CustomError("DAO_Exception", 409, "Tag update failed");
         }
+
         const result = {
             id: tagId,
             tag: {
@@ -171,34 +161,29 @@ router.post("/addcat", helper(async (req:express.Request, res:express.Response) 
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
     const userId = getUserIdbyAccessToken(accessToken);
-    console.log(userId)
     const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
     const addCat: InsertResult = await CatService.addCat(catNickname, coordinate, address, catDescription, catSpecies, userId, cut);
-    
-    if (addCat.raw.affectedRows === 0) {
-        res.status(409).send("Failed to add cat");
-        return;
-    }
+
+    if (addCat.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to add cat");
+
     const imagepath:string | boolean = await uploadFile(`CAT #${addCat.identifiers[0].id}`, photoPath);
     if (imagepath === false) {
         const deleteCat: DeleteResult = await CatService.deleteCat(addCat.identifiers[0].id);
         if (deleteCat.raw.affectedRows === 0) {
-            res.status(409).send("Failed to delete cat without posted picture, contact admin");
-            return;
+            throw new CustomError("DAO_Exception", 409, "Failed to delete cat without posted picture, contact admin");
         }
-        res.status(409).send("Added cat, but failed to add its photo");
-        return;
+        throw new CustomError("DAO_Exception", 409, "Added cat, but failed to add its photo");
     }
+
     const addPhoto:InsertResult = await PhotoService.addCatPhoto(imagepath, addCat.identifiers[0].id);
     if (addPhoto.raw.affectedRows === 0) {
         const deleteCat: DeleteResult = await CatService.deleteCat(addCat.identifiers[0].id);
         if (deleteCat.raw.affectedRows === 0) {
-            res.status(409).send("Failed to delete cat without posted picture, contact admin");
-            return;
+            throw new CustomError("DAO_Exception", 409, "Failed to delete cat without posted picture, contact admin");
         }
-        res.status(409).send("Added cat, but failed to add its photo");
-        return;
+        throw new CustomError("DAO_Exception", 409, "Added cat, but failed to add its photo");
     }
+
     res.status(201).send("Successfully added cat");
 }));
 
@@ -209,22 +194,20 @@ router.post("/unfollow", helper(async (req:express.Request, res:express.Response
     const userId = getUserIdbyAccessToken(accessToken);
 
     const updateFollow:DeleteResult = await CatService.deleteFollow(catId, userId);
-    if (updateFollow.raw.affectedRows === 0) {
-        res.status(409).send("Failed to unfollow cat");
-    }
+    if (updateFollow.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to unfollow cat");
+
     res.status(201).send("User unfollowed this cat");
 }));
 
 // This endpoint allows you to get the list of cats you follow.
 router.get("/catlist", helper(async (req:express.Request, res:express.Response) => {
-    console.log("catlist is here baby")
     const { accessToken }:{accessToken:string} = req.signedCookies;
     const userId = getUserIdbyAccessToken(accessToken);
 
     const getCats:Array<object> = await UserService.getCatList(userId);
-    if (!getCats) {
-        res.status(409).send("User's list not found");
-    }
+    if (!getCats) throw new CustomError("DAO_Exception", 409, "User's list not found");
+    res.status(409).send("User's list not found");
+
     res.status(200).send(getCats);
 }));
 
@@ -237,23 +220,17 @@ router.get("/:catId", helper(async (req:express.Request, res:express.Response) =
     const userId = getUserIdbyAccessToken(accessToken);
     const getCat:Cat|undefined = await CatService.getCat(catId);
 
-    if (!getCat) {
-        res.status(409).send("Cat not found");
-        return;
-    }
+    if (!getCat) throw new CustomError("DAO_Exception", 409, "Cat not found");
+
     const checkFollow:Array<{count: string}> = await CatService.checkFollow(Number(catId), userId);
     const follow:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
 
     const getTag: Array<object> = await CatTagService.getTag(catId);
-    if (!getTag) {
-        res.status(409).send("Cat found, but tag not found");
-        return;
-    }
+    if (!getTag) throw new CustomError("DAO_Exception", 409, "Cat found, but tag not found");
+
     const getPhoto:Photo|undefined = await PhotoService.getCatPhoto(catId);
-    if (!getPhoto) {
-        res.status(409).send("Cat and tag found, but photo not found");
-        return;
-    }
+    if (!getPhoto) throw new CustomError("DAO_Exception", 409, "Cat and tag found, but photo not found");
+
     res.status(200).send([getCat, follow, getTag, getPhoto]);
 }));
 

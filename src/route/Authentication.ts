@@ -3,12 +3,12 @@
 /* eslint-disable import/extensions */
 import express from "express";
 import { UpdateResult } from "typeorm";
-import jwt from "jsonwebtoken";
 import { User } from "../model";
 import { UserService } from "../service";
 import { getUserIdbyRefreshToken, generateAccessToken, generateRefeshToken } from "../library/jwt";
 import { getEncryPw } from "../library/crypto";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
+import CustomError from "../library/Error/customError";
 
 require("dotenv").config();
 
@@ -17,8 +17,7 @@ const router:express.Router = express.Router();
 
 router.post("/signin", helper(async (req:express.Request, res:express.Response) => {
     const { email, password }:{email:string, password:string} = req.body;
-    if (!email || !password) return res.status(409).send("Email and Password both required");
-
+    if (!email || !password) throw new CustomError("Body Parameters Exception", 409, "Email and Password both required");
 
     const user:User|undefined = await UserService.getUserByEmail(email);
     if (!user) return res.status(401).send("Invalid Email");
@@ -33,7 +32,7 @@ router.post("/signin", helper(async (req:express.Request, res:express.Response) 
     const refreshToken = generateRefeshToken(user.id);
     const result:UpdateResult = await UserService.updateToken(user.id, refreshToken);
 
-    if (result.raw.affectedRows === 0) return res.status(409).send("Failed to insert Token");
+    if (result.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to insert Token");
 
     res.clearCookie("refreshToken");
     res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
@@ -58,7 +57,7 @@ router.post("/token", helper(async (req:express.Request, res:express.Response, n
     const user:User|undefined = await UserService.getUserById(userId);
 
     // ? 요청받은 refreshToken과 다른경우
-    if (!user?.refreshToken || user?.refreshToken !== refreshToken) return res.status(401).send("Invalid Request Token");
+    if (!user?.refreshToken || user?.refreshToken !== refreshToken) throw new CustomError("JWT_Exception", 401, "Invalid Request Token");
 
     const accessToken = generateAccessToken(user);
     res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });

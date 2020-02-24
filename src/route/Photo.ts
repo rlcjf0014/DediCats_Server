@@ -6,16 +6,17 @@ import { User } from "../model";
 import { PhotoService, UserService } from "../service";
 import uploadFile from "../library/ImageFunction/imgupload";
 import deleteFile from "../library/ImageFunction/imgdelete";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
+import CustomError from "../library/Error/customError";
+
 
 const router:express.Router = express.Router();
 
 router.get("/album/:catId", helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
     const getPhoto:Array<object> = await PhotoService.getCatAlbum(catId);
-    if (!getPhoto) {
-        res.status(409).send("Photo not found");
-    }
+    if (!getPhoto) throw new CustomError("Body Parameters Exception", 409, "Photo not found");
+
     res.status(200).send(getPhoto);
 }));
 
@@ -25,19 +26,14 @@ router.post("/profile/delete", helper(async (req: express.Request, res:express.R
     const userId = getUserIdbyAccessToken(accessToken);
 
     const updatePic:UpdateResult = await PhotoService.deleteProfile(userId);
-    if (updatePic.raw.changedRows === 0) {
-        res.status(409).send("Failed to delete profile picture");
-        return;
-    }
+    if (updatePic.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to delete profile picture");
+
     const findkey:User|undefined = await UserService.getUserById(userId);
-    if (!findkey?.photoName || !findkey) {
-        res.status(409).send("Failed to update profile picture");
-        return;
-    }
+    if (!findkey?.photoName || !findkey) throw new CustomError("DAO_Exception", 409, "Failed to update profile picture");
+
     const check:boolean|unknown = await deleteFile(findkey.photoName);
-    if (check === false) {
-        res.status(409).send("Failed to delete picture from image bucket");
-    }
+    if (check === false) throw new CustomError("S3_Exception", 409, "Failed to delete picture from image bucket");
+
     res.status(201).send("Successfully deleted profile picture");
 }));
 
@@ -49,47 +45,33 @@ router.post("/profile", helper(async (req:express.Request, res:express.Response)
     const userId = getUserIdbyAccessToken(accessToken);
 
     const getProfile:User | undefined = await UserService.getUserById(userId);
-    if (!getProfile) {
-        res.status(409).send("Failed to update profile picture");
-        return;
-    }
+    if (!getProfile) throw new CustomError("DAO_Exception", 409, "Failed to update profile picture");
+
     if (getProfile?.photoPath === null) {
         const secretCode = Math.random().toString(36).slice(4);
         const photoName = secretCode + userId;
         const imagepath:string|boolean = await uploadFile(photoName, photoPath);
-        if (typeof (imagepath) === "boolean") {
-            res.status(409).send("Failed to update profile picture");
-            return;
-        }
+        if (typeof (imagepath) === "boolean") throw new CustomError("S3_Exception", 409, "Failed to update profile picture");
+
         const updatePic:UpdateResult = await PhotoService.updateProfile(userId, imagepath, photoName);
-        if (updatePic.raw.changedRows === 0) {
-            res.status(409).send("Failed to update profile picture");
-            return;
-        }
+        if (updatePic.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to update profile picture");
+
         res.status(201).send({ photoPath: imagepath });
     } else {
         const findkey:User|undefined = await UserService.getUserById(userId);
-        if (!findkey?.photoName || !findkey) {
-            res.status(409).send("Failed to update profile picture");
-            return;
-        }
+        if (!findkey?.photoName || !findkey) throw new CustomError("DAO_Exception", 409, "Failed to update profile picture");
+
         const check:boolean|unknown = await deleteFile(findkey.photoName);
-        if (!check) {
-            res.status(409).send("Failed to update profile picture");
-            return;
-        }
+        if (!check) throw new CustomError("DAO_Exception", 409, "Failed to update profile picture");
+
         const secretCode = Math.random().toString(36).slice(4);
         const photoName = secretCode + userId;
         const imagepath:string|boolean = await uploadFile(photoName, photoPath);
-        if (typeof (imagepath) === "boolean") {
-            res.status(409).send("Failed to update profile picture");
-            return;
-        }
+        if (typeof (imagepath) === "boolean") throw new CustomError("DAO_Exception", 409, "Failed to update profile picture");
+
         const updatePic:UpdateResult = await PhotoService.updateProfile(userId, imagepath, photoName);
-        if (updatePic.raw.changedRows === 0) {
-            res.status(409).send("Failed to update profile picture");
-            return;
-        }
+        if (updatePic.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to update profile picture");
+
         res.status(201).send({ photoPath: imagepath });
     }
 }));

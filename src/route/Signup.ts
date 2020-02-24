@@ -6,7 +6,7 @@ import { User } from "../model";
 import { UserService } from "../service";
 import { getEncryPw, getRandomByte } from "../library/crypto";
 import sendMail from "../library/email";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
 
 require("dotenv").config();
 

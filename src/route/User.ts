@@ -7,7 +7,8 @@ import { getUserIdbyAccessToken } from "../library/jwt";
 import { getEncryPw } from "../library/crypto";
 import { User } from "../model";
 import { UserService } from "../service";
-import { helper } from "../library/errorHelper";
+import { helper } from "../library/Error/errorHelper";
+import CustomError from "../library/Error/customError";
 
 const router:express.Router = express.Router();
 
@@ -17,10 +18,7 @@ router.patch("/changepw", helper(async (req:express.Request, res:express.Respons
 
     const userId = getUserIdbyAccessToken(accessToken);
     const user:User|undefined = await UserService.getUserById(userId);
-    if (!user) {
-        res.status(401).send("Fail to get User");
-        return;
-    }
+    if (!user) throw new CustomError("DAO_Exception", 401, "Fail to get User");
 
     // ? 암호화 후 비교
     const encryPassword:string = await getEncryPw(password, user.salt);
@@ -36,7 +34,7 @@ router.patch("/changepw", helper(async (req:express.Request, res:express.Respons
         res.status(201).send("password successfully changed");
         return;
     }
-    res.status(409).send("Failed to change user password");
+    throw new CustomError("DAO_Exception", 409, "Failed to change user password");
 }));
 
 
