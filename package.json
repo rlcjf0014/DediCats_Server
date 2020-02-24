@@ -40,6 +40,7 @@
     "socket.io": "^2.3.0",
     "terraformer-wkt-parser": "^1.2.1",
     "typeorm": "^0.2.22",
+    "winston": "^3.2.1",
     "wkx": "^0.4.8"
   },
   "devDependencies": {
