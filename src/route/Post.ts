@@ -20,7 +20,7 @@ const postRouter = (io:any) => {
         const userId = getUserIdbyAccessToken(accessToken);
 
         const addPost:InsertResult = await PostService.insertPost(userId, catId, content);
-        if (addPost.raw.affectedRows === 0) throw new CustomError("DAOError", 409, "Failed to save post");
+        if (addPost.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to save post");
 
         // result.identifiers[0].id
         if (photoPath === undefined) {
@@ -30,7 +30,7 @@ const postRouter = (io:any) => {
         const postId = addPost.identifiers[0].id;
         const key:string = `POST #${postId}`;
         const imagepath:string|boolean = await uploadFile(key, photoPath);
-        if (typeof (imagepath) === "boolean") throw new CustomError("S3Error", 409, "Saved post, but failed to upload image");
+        if (typeof (imagepath) === "boolean") throw new CustomError("S3_Exception", 409, "Saved post, but failed to upload image");
 
         const addPhoto:InsertResult = await PhotoService.addPostPhoto(imagepath, catId, postId);
         if (addPhoto.raw.affectedRows === 0) {
@@ -43,7 +43,7 @@ const postRouter = (io:any) => {
                 return;
             }
 
-            throw new CustomError("S3Error", 409, "Failed to save post");
+            throw new CustomError("S3_Exception", 409, "Failed to save post");
         }
         res.status(201).send("Successfully added post");
     //! 사진 데이터를 S3에 저장 후 그 주소를 데이터베이스 저장해야 함. 그 이후에 클라이언트가 요청할 시 주소를 보내줘야 함.
@@ -58,7 +58,7 @@ const postRouter = (io:any) => {
         const nthPage = paginationNumber * 10;
         const post:Array<object> = await PostService.getPosts(catIdNumber, nthPage);
 
-        if (!post) throw new CustomError("DAOError", 409, "Failed to get posts");
+        if (!post) throw new CustomError("DAO_Exception", 409, "Failed to get posts");
 
         const count:number = await PostService.getPostsCount(next, catIdNumber);
         const maxcount = Math.floor(count / 10) + 1;
@@ -70,7 +70,7 @@ const postRouter = (io:any) => {
         const { content, postId }:{content:string, postId:number} = req.body;
         const updatePost:UpdateResult = await PostService.updatePost(postId, content);
 
-        if (updatePost.raw.changedRows === 0) throw new CustomError("DAOError", 409, "Failed to update post");
+        if (updatePost.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to update post");
 
         res.status(201).json({ postId, content });
     }));
@@ -88,10 +88,10 @@ const postRouter = (io:any) => {
     router.post("/delete", helper(async (req:express.Request, res:express.Response) => {
         const { postId }:{postId:number} = req.body;
         const deletePost:UpdateResult = await PostService.updateState(postId);
-        if (deletePost.raw.changedRows === 0) throw new CustomError("DAOError", 409, "Failed to delete post");
+        if (deletePost.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to delete post");
 
         const deletePhoto:UpdateResult = await PhotoService.deletePostPhoto(postId);
-        if (deletePhoto.raw.changedRows === 0) throw new CustomError("DAOError", 409, "Deleted post, but failed to delete post photo");
+        if (deletePhoto.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Deleted post, but failed to delete post photo");
 
         io.to(postId).emit("drop", "");
         res.status(201).send("Successfully deleted post");
