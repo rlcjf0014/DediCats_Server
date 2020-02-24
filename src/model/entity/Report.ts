@@ -11,7 +11,7 @@ import {
 
 
 @Entity()
-export default class Report extends BaseEntity {
+export default class Report {
     @PrimaryGeneratedColumn()
     id!: number;
 

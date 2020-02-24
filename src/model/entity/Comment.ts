@@ -10,7 +10,7 @@ import { User, Post, Report } from "..";
 
 
 @Entity({ name: "comment" })
-export default class Comment extends BaseEntity {
+export default class Comment {
     @PrimaryGeneratedColumn()
     id!: number;
 

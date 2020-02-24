@@ -8,7 +8,7 @@ import { Cat, Post } from "..";
 import { PhotoStatus } from "../../types/index";
 
   @Entity({ name: "photo" })
-export default class Photo extends BaseEntity {
+export default class Photo {
       @PrimaryGeneratedColumn()
       id!: number;
 

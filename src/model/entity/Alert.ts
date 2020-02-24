@@ -10,7 +10,7 @@ import { User } from "..";
 
 
 @Entity()
-export default class Alert extends BaseEntity {
+export default class Alert {
     @PrimaryGeneratedColumn()
     id!: number;
 
