@@ -31,7 +31,7 @@ $ npm(yarn) start
 Expo Build
 ​
 ## Database Schema
-https://www.erdcloud.com/d/Ppy7ru3pgGP6mhgfc
+![스크린샷, 2020-02-27 01-03-12](https://user-images.githubusercontent.com/52588452/75363443-761fff00-58fd-11ea-8231-ae9cab329a0f.png)
 ## Server API
 ​
 ---
