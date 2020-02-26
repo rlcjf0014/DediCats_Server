@@ -34,6 +34,8 @@ Express / Node.js / TypeORM / Typescript / Socket.io / JWT / mariaDB
 AWS - S3, EC2, RDS
 Expo Build
 ​
+## Database Schema
+https://www.erdcloud.com/d/Ppy7ru3pgGP6mhgfc
 ## Server API
 ​
 ---
