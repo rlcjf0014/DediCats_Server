@@ -35,8 +35,6 @@ Expo Build
 ## Server API
 Please go to the following link to see APIs used for this project. 
 https://www.notion.so/Project-Dedicats-API-Document-4883570a67b64a0c81d23f3bfee31d74
-
----
 ​
 ## License
 ​
