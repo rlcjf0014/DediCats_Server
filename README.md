@@ -24,14 +24,10 @@ $ npm(yarn) start
 ​
 ## Stack
 ​
-**Server**
-​
-Express / Node.js / TypeORM / Typescript / Socket.io / JWT / mariaDB
+**Server**: Express / Node.js / TypeORM / Typescript / Socket.io / JWT / mariaDB
 ​
 
-**Deploy**
-​
-AWS - S3, EC2, RDS
+**Deploy**: AWS - S3, EC2, RDS
 Expo Build
 ​
 ## Database Schema
