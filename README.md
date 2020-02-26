@@ -1,9 +1,7 @@
 # DediCats-server
 
 # CodeStake 송성현, 최윤정, 김대연, 김수지 
-​
 ---
-​
 **Connect and build relationships with cats you love.**
 
 Follow all the cats in your area. Share photos and information, Post freely and interact with others. Dedicate to a cat today!
