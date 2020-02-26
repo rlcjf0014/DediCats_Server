@@ -33,7 +33,9 @@ Expo Build
 ## Database Schema
 ![스크린샷, 2020-02-27 01-03-12](https://user-images.githubusercontent.com/52588452/75363443-761fff00-58fd-11ea-8231-ae9cab329a0f.png)
 ## Server API
-​
+Please go to the following link to see APIs used for this project. 
+https://www.notion.so/Project-Dedicats-API-Document-4883570a67b64a0c81d23f3bfee31d74
+
 ---
 ​
 ## License
