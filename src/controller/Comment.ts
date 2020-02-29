@@ -28,7 +28,7 @@ const returnRouter = (io:any) => {
         const { commentId }:{commentId:number} = req.body;
         const result:UpdateResult = await CommentService.deleteComment(commentId);
         if (result.raw.changedRows === 1) {
-            res.status(201).send({ deleteStatus: "Y", message: "Successfully deleted post" });
+            res.status(201).send({ deleteStatus: "Y", message: "Successfully deleted comment" });
             return;
         }
 

@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import {
-    Entity, BaseEntity,
+    Entity,
     PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany,
 } from "typeorm";
 
@@ -22,7 +23,7 @@ export default class User {
     @Column({ type: "varchar", nullable: false })
     password! : string;
 
-    @Column({ type: "varchar", nullable: true })
+    @Column({ type: "varchar", nullable: false })
     salt !: string;
 
     @Column({ type: "varchar", nullable: false, unique: true })

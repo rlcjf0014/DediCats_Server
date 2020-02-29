@@ -6,6 +6,9 @@ import {
 import { Cat } from "..";
 import { CatStatus } from "../../types/index";
 
+
+
+
 const selectCat = async (catId:number):Promise<Cat|undefined> => {
     const selectedCat:Cat|undefined = await getConnection().createQueryBuilder()
         .select("cat")
