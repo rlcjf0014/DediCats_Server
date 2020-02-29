@@ -12,7 +12,7 @@ module.exports = {
     synchronize: true,
     logging: false,
     entities: [
-        "dist/data/entity/*.js",
+        "dist/model/entity/*.js",
     ],
     migrations: [
         "dist/data/migration/**/*.js",

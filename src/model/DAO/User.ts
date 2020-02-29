@@ -11,7 +11,6 @@ import { UserStatus } from "../../types/index";
 export default class CatRepository extends Repository<User> {
     getUserById(id:number):Promise<User|undefined> {
         return this.createQueryBuilder("user")
-            .from(User, "user")
             .where("user.id = :id", { id })
             .getOne();
     }
@@ -26,7 +25,6 @@ export default class CatRepository extends Repository<User> {
 
     getUserByEmail(email:string):Promise<User|undefined> {
         return this.createQueryBuilder("user")
-            .from(User, "user")
             .where("user.email = :email", { email })
             .getOne();
     }

@@ -9,6 +9,7 @@ const helper = (fn:Function) => (req:Request, res:Response, next:NextFunction) =
 };
 
 const typeORMError = (error:Error, req:Request, res:Response, next:NextFunction) => {
+    console.log(error);
     if (error instanceof QueryFailedError) return res.status(400).json({ type: "QueryFailedError", message: error.message });
     next(error);
 };
