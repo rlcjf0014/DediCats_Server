@@ -12,7 +12,6 @@ import { CatStatus } from "../../types/index";
 export default class CatRepository extends Repository<Cat> {
     selectCat(catId:number):Promise<Cat|undefined> {
         return this.createQueryBuilder("cat")
-            .from(Cat, "cat")
             .where({ id: catId })
             .getOne();
     }
