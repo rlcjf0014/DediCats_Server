@@ -1,67 +1,55 @@
+/* eslint-disable class-methods-use-this */
 import {
-    getConnection, UpdateResult, InsertResult, getRepository,
+    getConnection, UpdateResult, InsertResult, Repository, EntityRepository,
 } from "typeorm";
 
 import { CatTag, Tag } from "..";
-
 import { TagStatus } from "../../types/index";
 
+@EntityRepository()
+export default class CatTagRepository extends Repository<CatTag> {
+    deleteTag(tagId:number, catId:number, userId:number):Promise<UpdateResult> {
+        return getConnection().createQueryBuilder()
+            .update(CatTag).set({ status: TagStatus.Deleted, deleteUser: userId })
+            .where({ tag: tagId, cat: catId })
+            .execute();
+    }
 
-const deleteTag = async (tagId:number, catId:number, userId:number):Promise<UpdateResult> => {
-    const deletetag:UpdateResult = await getConnection().createQueryBuilder()
-        .update(CatTag).set({ status: TagStatus.Deleted, deleteUser: userId })
-        .where({ tag: tagId, cat: catId })
-        .execute();
-    return deletetag;
-};
+    getTag(catId:string):Promise<Array<object>> {
+        return this.createQueryBuilder("cat_tag")
+            .where({ cat: Number(catId), status: TagStatus.Active })
+            .leftJoinAndSelect("cat_tag.tag", "tag")
+            .select(["cat_tag.id", "tag.content"])
+            .getMany();
+    }
 
-const getTag = async (catId:string):Promise<Array<object>> => {
-    const gettag:Array<object> = await getRepository(CatTag).createQueryBuilder("cat_tag")
-        .where({ cat: Number(catId), status: TagStatus.Active })
-        .leftJoinAndSelect("cat_tag.tag", "tag")
-        .select(["cat_tag.id", "tag.content"])
-        .getMany();
-    return gettag;
-};
+    checkTag(catTag:string):Promise<Tag|undefined> {
+        return this.createQueryBuilder("cat_tag")
+            .select("tag").from(Tag, "tag")
+            .where("tag.content = :content", { content: catTag })
+            .select(["tag.id"])
+            .getOne();
+    }
 
-const checkTag = async (catTag:string):Promise<Tag|undefined> => {
-    const checktag:Tag|undefined = await getConnection().createQueryBuilder()
-        .select("tag").from(Tag, "tag")
-        .where("tag.content = :content", { content: catTag })
-        .select(["tag.id"])
-        .getOne();
-    return checktag;
-};
+    updateTag(userId: number, catId: number, tagId: number):Promise<InsertResult> {
+        return getConnection().createQueryBuilder()
+            .insert()
+            .into("cat_tag")
+            .values([{
+                user: userId, cat: catId, tag: tagId, status: TagStatus.Active,
+            }])
+            .execute();
+    }
 
-const updateTag = async (userId: number, catId: number, tagId: number):Promise<InsertResult> => {
-    const updatetag:InsertResult = await getConnection().createQueryBuilder()
-        .insert()
-        .into("cat_tag")
-        .values([{
-            user: userId, cat: catId, tag: tagId, status: TagStatus.Active,
-        }])
-        .execute();
-    return updatetag;
-};
-
-const newTag = async (catTag: string):Promise<InsertResult> => {
-    const newtag:InsertResult = await getConnection().createQueryBuilder()
-        .insert()
-        .into("tag")
-        .values([
-            {
-                content: catTag,
-            },
-        ])
-        .execute();
-    return newtag;
-};
-
-
-export {
-    deleteTag,
-    getTag,
-    checkTag,
-    updateTag,
-    newTag,
-};
+    newTag(catTag: string):Promise<InsertResult> {
+        return getConnection().createQueryBuilder()
+            .insert()
+            .into("tag")
+            .values([
+                {
+                    content: catTag,
+                },
+            ])
+            .execute();
+    }
+}

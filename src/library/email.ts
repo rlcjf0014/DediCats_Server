@@ -5,24 +5,24 @@ const makeHtml = (nickname:string, secretCode:string, option:string):string => {
     if (option === "signIn") {
         return `
         <div style="text-align : center">
-        <img style="display : inline" src="https://lh3.google.com/u/0/d/1TqLpc4xvwkUTeLrRASDc2Y0c4nme8t3g=w1870-h975-iv1"/>
+        <img style="display : inline" src="https://dedicatsimage.s3.ap-northeast-2.amazonaws.com/email+image.png"/>
         </div>
-        <p>Annyung Haseyo! ${nickname}!</p>
-        <p>Thanks for joining Dedicats! We really appreciate it. Please insert this code into email verfication to verify your account</p>
+        <p style="font-size: large">Annyung Haseyo! ${nickname}!</p>
+        <p style="font-size: medium">Thanks for joining Dedicats! We really appreciate it. Please insert this code into email verfication to verify your account</p>
         <h1>Your code is  <br><span style="text-decoration:underline">${secretCode}<span></h1>
         <h2>This code will only be valid for 1 hour.</h2>
-        <p>if you have any problems, please contact us : dediCats16@gmail.com</p>`;
+        <p style="font-size: 0.9rem">if you have any problems, please contact us : dediCats16@gmail.com</p>`
     }
     // (option === "pwInitialization")
     return `
         <div style="text-align : center">
-        <img style="display : inline" src="https://lh3.google.com/u/0/d/1TqLpc4xvwkUTeLrRASDc2Y0c4nme8t3g=w1870-h975-iv1"/>
+        <img style="display : inline" src="https://dedicatsimage.s3.ap-northeast-2.amazonaws.com/email+image.png"/>
         </div>
-        <p>Annyung Haseyo! ${nickname}!</p>
-        <p>Thanks for using Dedicats! We really appreciate it. Please insert this temporary password to log in and reset your password. Make sure to change your temporary password in MyPage! </p>
+        <p style="font-size: large">Annyung Haseyo! ${nickname}!</p>
+        <p style="font-size: medium">Thanks for using Dedicats! We really appreciate it. Please insert this temporary password to log in and reset your password. Make sure to change your temporary password in MyPage! </p>
         <h1>Your code is  <br><span style="text-decoration:underline">${secretCode}<span></h1>
         <h2>This code will only be valid for 1 hour.</h2>
-        <p>if you have any problems, please contact us: dediCats16@gmail.com</p>`;
+        <p style="font-size: 0.9rem">if you have any problems, please contact us: dediCats16@gmail.com</p>`;
 };
 
 const sendMail = async (nickname:string, email:string, option:string):Promise<string> => {
