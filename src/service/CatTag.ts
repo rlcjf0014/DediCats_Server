@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import { UpdateResult, InsertResult, getCustomRepository } from "typeorm";
 import CatTagRepository from "../model/DAO/CatTag";
+import Tag from "../model/entity/Tag";
 
 const catTagRepository = getCustomRepository(CatTagRepository);
 
