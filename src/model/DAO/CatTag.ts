@@ -6,7 +6,7 @@ import {
 import { CatTag, Tag } from "..";
 import { TagStatus } from "../../types/index";
 
-@EntityRepository()
+@EntityRepository(CatTag)
 export default class CatTagRepository extends Repository<CatTag> {
     deleteTag(tagId:number, catId:number, userId:number):Promise<UpdateResult> {
         return getConnection().createQueryBuilder()

@@ -9,7 +9,7 @@ import {
 import { Comment } from "..";
 import { CommentStatus } from "../../types/index";
 
-@EntityRepository()
+@EntityRepository(Comment)
 export default class CommentRespository extends Repository<Comment> {
     getComments(postId:number, nthPage:number):Promise<Array<Comment>> {
         return this.createQueryBuilder("comment")

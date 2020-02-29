@@ -8,7 +8,7 @@ import {
 import { Cat } from "..";
 import { CatStatus } from "../../types/index";
 
- @EntityRepository()
+ @EntityRepository(Cat)
 export default class CatRepository extends Repository<Cat> {
     selectCat(catId:number):Promise<Cat|undefined> {
         return this.createQueryBuilder("cat")
