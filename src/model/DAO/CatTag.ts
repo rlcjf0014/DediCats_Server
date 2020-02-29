@@ -25,7 +25,8 @@ export default class CatTagRepository extends Repository<CatTag> {
 
     checkTag(catTag:string):Promise<Tag|undefined> {
         return this.createQueryBuilder("cat_tag")
-            .select("tag").from(Tag, "tag")
+            .select("tag")
+            .from(Tag, "tag")
             .where("tag.content = :content", { content: catTag })
             .select(["tag.id"])
             .getOne();
