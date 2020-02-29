@@ -9,7 +9,7 @@ import { Photo, User } from "..";
 
 import { PhotoStatus } from "../../types/index";
 
-@EntityRepository()
+@EntityRepository(Photo)
 export default class PhotoRepository extends Repository<Photo> {
     addCatPhoto(imagePath:string|boolean, catId:number):Promise<InsertResult> {
         return getConnection().createQueryBuilder()

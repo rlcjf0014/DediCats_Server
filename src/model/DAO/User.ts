@@ -7,7 +7,7 @@ import {
 import { User } from "..";
 import { UserStatus } from "../../types/index";
 
- @EntityRepository()
+ @EntityRepository(User)
 export default class CatRepository extends Repository<User> {
     getUserById(id:number):Promise<User|undefined> {
         return this.createQueryBuilder("user")
