@@ -21,6 +21,26 @@ import {
 
 require("dotenv").config();
 
+let connection: Connection;
+const getConnection = async (): Promise<Connection> => {
+    try {
+        if (!(connection instanceof Connection)) {
+            connection = await createConnection();
+        }
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        throw err;
+    }
+    return connection;
+};
+
+getConnection()
+    .then(async () => {
+        console.log("Please wait...");
+        console.log("The database has been set up.\nPlease use the server!");
+    })
+    .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
 
 const api: express.Application = express();
 
@@ -31,7 +51,7 @@ const io = require("socket.io")(server);
 const post = Post(io);
 const comment = Comment(io);
 
-let connection: Connection;
+// let connection: Connection;
 
 api.use(cors());
 
@@ -81,25 +101,25 @@ server.listen(PORT, () => {
     console.log(`app listen on ${PORT}`);
 });
 
-const getConnection = async (): Promise<Connection> => {
-    try {
-        if (!(connection instanceof Connection)) {
-            connection = await createConnection();
-        }
-    } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        throw err;
-    }
-    return connection;
-};
+// const getConnection = async (): Promise<Connection> => {
+//     try {
+//         if (!(connection instanceof Connection)) {
+//             connection = await createConnection();
+//         }
+//     } catch (err) {
+//         // eslint-disable-next-line no-console
+//         console.error(err);
+//         throw err;
+//     }
+//     return connection;
+// };
 
-getConnection()
-    .then(async () => {
-        console.log("Please wait...");
-        console.log("The database has been set up.\nPlease use the server!");
-    })
-    .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
+// getConnection()
+//     .then(async () => {
+//         console.log("Please wait...");
+//         console.log("The database has been set up.\nPlease use the server!");
+//     })
+//     .catch((err:Error) => console.log(`TypeORM connection error: ${err}`));
 
 
 api.use((req:Request, res:Response) => {
