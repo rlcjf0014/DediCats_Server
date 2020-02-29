@@ -6,7 +6,7 @@ import {
 import { Post } from "..";
 import { PostStatus, CommentStatus, PhotoStatus } from "../../types/index";
 
-@EntityRepository()
+@EntityRepository(Post)
 export default class PostRepository extends Repository<Post> {
     insertPost(userId:number, catId:number, content:string):Promise<InsertResult> {
         return getConnection().createQueryBuilder()

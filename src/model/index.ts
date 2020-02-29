@@ -8,5 +8,3 @@ export { default as Post } from "./entity/Post";
 export { default as Report } from "./entity/Report";
 export { default as Tag } from "./entity/Tag";
 export { default as User } from "./entity/User";
-
-
