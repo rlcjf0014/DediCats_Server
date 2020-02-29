@@ -6,7 +6,7 @@ module.exports = {
     host: process.env.DB_HOST || "localhost",
     port: process.env.DB_PORT || 3306,
     username: process.env.DB_USER || "root",
-    password: process.env.DB_PASS || "rlcjf0014",
+    password: process.env.DB_PASS || "1234",
     charset: "utf8mb4",
     database: process.env.DB_NAME || "cats",
     synchronize: true,
@@ -15,14 +15,14 @@ module.exports = {
         "dist/model/entity/*.js",
     ],
     migrations: [
-        "dist/data/migration/**/*.js",
+        "dist/model/migration/**/*.js",
     ],
     subscribers: [
-        "dist/data/subscriber/**/*.js",
+        "dist/model/subscriber/**/*.js",
     ],
     cli: {
-        entitiesDir: "dist/data/entity",
-        migrationsDir: "dist/data/migration",
-        subscribersDir: "dist/data/subscriber",
+        entitiesDir: "dist/model/entity",
+        migrationsDir: "dist/model/migration",
+        subscribersDir: "dist/model/subscriber",
     },
 };

@@ -16,11 +16,10 @@ import {
 
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
 }
-    from "./controller";
+    from "./route";
 
 
 require("dotenv").config();
-
 
 const api: express.Application = express();
 
