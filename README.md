@@ -29,7 +29,7 @@ $ npm(yarn) start
 **Server**: Express / Node.js / TypeORM / Typescript / Socket.io / JWT / mariaDB
 ​
 
-**Deploy**: AWS - S3, EC2, RDS
+**Deploy**: AWS - S3, EC2, RDS, nginx
 Expo Build
 ​
 ## Database Schema
