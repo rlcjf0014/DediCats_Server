@@ -15,11 +15,11 @@ import { getUserIdbyAccessToken } from "../library/jwt";
 import { formatRainbow, formatCut } from "../library/formatCatOptions";
 import { helper } from "../library/Error/errorHelper";
 import CustomError from "../library/Error/customError";
+import { getCatsBylocation } from "../service/Cat";
 
-const router:express.Router = express.Router();
 
 // delete tag
-router.post("/deleteTag", helper(async (req:express.Request, res:express.Response) => {
+const deletetag = helper(async (req:express.Request, res:express.Response) => {
     const { tagId, catId }:{tagId:number, catId:number } = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     const userId = getUserIdbyAccessToken(accessToken);
@@ -28,10 +28,10 @@ router.post("/deleteTag", helper(async (req:express.Request, res:express.Respons
     if (deleteTag.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to delete tag");
 
     res.status(201).send("Successfully deleted tag");
-}));
+});
 
 // This endpoint updates the user's following information.
-router.post("/follow", helper(async (req:express.Request, res:express.Response) => {
+const follow = helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId:number} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     const userId = getUserIdbyAccessToken(accessToken);
@@ -40,11 +40,11 @@ router.post("/follow", helper(async (req:express.Request, res:express.Response) 
     if (updateFollow.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to follow this cat");
 
     res.status(201).send("User now follows this cat");
-}));
+});
 
 
 // update cat rainbow
-router.post("/rainbow", helper(async (req:express.Request, res:express.Response) => {
+const updateRainbow = helper(async (req:express.Request, res:express.Response) => {
     const { catId, rainbow }:{catId:number, rainbow:{Y:number, YDate:string|null, N:number, NDate:string|null}} = req.body;
 
     const selectedRainbow:Cat|undefined = await CatService.selectCat(catId);
@@ -64,18 +64,18 @@ router.post("/rainbow", helper(async (req:express.Request, res:express.Response)
     }
 
     throw new CustomError("DAO_Exception", 409, "Could not update rainbow");
-}));
+});
 
 // Followers Tab
-router.get("/follower/:catId", helper(async (req:express.Request, res:express.Response) => {
+const follower = helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
     const getFollower:Array<object> = await CatService.getCatFollower(catId);
 
     res.status(200).send(getFollower);
-}));
+});
 
 // Cat's Today Status
-router.post("/addcatToday", helper(async (req:express.Request, res:express.Response) => {
+const addcatToday = helper(async (req:express.Request, res:express.Response) => {
     const { catId, catToday }:{catId:number, catToday:string} = req.body;
     const now = `${new Date().toISOString().slice(0, 23)}Z`;
     const updateToday:UpdateResult = await CatService.addCatToday(catId, catToday, now);
@@ -84,10 +84,10 @@ router.post("/addcatToday", helper(async (req:express.Request, res:express.Respo
 
     const result = { cat_today: catToday, cat_today_time: now };
     res.status(201).send(result);
-}));
+});
 
 // Catcut
-router.post("/cut", helper(async (req:express.Request, res:express.Response) => {
+const updatecut = helper(async (req:express.Request, res:express.Response) => {
     const { catId, catCut }:{catId:number, catCut:{Y:number, N:number, unknown:number}} = req.body;
 
     const selectedCut:Cat|undefined = await CatService.selectCat(catId);
@@ -108,10 +108,10 @@ router.post("/cut", helper(async (req:express.Request, res:express.Response) => 
     }
 
     throw new CustomError("DAO_Exception", 409, "Failed to update peanuts.");
-}));
+});
 
 // update Tag
-router.post("/updateTag", helper(async (req:express.Request, res:express.Response) => {
+const updatetag = helper(async (req:express.Request, res:express.Response) => {
     const { catId, catTag }:{catId:number, catTag:string } = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
@@ -149,11 +149,11 @@ router.post("/updateTag", helper(async (req:express.Request, res:express.Respons
 
         res.status(201).send(result);
     }
-}));
+});
 
 // Add Cat
 //! new wkx.Point(1, 2).toWkt()
-router.post("/addcat", helper(async (req:express.Request, res:express.Response) => {
+const addcat = helper(async (req:express.Request, res:express.Response) => {
     const {
         catNickname, location, address, catDescription, catSpecies, photoPath, cut,
     }:{ catNickname:string, location:{latitude:number, longitude:number}, address:string, catDescription:string,
@@ -185,10 +185,10 @@ router.post("/addcat", helper(async (req:express.Request, res:express.Response) 
     }
 
     res.status(201).send("Successfully added cat");
-}));
+});
 
 // Unfollow Cat
-router.post("/unfollow", helper(async (req:express.Request, res:express.Response) => {
+const unfollow = helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId:number} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
     const userId = getUserIdbyAccessToken(accessToken);
@@ -197,10 +197,11 @@ router.post("/unfollow", helper(async (req:express.Request, res:express.Response
     if (updateFollow.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to unfollow cat");
 
     res.status(201).send("User unfollowed this cat");
-}));
+});
+
 
 // This endpoint allows you to get the list of cats you follow.
-router.get("/catlist", helper(async (req:express.Request, res:express.Response) => {
+const catlist = helper(async (req:express.Request, res:express.Response) => {
     const { accessToken }:{accessToken:string} = req.signedCookies;
     const userId = getUserIdbyAccessToken(accessToken);
 
@@ -208,11 +209,12 @@ router.get("/catlist", helper(async (req:express.Request, res:express.Response) 
     if (!getCats) throw new CustomError("DAO_Exception", 409, "User's list not found");
 
     res.status(200).send(getCats);
-}));
+});
+
 
 // This endpoint provides you with the information of the selected cat.
 // ? 캣 태그, 사진 같이 보내줘야 함.
-router.get("/:catId", helper(async (req:express.Request, res:express.Response) => {
+const selectedCat = helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string } = req.params;
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
@@ -222,7 +224,7 @@ router.get("/:catId", helper(async (req:express.Request, res:express.Response) =
     if (!getCat) throw new CustomError("DAO_Exception", 409, "Cat not found");
 
     const checkFollow:Array<{count: string}> = await CatService.checkFollow(Number(catId), userId);
-    const follow:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
+    const followcount:object = checkFollow[0].count === "1" ? { isFollowing: true } : { isFollowing: false };
 
     const getTag: Array<object> = await CatTagService.getTag(catId);
     if (!getTag) throw new CustomError("DAO_Exception", 409, "Cat found, but tag not found");
@@ -230,8 +232,29 @@ router.get("/:catId", helper(async (req:express.Request, res:express.Response) =
     const getPhoto:Photo|undefined = await PhotoService.getCatPhoto(catId);
     if (!getPhoto) throw new CustomError("DAO_Exception", 409, "Cat and tag found, but photo not found");
 
-    res.status(200).send([getCat, follow, getTag, getPhoto]);
-}));
+    res.status(200).send([getCat, followcount, getTag, getPhoto]);
+});
+
+const mapCats = helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
+    const { location } : {location:{ NElatitude : number, NElongitude : number, SWlatitude : number, SWlongitude : number }} = req.body;
+    const { accessToken }:{accessToken:string} = req.signedCookies;
+    const userId = getUserIdbyAccessToken(accessToken);
+    const result:Array<object> = await getCatsBylocation(location, userId);
+    res.status(200).send(result);
+});
 
 
-export default router;
+export {
+    selectedCat,
+    deletetag,
+    follow,
+    updateRainbow,
+    follower,
+    addcatToday,
+    updatecut,
+    updatetag,
+    addcat,
+    unfollow,
+    catlist,
+    mapCats,
+};

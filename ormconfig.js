@@ -1,12 +1,14 @@
 require("dotenv").config();
 
+
 module.exports = {
     type: "mariadb",
-    host: "localhost",
-    port: 3306,
-    username: "root",
-    password: "1112",
-    database: "cats",
+    host: process.env.DB_HOST || "localhost",
+    port: process.env.DB_PORT || 3306,
+    username: process.env.DB_USER || "root",
+    password: process.env.DB_PASS || "1234",
+    charset: "utf8mb4",
+    database: process.env.DB_NAME || "cats",
     synchronize: true,
     logging: false,
     entities: [
@@ -19,8 +21,8 @@ module.exports = {
         "dist/model/subscriber/**/*.js",
     ],
     cli: {
-        entitiesDir: "dist/data/entity",
-        migrationsDir: "dist/data/migration",
-        subscribersDir: "dist/data/subscriber",
+        entitiesDir: "dist/model/entity",
+        migrationsDir: "dist/model/migration",
+        subscribersDir: "dist/model/subscriber",
     },
 };

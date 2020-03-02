@@ -2,16 +2,18 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 /* eslint-disable max-len */
-import { UpdateResult, InsertResult } from "typeorm";
+import { UpdateResult, InsertResult, getCustomRepository } from "typeorm";
 import Comment from "../model/entity/Comment";
-import * as CommentDAO from "../model/DAO/Comment";
+import CommentRepository from "../model/DAO/Comment";
+
+const commentRepository = () => getCustomRepository(CommentRepository);
 
 
-const getComments = (postId:number, nthPage:number):Promise<Array<Comment>> => CommentDAO.getComments(postId, nthPage);
-const deleteComment = (commentId:number):Promise<UpdateResult> => CommentDAO.deleteComment(commentId);
-const insertComment = (postId:number, userId:number, content:string):Promise<InsertResult> => CommentDAO.insertComment(postId, userId, content);
-const getComment = (commentId:number):Promise<object|undefined> => CommentDAO.getComment(commentId);
-const updateComment = (commentId:number, userId:number, content:string):Promise<UpdateResult> => CommentDAO.updateComment(commentId, userId, content);
+const getComments = (postId:number, nthPage:number):Promise<Array<Comment>> => commentRepository().getComments(postId, nthPage);
+const deleteComment = (commentId:number):Promise<UpdateResult> => commentRepository().deleteComment(commentId);
+const insertComment = (postId:number, userId:number, content:string):Promise<InsertResult> => commentRepository().insertComment(postId, userId, content);
+const getComment = (commentId:number):Promise<object|undefined> => commentRepository().getComment(commentId);
+const updateComment = (commentId:number, userId:number, content:string):Promise<UpdateResult> => commentRepository().updateComment(commentId, userId, content);
 
 export {
     getComments, deleteComment, insertComment, getComment, updateComment,

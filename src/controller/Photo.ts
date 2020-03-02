@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 import express from "express";
 import { UpdateResult } from "typeorm";
@@ -10,17 +11,15 @@ import { helper } from "../library/Error/errorHelper";
 import CustomError from "../library/Error/customError";
 
 
-const router:express.Router = express.Router();
-
-router.get("/album/:catId", helper(async (req:express.Request, res:express.Response) => {
+const catAlbum = helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string} = req.params;
     const getPhoto:Array<object> = await PhotoService.getCatAlbum(catId);
     if (!getPhoto) throw new CustomError("Body Parameters Exception", 409, "Photo not found");
 
     res.status(200).send(getPhoto);
-}));
+});
 
-router.post("/profile/delete", helper(async (req: express.Request, res:express.Response) => {
+const deleteProfile = helper(async (req: express.Request, res:express.Response) => {
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
     const userId = getUserIdbyAccessToken(accessToken);
@@ -35,10 +34,9 @@ router.post("/profile/delete", helper(async (req: express.Request, res:express.R
     if (check === false) throw new CustomError("S3_Exception", 409, "Failed to delete picture from image bucket");
 
     res.status(201).send("Successfully deleted profile picture");
-}));
+});
 
-//! S3에 데이터 저장 후 그 주소를 받아와 데이터베이스에 저장 및 클라이언트에 보내줘야 함.
-router.post("/profile", helper(async (req:express.Request, res:express.Response) => {
+const profilePic = helper(async (req:express.Request, res:express.Response) => {
     const { photoPath }:{ photoPath:string} = req.body;
     const { accessToken }:{accessToken:string} = req.signedCookies;
 
@@ -74,6 +72,13 @@ router.post("/profile", helper(async (req:express.Request, res:express.Response)
 
         res.status(201).send({ photoPath: imagepath });
     }
-}));
+});
 
-export default router;
+//! S3에 데이터 저장 후 그 주소를 받아와 데이터베이스에 저장 및 클라이언트에 보내줘야 함.
+
+
+export {
+    profilePic,
+    deleteProfile,
+    catAlbum,
+};

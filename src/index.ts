@@ -16,15 +16,14 @@ import {
 
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
 }
-    from "./controller";
+    from "./route";
 
 
 require("dotenv").config();
 
-
 const api: express.Application = express();
 
-const PORT : Number = 8000;
+const PORT : Number = 3000;
 const server = http.createServer(api);
 const io = require("socket.io")(server);
 

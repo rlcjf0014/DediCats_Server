@@ -7,9 +7,7 @@ import { ReportService } from "../service";
 import { helper } from "../library/Error/errorHelper";
 import CustomError from "../library/Error/customError";
 
-const router:express.Router = express.Router();
-
-router.post("/", helper(async (req:express.Request, res:express.Response) => {
+const report = helper(async (req:express.Request, res:express.Response) => {
     const {
         commentId, postId, catId, criminalId,
     }:{commentId:(number|undefined), postId:(number|undefined), catId:(number|undefined), criminalId:number} = req.body;
@@ -35,6 +33,6 @@ router.post("/", helper(async (req:express.Request, res:express.Response) => {
 
         res.status(201).send("Successfully reported comment");
     }
-}));
+});
 
-export default router;
+export default report;
