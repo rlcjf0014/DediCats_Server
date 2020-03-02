@@ -8,9 +8,6 @@ import { PostService, PhotoService } from "../service";
 import { helper } from "../library/Error/errorHelper";
 import CustomError from "../library/Error/customError";
 
-const router:express.Router = express.Router();
-
-
 // Add Post
 const addpost = helper(async (req:express.Request, res:express.Response) => {
     const {

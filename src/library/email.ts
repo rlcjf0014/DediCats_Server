@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import nodemailer from "nodemailer";
 import smtpTransport from "nodemailer-smtp-transport";
 
@@ -49,10 +50,8 @@ const sendMail = async (nickname:string, email:string, option:string):Promise<st
         if (error) {
             console.log("Failed to send email");
             throw error;
-            // res.status(409).send("Failed to send email");
         }
         console.log(`Email sent: ${info.response}`);
-        // res.status(201).send(signupCode);
     });
 
     return secretCode;
