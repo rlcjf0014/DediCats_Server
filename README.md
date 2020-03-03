@@ -37,7 +37,7 @@ React Native(Expo) / React Navigation / MobX / axios / Socket.io / Native Base /
 Express / Node.js / TypeORM / Typescript / Socket.io / JWT / mariaDB
 
 #### Deploy 
-AWS - S3, EC2, RDS, Nginx
+AWS - S3 / EC2 / RDS / Nginx
 
 ## Database Schema
 ![스크린샷, 2020-02-27 01-03-12](https://user-images.githubusercontent.com/52588452/75363443-761fff00-58fd-11ea-8231-ae9cab329a0f.png)
