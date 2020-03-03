@@ -42,6 +42,4 @@ https://www.notion.so/Project-Dedicats-API-Document-4883570a67b64a0c81d23f3bfee3
 ​
 ## License
 ​
----
-​
 Copyrights by Team CodeStake. For the further use, please contact Team CodeStake via `dedicats16@gmail.com`.
