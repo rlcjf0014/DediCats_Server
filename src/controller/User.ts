@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
@@ -29,38 +30,35 @@ const signin = helper(async (req:express.Request, res:express.Response) => {
     if (encryPassword !== user.password) return res.status(401).send("Incorrect Password.");
 
     // ! 토큰 발급 및 업데이트
-    const accessToken = generateAccessToken(user);
     const refreshToken = generateRefeshToken(user.id);
     const result:UpdateResult = await UserService.updateToken(user.id, refreshToken);
-
     if (result.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to insert Token");
 
-    res.clearCookie("refreshToken");
-    res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
-    res.cookie("refreshToken", refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 100, signed: true });
-
-    return res.status(201).send("success");
+    return res.status(201).send({ refreshToken });
 });
 
 const signout = helper(async (req:express.Request, res:express.Response) => {
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
+    const { refreshToken } = req.body;
+    const userId:number = getUserIdbyRefreshToken(refreshToken);
+    const result:UpdateResult = await UserService.updateToken(userId, "");
+
+    if (result.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 201, "Failed to delete token but signout!");
+
     return res.status(201).send("Signout Success!");
 });
 
 const token = helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
-    const { refreshToken } = req.signedCookies;
+    const { refreshToken } = req.body;
     if (!refreshToken) return res.status(401).send("logout");
 
-    const userId:number = getUserIdbyRefreshToken(refreshToken, next);
-
+    const userId:number = getUserIdbyRefreshToken(refreshToken);
     const user:User|undefined = await UserService.getUserById(userId);
 
     // ? 요청받은 refreshToken과 다른경우
     if (!user?.refreshToken || user?.refreshToken !== refreshToken) throw new CustomError("JWT_Exception", 401, "Invalid Request Token");
 
     const accessToken = generateAccessToken(user);
-    res.cookie("accessToken", accessToken, { maxAge: 1000 * 60 * 60 * 24, signed: true });
+
     const {
         id, nickname, photoPath, createAt, email,
     } = user;
@@ -74,9 +72,9 @@ const token = helper(async (req:express.Request, res:express.Response, next:expr
 
 const changepw = helper(async (req:express.Request, res:express.Response) => {
     const { password, newPassword }:{password:string, newPassword:string } = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
-    const userId = getUserIdbyAccessToken(accessToken);
     const user:User|undefined = await UserService.getUserById(userId);
     if (!user) throw new CustomError("DAO_Exception", 401, "Fail to get User");
 

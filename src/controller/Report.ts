@@ -11,9 +11,8 @@ const report = helper(async (req:express.Request, res:express.Response) => {
     const {
         commentId, postId, catId, criminalId,
     }:{commentId:(number|undefined), postId:(number|undefined), catId:(number|undefined), criminalId:number} = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
     if (postId) {
         const reportPost:InsertResult = await ReportService.reportPost(postId, userId, criminalId);
         if (reportPost.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to report post");
