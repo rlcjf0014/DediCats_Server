@@ -13,9 +13,8 @@ const addpost = helper(async (req:express.Request, res:express.Response) => {
     const {
         catId, content, photoPath,
     }:{catId:number, content:string, photoPath: string | undefined} = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const addPost:InsertResult = await PostService.insertPost(userId, catId, content);
     if (addPost.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to save post");

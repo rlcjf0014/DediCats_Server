@@ -4,7 +4,7 @@ import "reflect-metadata";
 import express, { Request, Response, NextFunction } from "express";
 import { createConnection, Connection } from "typeorm";
 import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 
 import cors from "cors";
@@ -17,6 +17,7 @@ import {
     BasicRouter, Cat, Comment, Map, Photo, Post, Report, User, Signup, Authentication,
 }
     from "./route";
+import CustomError from "./library/Error/customError";
 
 
 require("dotenv").config();
@@ -34,7 +35,7 @@ let connection: Connection;
 
 api.use(cors());
 
-api.use(cookieParser(process.env.TOKEN_KEY));
+// api.use(cookieParser(process.env.TOKEN_KEY));
 api.use(bodyParser.json({ limit: "50mb" }));
 api.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 
@@ -43,7 +44,10 @@ api.use("/signup", Signup);
 api.use("/auth", Authentication);
 
 api.use("/*", (req:Request, res:Response, next:NextFunction) => {
-    const { accessToken } = req.signedCookies;
+    const { authorization } = req.headers;
+    const accessToken:string|undefined = authorization && authorization.split(" ")[1];
+    if (!accessToken) throw new CustomError("Token is required", 401, "Fail to get accessToken in header");
+
     const accessKey:any = process.env.JWT_SECRET_ACCESS;
     try {
         jwt.verify(accessToken, accessKey);
