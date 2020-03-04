@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import nodemailer from "nodemailer";
 import smtpTransport from "nodemailer-smtp-transport";
 
@@ -11,7 +12,7 @@ const makeHtml = (nickname:string, secretCode:string, option:string):string => {
         <p style="font-size: medium">Thanks for joining Dedicats! We really appreciate it. Please insert this code into email verfication to verify your account</p>
         <h1>Your code is  <br><span style="text-decoration:underline">${secretCode}<span></h1>
         <h2>This code will only be valid for 1 hour.</h2>
-        <p style="font-size: 0.9rem">if you have any problems, please contact us : dediCats16@gmail.com</p>`
+        <p style="font-size: 0.9rem">if you have any problems, please contact us : dediCats16@gmail.com</p>`;
     }
     // (option === "pwInitialization")
     return `
@@ -49,10 +50,8 @@ const sendMail = async (nickname:string, email:string, option:string):Promise<st
         if (error) {
             console.log("Failed to send email");
             throw error;
-            // res.status(409).send("Failed to send email");
         }
         console.log(`Email sent: ${info.response}`);
-        // res.status(201).send(signupCode);
     });
 
     return secretCode;

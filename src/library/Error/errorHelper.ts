@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable max-len */
 import { NextFunction, Request, Response } from "express";
 import { QueryFailedError } from "typeorm";

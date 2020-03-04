@@ -1,7 +1,7 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 import {
-    Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
+    Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
     ManyToOne,
 } from "typeorm";
 
