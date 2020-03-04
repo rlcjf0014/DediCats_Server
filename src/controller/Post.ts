@@ -8,17 +8,13 @@ import { PostService, PhotoService } from "../service";
 import { helper } from "../library/Error/errorHelper";
 import CustomError from "../library/Error/customError";
 
-const router:express.Router = express.Router();
-
-
 // Add Post
 const addpost = helper(async (req:express.Request, res:express.Response) => {
     const {
         catId, content, photoPath,
     }:{catId:number, content:string, photoPath: string | undefined} = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const addPost:InsertResult = await PostService.insertPost(userId, catId, content);
     if (addPost.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to save post");
@@ -59,6 +55,7 @@ const postRefresh = helper(async (req:express.Request, res:express.Response, nex
 
     const nthPage = paginationNumber * 10;
     const post:Array<object> = await PostService.getPosts(catIdNumber, nthPage);
+<<<<<<< HEAD
 
     if (!post) throw new CustomError("DAO_Exception", 409, "Failed to get posts");
 
@@ -67,6 +64,16 @@ const postRefresh = helper(async (req:express.Request, res:express.Response, nex
     res.status(200).send({ post, maxcount });
 });
 
+=======
+
+    if (!post) throw new CustomError("DAO_Exception", 409, "Failed to get posts");
+
+    const count:number = await PostService.getPostsCount(next, catIdNumber);
+    const maxcount = Math.floor(count / 10) + 1;
+    res.status(200).send({ post, maxcount });
+});
+
+>>>>>>> 8835c9ef7292397ce246326d93aba5322b786ddc
 
 // update Post
 const updatepost = helper(async (req:express.Request, res:express.Response) => {

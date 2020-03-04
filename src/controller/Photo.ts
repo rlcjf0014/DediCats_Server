@@ -20,9 +20,8 @@ const catAlbum = helper(async (req:express.Request, res:express.Response) => {
 });
 
 const deleteProfile = helper(async (req: express.Request, res:express.Response) => {
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const updatePic:UpdateResult = await PhotoService.deleteProfile(userId);
     if (updatePic.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to delete profile picture");
@@ -38,9 +37,8 @@ const deleteProfile = helper(async (req: express.Request, res:express.Response) 
 
 const profilePic = helper(async (req:express.Request, res:express.Response) => {
     const { photoPath }:{ photoPath:string} = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const getProfile:User | undefined = await UserService.getUserById(userId);
     if (!getProfile) throw new CustomError("DAO_Exception", 409, "Failed to update profile picture");

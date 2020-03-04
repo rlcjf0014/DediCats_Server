@@ -21,8 +21,8 @@ import { getCatsBylocation } from "../service/Cat";
 // delete tag
 const deletetag = helper(async (req:express.Request, res:express.Response) => {
     const { tagId, catId }:{tagId:number, catId:number } = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const deleteTag:UpdateResult = await CatTagService.deleteTag(tagId, catId, userId);
     if (deleteTag.raw.changedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to delete tag");
@@ -33,8 +33,8 @@ const deletetag = helper(async (req:express.Request, res:express.Response) => {
 // This endpoint updates the user's following information.
 const follow = helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId:number} = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const updateFollow:InsertResult = await CatService.insertFollow(catId, userId);
     if (updateFollow.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to follow this cat");
@@ -113,9 +113,8 @@ const updatecut = helper(async (req:express.Request, res:express.Response) => {
 // update Tag
 const updatetag = helper(async (req:express.Request, res:express.Response) => {
     const { catId, catTag }:{catId:number, catTag:string } = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const checkTag:Tag|undefined = await CatTagService.checkTag(catTag);
     if (checkTag) {
@@ -158,9 +157,9 @@ const addcat = helper(async (req:express.Request, res:express.Response) => {
         catNickname, location, address, catDescription, catSpecies, photoPath, cut,
     }:{ catNickname:string, location:{latitude:number, longitude:number}, address:string, catDescription:string,
         catSpecies:string, photoPath:string, cut:object, } = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
-    const userId = getUserIdbyAccessToken(accessToken);
     const coordinate = new wkx.Point(location.latitude, location.longitude).toWkt();
     const addCat: InsertResult = await CatService.addCat(catNickname, coordinate, address, catDescription, catSpecies, userId, cut);
 
@@ -190,8 +189,8 @@ const addcat = helper(async (req:express.Request, res:express.Response) => {
 // Unfollow Cat
 const unfollow = helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId:number} = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const updateFollow:DeleteResult = await CatService.deleteFollow(catId, userId);
     if (updateFollow.raw.affectedRows === 0) throw new CustomError("DAO_Exception", 409, "Failed to unfollow cat");
@@ -202,8 +201,8 @@ const unfollow = helper(async (req:express.Request, res:express.Response) => {
 
 // This endpoint allows you to get the list of cats you follow.
 const catlist = helper(async (req:express.Request, res:express.Response) => {
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
     const getCats:Array<object> = await UserService.getCatList(userId);
     if (!getCats) throw new CustomError("DAO_Exception", 409, "User's list not found");
@@ -216,9 +215,9 @@ const catlist = helper(async (req:express.Request, res:express.Response) => {
 // ? 캣 태그, 사진 같이 보내줘야 함.
 const selectedCat = helper(async (req:express.Request, res:express.Response) => {
     const { catId }:{catId?: string } = req.params;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
 
-    const userId = getUserIdbyAccessToken(accessToken);
     const getCat:Cat|undefined = await CatService.getCat(catId);
 
     if (!getCat) throw new CustomError("DAO_Exception", 409, "Cat not found");
@@ -237,8 +236,9 @@ const selectedCat = helper(async (req:express.Request, res:express.Response) => 
 
 const mapCats = helper(async (req:express.Request, res:express.Response, next:express.NextFunction) => {
     const { location } : {location:{ NElatitude : number, NElongitude : number, SWlatitude : number, SWlongitude : number }} = req.body;
-    const { accessToken }:{accessToken:string} = req.signedCookies;
-    const userId = getUserIdbyAccessToken(accessToken);
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
+
     const result:Array<object> = await getCatsBylocation(location, userId);
     res.status(200).send(result);
 });
