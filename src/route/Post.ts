@@ -12,6 +12,8 @@ const postRouter = (io:any) => {
 
     // ? Disconnect User from Post
 
+    router.post("/update", PostRouter.updatepost);
+
     router.get("/disconnect", PostRouter.disconnect(io));
 
     // delete Post
