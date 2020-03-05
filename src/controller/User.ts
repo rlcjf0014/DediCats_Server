@@ -58,6 +58,7 @@ const token = helper(async (req:express.Request, res:express.Response, next:expr
     if (!user?.refreshToken || user?.refreshToken !== refreshToken) throw new CustomError("JWT_Exception", 401, "Invalid Request Token");
 
     const accessToken = generateAccessToken(user);
+
     const {
         id, nickname, photoPath, createAt, email,
     } = user;

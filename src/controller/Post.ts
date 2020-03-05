@@ -55,7 +55,6 @@ const postRefresh = helper(async (req:express.Request, res:express.Response, nex
 
     const nthPage = paginationNumber * 10;
     const post:Array<object> = await PostService.getPosts(catIdNumber, nthPage);
-<<<<<<< HEAD
 
     if (!post) throw new CustomError("DAO_Exception", 409, "Failed to get posts");
 
@@ -64,16 +63,6 @@ const postRefresh = helper(async (req:express.Request, res:express.Response, nex
     res.status(200).send({ post, maxcount });
 });
 
-=======
-
-    if (!post) throw new CustomError("DAO_Exception", 409, "Failed to get posts");
-
-    const count:number = await PostService.getPostsCount(next, catIdNumber);
-    const maxcount = Math.floor(count / 10) + 1;
-    res.status(200).send({ post, maxcount });
-});
-
->>>>>>> 8835c9ef7292397ce246326d93aba5322b786ddc
 
 // update Post
 const updatepost = helper(async (req:express.Request, res:express.Response) => {

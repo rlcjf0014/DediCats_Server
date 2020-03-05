@@ -36,9 +36,15 @@ const deleteComment = helper(async (req:express.Request, res:express.Response) =
 // Add Comment
 const addComment = (io:any) => helper(async (req:express.Request, res:express.Response) => {
     const { content, postId }:{content:string, postId:number} = req.body;
+    const { authorization } = req.headers;
+    const userId = getUserIdbyAccessToken(authorization);
+
+    const result:InsertResult = await CommentService.insertComment(postId, userId, content);
+
     if (result.raw.affectedRows) {
         const newComment:object|undefined = await CommentService.getComment(result.identifiers[0].id);
         io.to(postId).emit("new comment", newComment);
+        res.status(201).send("Adding comment was successful");
         return;
     }
 
