@@ -10,7 +10,7 @@ Each and every one of us have a favorite cat moment to share. Even if you do not
 
 DediCats, We support the coexistence of cats and humans everywhere.
 
-**클라이언트 코드**: https://github.com/naseriansuzie/DediCats_Client
+**클라이언트 **: https://github.com/naseriansuzie/DediCats_Client
 
 
 
