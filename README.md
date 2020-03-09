@@ -10,8 +10,9 @@ Each and every one of us have a favorite cat moment to share. Even if you do not
 
 DediCats, We support the coexistence of cats and humans everywhere.
 
-**클라이언트 **: https://github.com/naseriansuzie/DediCats_Client
+**프로젝트 소개** : https://www.notion.so/1-CodeStake-DediCats-38788b87b32a4c9d964105add197ad94
 
+**클라이언트 레포**: https://github.com/naseriansuzie/DediCats_Client
 
 
 ## Install
