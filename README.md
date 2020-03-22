@@ -10,8 +10,11 @@ Each and every one of us have a favorite cat moment to share. Even if you do not
 
 DediCats, We support the coexistence of cats and humans everywhere.
 
-**클라이언트 코드**: https://github.com/naseriansuzie/DediCats_Client
+- Google Play Store : https://play.google.com/store/apps/details?id=com.codestake.DediCats
 
+- Project Introduction : https://www.notion.so/1-CodeStake-DediCats-38788b87b32a4c9d964105add197ad94
+
+- Server Repository: https://github.com/rlcjf0014/DediCats_Server
 
 
 ## Install
@@ -49,4 +52,4 @@ https://www.notion.so/Project-Dedicats-API-Document-4883570a67b64a0c81d23f3bfee3
 ​
 ## License
 ​
-Copyrights by Team CodeStake. For the further use, please contact Team CodeStake via `dedicats16@gmail.com`.
+Copyrights by Team CodeStake. For further information, please contact Team CodeStake via `dedicats16@gmail.com`.
