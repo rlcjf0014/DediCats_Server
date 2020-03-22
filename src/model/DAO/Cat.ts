@@ -30,6 +30,7 @@ export default class CatRepository extends Repository<Cat> {
             .where("cat.id = :id", { id: Number(catId) })
             .leftJoinAndSelect("cat.users", "user")
             .select(["cat.id", "user.id", "user.nickname", "user.photoPath"])
+            .orderBy("user.nickname", "ASC")
             .getMany();
     }
 
